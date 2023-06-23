@@ -40,7 +40,6 @@ export const NoDerugRequests: FC<{
         }}
         aria-labelledby="header-id"
       >
-        <div id="header-id">Derug request</div>
         {currentRequest?.derugger.toString()}
       </div>
       <div className="w-full">

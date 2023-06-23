@@ -9,6 +9,7 @@ const getNavStyling = (tab: string, selected: string) => {
     backgroundColor: tab === selected ? "rgba(9, 194, 246,.35)" : "transparent",
     color: tab === selected ? "rgba(9, 194, 246)" : "white",
     fontSize: "1rem",
+    padding: ".5em 1em",
     borderRadius: "1.5em",
     // fontWeight: "bold",
     fontFamily: "monospace",
@@ -77,13 +78,7 @@ export const HeaderTabs: FC<{
               )}
             <div
               aria-label="Main"
-              className="flex justify-end w-fit border-none"
-              style={{
-                // borderBottom: "1px solid  rgba(9, 194, 246)",
-                position: "sticky",
-                borderRadius: "2em",
-              }}
-            >
+              className="sticky flex justify-end w-fit items-center">
               {collectionDerug &&
                 (collectionDerug!.status === DerugStatus.Reminting ||
                   collectionDerug?.status === DerugStatus.UploadingMetadata) &&

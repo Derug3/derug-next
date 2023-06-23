@@ -38,12 +38,13 @@ const DerugRequestDetails: FC<{
   };
 
   const renderCreators = useMemo(() => {
-    return derugRequest.creators?.map((c) => {
+    return derugRequest.creators?.map((c, index) => {
       const relatedCreator = creatorsData?.find(
         (cr) => c.address.toString() === cr.pubkey
       );
       return (
         <div
+          key={index}
           className="w-full bg-black border-b-[1px] border-green-color
          flex justify-between items-center p-3"
         >
@@ -72,9 +73,10 @@ const DerugRequestDetails: FC<{
   }, [creatorsData]);
 
   const renderUtilityTitles = useMemo(() => {
-    return derugRequest.utility.map((u) => {
+    return derugRequest.utility.map((u, index) => {
       return (
         <div
+          key={index}
           onClick={() => setSelectedUtility(u)}
           className={`border-[1px] rounded-md bg-${selecterUtility.title === u.title
             ? "main-blue/[0.7]"

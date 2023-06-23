@@ -207,8 +207,8 @@ export const Remint: FC<{
                   <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 px-10 ">
                     {loading ? (
                       <>
-                        {generateSkeletonArrays(5).map(() => {
-                          return <Skeleton baseColor="red" />;
+                        {generateSkeletonArrays(5).map((_, index) => {
+                          return <Skeleton baseColor="red" key={index} />;
                         })}
                       </>
                     ) : (

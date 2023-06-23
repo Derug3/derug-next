@@ -39,6 +39,7 @@ const WalletWrapper: FC<Props> = (props) => {
         <WalletModalProvider>{props.children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
+
   );
 };
 

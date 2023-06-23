@@ -35,10 +35,10 @@ export const HotListings: FC<{
             overflowY: "scroll",
           }}
         >
-          {hotListings.map((cd) => {
+          {hotListings.map((cd, index) => {
             console.log(cd, "cd");
 
-            return <HotListingItem collectionData={cd} />;
+            return <HotListingItem collectionData={cd} key={index} />;
           })}
         </div>
       </div>

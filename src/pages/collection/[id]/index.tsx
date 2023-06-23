@@ -38,6 +38,8 @@ import {
 } from "@/interface/collections.interface";
 import { IGraphData, IRemintConfig } from "@/interface/derug.interface";
 import { useRouter } from "next/router";
+
+
 export const Collections: FC = () => {
   dayjs.extend(utc);
   const [collectionStats, setCollectionStats] = useState<ICollectionStats>();
@@ -64,6 +66,8 @@ export const Collections: FC = () => {
   const router = useRouter();
 
   const slug = router.query.id as string;
+
+
   let derug = router.query;
   const [remintConfig, setRemintConfig] = useState<IRemintConfig | undefined>();
 

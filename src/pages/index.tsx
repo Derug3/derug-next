@@ -40,8 +40,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const { name } = useDebounce(searchValue);
 
-  const { push: navigate } = useRouter();
-
+  const router = useRouter()
   useEffect(() => {
     void getCollectionsData();
     void getActiveCollections();
@@ -117,6 +116,11 @@ const Home = () => {
   };
 
   const renderSelect = useMemo(() => {
+    const enterSearch = (e: any) => {
+      router.push(`/collection/${e.symbol}`);
+
+    }
+
     return (
       <Select
         className="absolute top-0 left-0 w-full h-full z-10 p-2 border border-gray-200 rounded-lg shadow"
@@ -125,12 +129,12 @@ const Home = () => {
         onInputChange={handleSearch}
         styles={selectStylesPrimary}
         options={filteredCollections}
-        onChange={(e) => navigate(`collection/${e.target}`)}
+        onChange={enterSearch}
         getOptionLabel={(option: any) => option.name}
         getOptionValue={(option: any) => option.symbol}
         formatOptionLabel={(e: any) => (
-          <Box
-            sx={{
+          <div
+            style={{
               width: "100%",
               display: "flex",
               alignItems: "center",
@@ -140,8 +144,8 @@ const Home = () => {
             }}
           >
             <img style={{ width: "2.5em", height: "2.5em" }} src={e.image} />
-            <Text as={"h3"}>{e.name}</Text>
-          </Box>
+            <h3 >{e.name}</h3>
+          </div>
         )}
       />
     );

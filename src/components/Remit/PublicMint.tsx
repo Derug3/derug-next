@@ -102,9 +102,9 @@ const PublicMint = () => {
   };
 
   const renderNfts = useMemo(() => {
-    return nfts.map((n) => {
+    return nfts.map((n, index) => {
       return (
-        <div className="flex flex-col items-center">
+        <div key={index} className="flex flex-col items-center">
           <img src={n.image} alt="" className="w-36 h-28" />
           <p className="text-white text-sm w-full break-all">{n.name}</p>
         </div>
@@ -130,8 +130,9 @@ const PublicMint = () => {
         </p>
         <div className="overflow-y-scroll grid grid-cols-3 gap-5">
           {loading
-            ? generateSkeletonArrays(15).map(() => (
+            ? generateSkeletonArrays(15).map((_, index) => (
               <Skeleton
+                key={index}
                 height={100}
                 width={110}
                 baseColor="rgb(22,27,34)"

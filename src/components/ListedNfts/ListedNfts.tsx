@@ -1,7 +1,5 @@
 import React, { FC, useContext, useState } from "react";
-import Skeleton from "react-loading-skeleton";
 import { CollectionContext } from "../../stores/collectionContext";
-import { generateSkeletonArrays } from "../../utilities/nft-fetching";
 import ListedNftItem from "./ListedNftItem";
 
 const ListedNfts: FC = () => {
@@ -10,14 +8,14 @@ const ListedNfts: FC = () => {
   const renderListedNfts = () => {
     return activeListings
       ? activeListings?.map((ln) => {
-          return (
-            <ListedNftItem
-              listedNft={ln}
-              key={ln.mint}
-              imageUrl={ln.imageUrl}
-            />
-          );
-        })
+        return (
+          <ListedNftItem
+            listedNft={ln}
+            key={ln.mint}
+            imageUrl={ln.imageUrl}
+          />
+        );
+      })
       : [];
   };
 

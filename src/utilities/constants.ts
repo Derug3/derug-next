@@ -14,7 +14,7 @@ export const FADE_UP_ANIMATION_VARIANTS = {
   show: { opacity: 1, y: 0, transition: { type: "spring" } },
 };
 
-export const HOME = "";
+export const HOME = "/";
 export const COLLECTION = "/collection";
 
 export const NFTS_PER_PAGE = 10;

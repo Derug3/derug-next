@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC } from "react";
 import {
   IChainCollectionData,
   ICollectionData,
@@ -111,9 +111,10 @@ export const ActiveListings: FC<{
             overflowY: "scroll",
           }}
         >
-          {activeListings.map((cd) => {
+          {activeListings.map((cd, index) => {
             return (
               <ActiveListingItem
+                key={index}
                 derugData={cd.derug}
                 collectionData={cd.collection}
               />
