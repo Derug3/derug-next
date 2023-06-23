@@ -1,8 +1,5 @@
-import { Box, Text } from "@primer/react";
-import { motion } from "framer-motion";
 import { FC, useState } from "react";
 import { AiOutlineStar } from "react-icons/ai";
-import { FADE_DOWN_ANIMATION_VARIANTS } from "../../utilities/constants";
 import CollectionData from "../CollectionData/CollectionData";
 import tensorLogo from "../../assets/tensorLogo.png";
 import magicEdenLogo from "../../assets/magicEdenLogo.png";
@@ -15,36 +12,20 @@ export const LeftPane: FC<{
   const router = useRouter();
   const slug = router.pathname;
   return (
-    <motion.div variants={FADE_DOWN_ANIMATION_VARIANTS}>
-      <motion.div
-        variants={FADE_DOWN_ANIMATION_VARIANTS}
+    <div>
+      <div
         className="pl-10 sticky"
       >
-        <Box
-          sx={{
-            "@media screen and (max-width: 768px)": {
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
-            },
-          }}
+        <div
         >
           {(selectedInfo === "description" || selectedInfo === "") && (
-            <Box
-              sx={{
-                "@media screen and (max-width: 768px)": {
-                  display: "flex",
-                  flexDirection: "column",
-                  width: "100%",
-                },
-              }}
+            <div
             >
-              <Text
+              <div
                 id="description"
-                as="p"
-                sx={{ p: 2, maxHeight: "32em", overflow: "none" }}
+                style={{ padding: 2, maxHeight: "32em", overflow: "none" }}
               >
-                <Box className="flex flex-col items-end">
+                <div className="flex flex-col items-end">
                   <div className="flex gap-3 items-center">
                     <AiOutlineStar
                       style={{ color: isFavorite ? "#F0CF65" : "white" }}
@@ -74,13 +55,13 @@ export const LeftPane: FC<{
                       }
                     />
                   </div>
-                </Box>
-              </Text>
+                </div>
+              </div>
               <CollectionData />
-            </Box>
+            </div>
           )}
-        </Box>
-      </motion.div>
-    </motion.div>
+        </div>
+      </div>
+    </div>
   );
 };

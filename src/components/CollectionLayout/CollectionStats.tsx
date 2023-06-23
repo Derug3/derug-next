@@ -1,4 +1,3 @@
-import { Box, Button, Heading } from "@primer/react";
 import {
   ICollectionDerugData,
   ICollectionStats,
@@ -20,14 +19,14 @@ export const CollectionStats: FC<{
 
   const remintConfigTime =
     remintConfig &&
-    dayjs(remintConfig.privateMintEnd).isAfter(dayjs()) &&
-    collectionDerug?.status === DerugStatus.Reminting
+      dayjs(remintConfig.privateMintEnd).isAfter(dayjs()) &&
+      collectionDerug?.status === DerugStatus.Reminting
       ? remintConfig.privateMintEnd
       : undefined;
 
   return (
-    <Box className="flex flex-row items-start justify-between w-full px-10 mt-5">
-      <Box className="flex flex-col gap-5 border-1 w-1/2">
+    <div className="flex flex-row items-start justify-between w-full px-10 mt-5">
+      <div className="flex flex-col gap-5 border-1 w-1/2">
         <HeadingItem
           amount={collection?.fp}
           descColor="#2dd4bf"
@@ -55,9 +54,9 @@ export const CollectionStats: FC<{
             desc=""
           />
         )}
-      </Box>
+      </div>
 
-      <Box className="flex flex-col gap-5 w-1/2">
+      <div className="flex flex-col gap-5 w-1/2">
         <HeadingItem
           descColor="#2dd4bf"
           title="TOTAL SUPPLY"
@@ -93,7 +92,7 @@ export const CollectionStats: FC<{
               desc=""
             />
           )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };

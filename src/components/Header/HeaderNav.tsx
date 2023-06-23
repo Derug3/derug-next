@@ -1,8 +1,6 @@
 import derugPfp from "../../assets/derugPfp.png";
-import { ActionList, Button, Header } from "@primer/react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { FC, useCallback, useEffect, useState } from "react";
-import { motion } from "framer-motion";
 
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { FaTwitter } from "react-icons/fa";
@@ -62,16 +60,15 @@ const HeaderNav: FC = () => {
 
   return (
     <>
-      <Header
+      <header
         className="flex items-center w-full justify-between px-10  rounded-lg shadow-xl"
-        sx={{
-          p: 0,
+        style={{
           padding: "0.5em 1.5em",
           background: "transparent",
           // borderBottom: "1px solid  rgb(9, 194, 246)",
         }}
       >
-        <Header.Item onClick={() => navigate(HOME)}>
+        <div onClick={() => navigate(HOME)}>
           <img
             src={derugPfp.src}
             style={{
@@ -81,14 +78,14 @@ const HeaderNav: FC = () => {
               filter: "drop-shadow(rgb(9, 194, 246) 0px 0px 1px)",
             }}
           />
-        </Header.Item>
+        </div>
         <div className="flex">
           {/* <Header.Item full>
       <motion.button className="font-mono" {...FADE_IN_ANIMATION_SETTINGS}>
         
       </motion.button>
     </Header.Item> */}
-          <Header.Item full className="flex gap-10">
+          <div className="flex gap-10">
             {/* <motion.button
               className="font-mono"
               {...FADE_IN_ANIMATION_SETTINGS}
@@ -192,9 +189,9 @@ const HeaderNav: FC = () => {
               //   </ActionMenu.Overlay>
               // </ActionMenu>
             )}
-          </Header.Item>
+          </div>
         </div>
-      </Header>
+      </header>
     </>
   );
 };

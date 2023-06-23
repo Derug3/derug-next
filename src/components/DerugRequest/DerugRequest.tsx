@@ -1,7 +1,5 @@
-import { Button, Dialog } from "@primer/react";
 import { useWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import dayjs from "dayjs";
-import { motion } from "framer-motion";
 import { FC, useContext, useMemo, useRef, useState } from "react";
 import { IRequest } from "../../interface/collections.interface";
 import { CollectionContext } from "../../stores/collectionContext";
@@ -64,12 +62,11 @@ export const DerugRequest: FC = () => {
   }, [wallet, collectionDerug, derugRequests]);
 
   return (
-    <motion.div
+    <div
       className="flex w-full flex-col mt-5"
-      variants={FADE_DOWN_ANIMATION_VARIANTS}
       style={{ boxShadow: "0 -10px 10px -10px rgba(9, 194, 246, 0.2)" }}
     >
-      <Dialog
+      {/* <Dialog
         returnFocusRef={returnFocusRef}
         isOpen={isOpen}
         onDismiss={() => setIsOpen(false)}
@@ -82,7 +79,7 @@ export const DerugRequest: FC = () => {
       >
         <Dialog.Header id="header-id">Derug request</Dialog.Header>
         {currentRequest?.derugger.toString()}
-      </Dialog>
+      </Dialog> */}
       <div className="w-full">
         <div className="flex w-full flex-col gap-1 items-center justify-around p-3">
           {derugRequests && (
@@ -96,7 +93,7 @@ export const DerugRequest: FC = () => {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

@@ -1,5 +1,4 @@
 import React, { FC, useMemo } from "react";
-import { Box, Text } from "@primer/react";
 import Select from "react-select";
 import { ICollectionVolume } from "../../interface/collections.interface";
 import { CollectionVolumeFilter } from "../../enums/collections.enums";
@@ -30,11 +29,11 @@ const HotCollections: FC<{
   }, []);
 
   return (
-    <Box className="w-full flex-col gap-5 mt-6 flex gap-5">
-      <Box className="w-full flex justify-center">
-        <Text className="px-4 text-2xl font-mono text-gray-500 items-center	font-bold flex text-start">
+    <div className="w-full flex-col gap-5 mt-6 flex gap-5">
+      <div className="w-full flex justify-center">
+        <span className="px-4 text-2xl font-mono text-gray-500 items-center	font-bold flex text-start">
           COLLECTIONS 🔥
-        </Text>
+        </span>
         <Select
           styles={{ ...selectStylesPrimary }}
           className="p-2 border border-gray-200 rounded-lg shadow"
@@ -49,9 +48,9 @@ const HotCollections: FC<{
             );
           }}
         />
-      </Box>
-      <Box className="grid grid-cols-3 gap-10">{renderCollectionItem}</Box>
-    </Box>
+      </div>
+      <div className="grid grid-cols-3 gap-10">{renderCollectionItem}</div>
+    </div>
   );
 };
 

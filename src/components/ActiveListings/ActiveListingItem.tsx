@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { FC, useEffect, useMemo, useState } from "react";
 import {
   ICollectionData,
@@ -12,7 +11,6 @@ import {
 } from "../../utilities/constants";
 import { FaDiscord, FaTwitter } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
-import { Box, RelativeTime, Text } from "@primer/react";
 import { getSingleDerugRequest } from "../../solana/methods/derug-request";
 import { IUserData } from "../../interface/user.interface";
 import { getUserTwitterData } from "../../api/twitter.api";
@@ -41,7 +39,7 @@ export const ActiveListingItem: FC<{
         request.derugger.toString()
       );
       setTwtiterUserData(userTwitterData);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getStatus = useMemo(() => {
@@ -77,20 +75,19 @@ export const ActiveListingItem: FC<{
 
   const { push: navigate } = useRouter();
   return (
-    <motion.div
+    <div
       onClick={() => navigate(`${COLLECTION}/${collectionData.symbol}`)}
-      variants={FADE_DOWN_ANIMATION_VARIANTS}
       className={`p-6 border border-gray-500 rounded-lg dark:border-gray dark:hover:bg-gray-900`}
       style={{ background: "#0d1117" }}
     >
-      <Box className="flex items-start gap-5 w-full">
+      <div className="flex items-start gap-5 w-full">
         <img className="w-56 rounded-sm" src={collectionData.image} alt="" />
-        <Box className="flex flex-col gap-2 py-2 w-full bg-200">
-          <Box className="w-full flex justify-between border-b-[1px] border-gray-200">
-            <Text className="text-xl text-gray-400 uppercase font-mono">
+        <div className="flex flex-col gap-2 py-2 w-full bg-200">
+          <div className="w-full flex justify-between border-b-[1px] border-gray-200">
+            <span className="text-xl text-gray-400 uppercase font-mono">
               {collectionData.name}
-            </Text>
-            <Box className="flex items-center gap-2">
+            </span>
+            <div className="flex items-center gap-2">
               {collectionData.discord && (
                 <FaDiscord
                   style={{
@@ -109,76 +106,76 @@ export const ActiveListingItem: FC<{
                   }}
                 />
               )}
-            </Box>
-          </Box>
-          <Box className="w-full flex justify-between">
-            <Text className="text-gray-200 font-bold font-mono">Status:</Text>
-            <Text className={`text-${getStatusColor} font-mono`}>
+            </div>
+          </div>
+          <div className="w-full flex justify-between">
+            <span className="text-gray-200 font-bold font-mono">Status:</span>
+            <span className={`text-${getStatusColor} font-mono`}>
               {getStatus(derugData.status)}
-            </Text>
-          </Box>
-          <Box className="w-full flex justify-between">
-            <Text className="text-gray-200 font-bold font-mono">
+            </span>
+          </div>
+          <div className="w-full flex justify-between">
+            <span className="text-gray-200 font-bold font-mono">
               Time left:
-            </Text>
+            </span>
             <Countdown
               className="text-gray-200 font-mono text-red-400"
               date={derugData.periodEnd}
             />
-          </Box>
-          <Box className="w-full flex justify-between font-mono">
-            <Text className="text-gray-200 font-bold font-mono">
+          </div>
+          <div className="w-full flex justify-between font-mono">
+            <span className="text-gray-200 font-bold font-mono">
               Total supply:
-            </Text>
-            <Text className="text-gray-200 font-mono">
+            </span>
+            <span className="text-gray-200 font-mono">
               {derugData.totalSupply}
-            </Text>
-          </Box>
+            </span>
+          </div>
           {winningRequest && (
-            <Box className="flex justify-between w-full">
-              <Text className="text-gray-200 font-bold font-mono">
+            <div className="flex justify-between w-full">
+              <span className="text-gray-200 font-bold font-mono">
                 New Name:
-              </Text>
-              <Text className="text-gray-200 font-mono">
+              </span>
+              <span className="text-gray-200 font-mono">
                 {winningRequest.newName}
-              </Text>
-            </Box>
+              </span>
+            </div>
           )}
           {(twitterUserData || winningRequest) && (
-            <Box className="flex justify-between">
-              <Text className="text-gray-200 font-bold font-mono">Won by:</Text>
+            <div className="flex justify-between">
+              <span className="text-gray-200 font-bold font-mono">Won by:</span>
               {twitterUserData && (
-                <Box className="flex gap-2">
+                <div className="flex gap-2">
                   <img
                     className="w-16 rounded-[50px]"
                     src={twitterUserData.image}
                     alt=""
                   />
-                  <Text className="text-gray-200 font-mono">
+                  <span className="text-gray-200 font-mono">
                     {twitterUserData.twitterHandle}
-                  </Text>
-                </Box>
+                  </span>
+                </div>
               )}
               {!twitterUserData && winningRequest && (
-                <Text className="text-gray-200 font-mono">
+                <span className="text-gray-200 font-mono">
                   {getTrimmedPublicKey(winningRequest.derugger)}
-                </Text>
+                </span>
               )}
-            </Box>
+            </div>
           )}
           {!twitterUserData && !winningRequest && (
-            <Box className="w-full flex justify-between">
-              <Text className="text-gray-200 font-bold font-mono">
+            <div className="w-full flex justify-between">
+              <span className="text-gray-200 font-bold font-mono">
                 Requests count:
-              </Text>
-              <Text className="text-gray-200 font-mono">
+              </span>
+              <span className="text-gray-200 font-mono">
                 {derugData.addedRequests.length}
-              </Text>
-            </Box>
+              </span>
+            </div>
           )}
-        </Box>
-      </Box>
-    </motion.div>
+        </div>
+      </div>
+    </div>
   );
 };
 

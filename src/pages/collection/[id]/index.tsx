@@ -25,7 +25,6 @@ import { CollectionContext } from "@/stores/collectionContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import dayjs from "dayjs";
-import { Box } from "@primer/react";
 import { DerugStatus } from "@/enums/collections.enums";
 import {
   ICollectionStats,
@@ -214,20 +213,14 @@ export const Collections: FC = () => {
         setCandyMachine,
       }}
     >
-      <Box
+      <div
         className="overflow-y-auto pt-5"
         style={{
           zoom: "85%",
         }}
       >
-        <Box
+        <div
           className="overflow-y-clip flex flex-col"
-          sx={{
-            "@media screen and (max-width: 768px)": {
-              flexDirection: "column-reverse",
-              gap: "1em",
-            },
-          }}
         >
           {wallet && (
             <AddDerugRequst
@@ -237,22 +230,19 @@ export const Collections: FC = () => {
               setDerugRequest={setDerugRequests}
             />
           )}
-          <Box className="sticky top-0 grid">
+          <div className="sticky top-0 grid">
             <HeaderTabs
               setSelectedInfo={setSelectedInfo}
               selectedData={selectedData}
               setSelectedData={setSelectedData}
               openDerugModal={setDerugRequestVisible}
             />
-          </Box>
+          </div>
 
-          <Box
-            sx={{
+          <div
+            style={{
               display: "grid",
               gridTemplateColumns: "50% 50%",
-              "@media screen and (max-width: 768px)": {
-                gridTemplateColumns: "100%",
-              },
             }}
           >
             <div
@@ -271,8 +261,8 @@ export const Collections: FC = () => {
                 />
               </div>
             </div>
-            <Box
-              sx={{
+            <div
+              style={{
                 maxHeight: "30em",
                 overflowY: "scroll",
               }}
@@ -283,24 +273,24 @@ export const Collections: FC = () => {
                 traits={traits}
                 iframeRef={iframeRef}
               />
-            </Box>
-          </Box>
-        </Box>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </div>
       {collectionDerug ? (
         <>
           {(collectionDerug.status === DerugStatus.Initialized ||
             collectionDerug.status === DerugStatus.Voting) &&
-          showDerugRequests &&
-          !hasWinning ? (
+            showDerugRequests &&
+            !hasWinning ? (
             <DerugRequest />
           ) : (
             <>
               {remintConfig &&
-              (dayjs(remintConfig.privateMintEnd).isBefore(dayjs()) ||
-                (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
-              candyMachine &&
-              Number(candyMachine.data.itemsAvailable) > 0 ? (
+                (dayjs(remintConfig.privateMintEnd).isBefore(dayjs()) ||
+                  (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
+                candyMachine &&
+                Number(candyMachine.data.itemsAvailable) > 0 ? (
                 <PublicMint />
               ) : (
                 collectionDerug &&

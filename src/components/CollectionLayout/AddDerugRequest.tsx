@@ -1,6 +1,4 @@
-import { Box, Button, Dialog, TextInput, Label } from "@primer/react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { motion } from "framer-motion";
 import { FC, useContext, useEffect, useRef, useState } from "react";
 import { IRequest, IUtility } from "../../interface/collections.interface";
 import {
@@ -14,7 +12,6 @@ import {
   getSingleDerugRequest,
 } from "../../solana/methods/derug-request";
 import { CollectionContext } from "../../stores/collectionContext";
-import { FADE_DOWN_ANIMATION_VARIANTS } from "../../utilities/constants";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import UtilityArray from "./UtilityArray";
@@ -128,7 +125,7 @@ export const AddDerugRequst: FC<{
             selectedMint.address.toString() !== WRAPPED_SOL_MINT.toString()
             ? selectedMint.address
             : //TODO:Remove before mainnet
-              undefined,
+            undefined,
           activeListings ? activeListings[0] : undefined
         );
         const addedRequests = [...(derugRequests ?? [])];
@@ -178,17 +175,16 @@ export const AddDerugRequst: FC<{
   const storeUserData = async () => {
     try {
       setUserData(await getUserTwitterData(wallet.publicKey?.toString()!));
-    } catch (error) {}
+    } catch (error) { }
   };
 
   return (
-    <motion.div
+    <div
       className="flex w-full flex-col"
-      variants={FADE_DOWN_ANIMATION_VARIANTS}
     >
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(submitRequest)}>
-          <Dialog
+          {/* <Dialog
             returnFocusRef={returnFocusRef}
             isOpen={isOpen}
             onDismiss={() => setIsOpen(false)}
@@ -375,15 +371,15 @@ export const AddDerugRequst: FC<{
                     {" "}
                     {(methods.formState.errors.creatorsFees ||
                       methods.formState.errors.creatorsKey) && (
-                      <p className="text-red-500 text-xs">
-                        {
-                          (
-                            methods.formState.errors.creatorsFees ??
-                            methods.formState.errors.creatorsKey
-                          )?.message
-                        }
-                      </p>
-                    )}
+                        <p className="text-red-500 text-xs">
+                          {
+                            (
+                              methods.formState.errors.creatorsFees ??
+                              methods.formState.errors.creatorsKey
+                            )?.message
+                          }
+                        </p>
+                      )}
                   </>
                 </div>
               </Box>
@@ -474,9 +470,9 @@ export const AddDerugRequst: FC<{
                 Submit request
               </Button>
             </Box>
-          </Dialog>
+          </Dialog> */}
         </form>
       </FormProvider>
-    </motion.div>
+    </div>
   );
 };

@@ -1,7 +1,5 @@
-import { Button, Dialog } from "@primer/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import dayjs from "dayjs";
-import { motion } from "framer-motion";
 import { FC, useContext, useMemo, useRef, useState } from "react";
 import { DerugStatus } from "../../enums/collections.enums";
 import { IRequest } from "../../interface/collections.interface";
@@ -31,24 +29,20 @@ export const NoDerugRequests: FC<{
   }, [derugRequests, collectionDerug, wallet]);
 
   return (
-    <motion.div
+    <div
       className="flex w-full flex-col mt-5"
-      variants={FADE_DOWN_ANIMATION_VARIANTS}
       style={{ boxShadow: "0 -10px 10px -10px rgba(9, 194, 246, 0.2)" }}
     >
-      <Dialog
-        returnFocusRef={returnFocusRef}
-        isOpen={isOpen}
-        onDismiss={() => setIsOpen(false)}
-        sx={{
+      <div
+        style={{
           width: "600px",
           filter: "drop-shadow(rgb(246, 242, 9) 0px 0px 10px)",
         }}
         aria-labelledby="header-id"
       >
-        <Dialog.Header id="header-id">Derug request</Dialog.Header>
+        <div id="header-id">Derug request</div>
         {currentRequest?.derugger.toString()}
-      </Dialog>
+      </div>
       <div className="w-full">
         <div className="text-base w-full flex items-center flex-col py-10 font-mono mt-3 text-white">
           There is no derug request yet.
@@ -64,7 +58,7 @@ export const NoDerugRequests: FC<{
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

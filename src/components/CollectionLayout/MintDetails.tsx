@@ -1,4 +1,3 @@
-import { ToggleSwitch, Text, TextInput, Box } from "@primer/react";
 import { NATIVE_MINT } from "@solana/spl-token";
 import { TokenListProvider } from "@solana/spl-token-registry";
 import { PublicKey } from "@solana/web3.js";
@@ -172,8 +171,8 @@ const MintDetails: FC<{
           getOptionLabel={(option: ITreasuryTokenAccInfo) => option.name}
           getOptionValue={(option: ITreasuryTokenAccInfo) => option.symbol}
           formatOptionLabel={(e: any) => (
-            <Box
-              sx={{
+            <div
+              style={{
                 width: "100%",
                 display: "flex",
                 alignItems: "center",
@@ -186,10 +185,10 @@ const MintDetails: FC<{
                 style={{ width: "1.5em", height: "1.5em" }}
                 src={e.logoURI}
               />
-              <Text as={"h3"} className="text-white">
+              <h3 className="text-white">
                 {e.name}
-              </Text>
-            </Box>
+              </h3>
+            </div>
           )}
         />
         {errors.selectedMint?.message && (
@@ -202,25 +201,23 @@ const MintDetails: FC<{
   }, [availableTokensList, searchLoading]);
   return (
     <div className="flex justify-evenly flex-col text-gray-400 gap-5 p-3 font-mono">
-      <Box className="flex flex-row w-full justify-between items-center">
-        <Box className="flex flex-col items-start text-start">
-          <Text fontSize={2} color="white">
+      <div className="flex flex-row w-full justify-between items-center">
+        <div className="flex flex-col items-start text-start">
+          <span color="white">
             Public mint
-          </Text>
-          <Text
+          </span>
+          <span
             color="fg.subtle"
-            fontSize={1}
             id="switchCaption"
-            display="block"
-            sx={{ width: "70%" }}
+            style={{ width: "70%" }}
           >
             In case you want to enable minting nft by non-current holders
-          </Text>
-        </Box>
-        <Box className="flex flex-col items-end">
-          <ToggleSwitch
+          </span>
+        </div>
+        <div className="flex flex-col items-end">
+          <input
             aria-labelledby="switchLabel"
-            size="small"
+            type="toggle"
             aria-describedby="switchCaption"
             defaultChecked={true}
             onClick={(e) => {
@@ -230,19 +227,19 @@ const MintDetails: FC<{
               setIsPublicMint(!isPublicMint);
             }}
           />
-        </Box>
-      </Box>
+        </div>
+      </div>
       {isPublicMint && (
         <div className="flex flex-col gap-5">
-          <Box className="flex flex-row w-full justify-between items-center">
-            <Box className="flex flex-col items-start text-start gap-5">
-              <Text fontSize={2} color="white">
+          <div className="flex flex-row w-full justify-between items-center">
+            <div className="flex flex-col items-start text-start gap-5">
+              <span color="white">
                 Price & Currency
-              </Text>
-            </Box>
+              </span>
+            </div>
             <div className="flex flex-col w-1/2">
-              <Box className="flex flex-row items-start text-start">
-                <TextInput
+              <div className="flex flex-row items-start text-start">
+                <input
                   {...register("price", {
                     min: {
                       value: 0,
@@ -263,34 +260,32 @@ const MintDetails: FC<{
                   }}
                 />
                 {renderSelect}
-              </Box>
+              </div>
               {errors.price && (
                 <p className="text-red-500">{errors.price.message}</p>
               )}
             </div>
-          </Box>
+          </div>
         </div>
       )}
-      <Box className="flex flex-row w-full justify-between items-center">
+      <div className="flex flex-row w-full justify-between items-center">
         {isPublicMint && (
-          <Box className="flex w-full flex-row items-center text-start gap-5">
+          <div className="flex w-full flex-row items-center text-start gap-5">
             <div className="flex flex-col">
-              <Text fontSize={2} color="white">
+              <span color="white">
                 Private mint duration
-              </Text>
-              <Text
+              </span>
+              <span
                 color="fg.subtle"
-                fontSize={1}
                 id="switchCaption"
-                display="block"
               >
                 Private mint is a period of time when holders can burn rugged
                 nfts and get a new ones
-              </Text>
+              </span>
             </div>
             <div className="flex flex-col items-start gap-4 w-1/2">
               <div className="flex justify-end items-center gap-3 w-full">
-                <TextInput
+                <input
                   {...register("privateMintEnd", {
                     required: {
                       value: isPublicMint,
@@ -300,23 +295,23 @@ const MintDetails: FC<{
                   type={"number"}
                   placeholder="duration"
                   value={duration}
-                  sx={{ width: "100%" }}
+                  style={{ width: "100%" }}
                   onChange={(e) => {
                     setDuration && setDuration(+e.target.value);
                     e.target.value !== "" && clearErrors("privateMintEnd");
                   }}
                 />
-                <Text fontSize={1} color="white">
+                <span color="white">
                   hours
-                </Text>
+                </span>
               </div>
               {errors.privateMintEnd && (
                 <p className="text-red-500">{errors.privateMintEnd.message}</p>
               )}
             </div>
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
     </div>
   );
 };

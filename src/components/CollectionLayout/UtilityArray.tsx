@@ -1,4 +1,3 @@
-import { Box, Button, Textarea, TextInput } from "@primer/react";
 import "rc-slider/assets/index.css";
 import { FC } from "react";
 
@@ -40,7 +39,7 @@ const UtilityArray: FC<{
   };
 
   return (
-    <Box className="w-full px-3">
+    <div className="w-full px-3">
       {items &&
         items.map(
           (u, index) =>
@@ -50,33 +49,33 @@ const UtilityArray: FC<{
                 className="flex flex-row w-full justify-between items-start gap-3"
               >
                 <div className="flex w-full flex-col">
-                  <TextInput
+                  <input
                     placeholder={placeholder}
                     value={u.title}
-                    sx={{ width: "100%" }}
+                    style={{ width: "100%" }}
                     onChange={(e) =>
                       handleItemsNameChange(e.target.value, index)
                     }
                   />
-                  <Textarea
+                  <input
                     placeholder="Enter a description"
+                    type="textarea"
                     value={u.description}
-                    sx={{ width: "100%" }}
+                    style={{ width: "100%" }}
                     onChange={(e) =>
                       handleItemsDescChange(e.target.value, index)
                     }
                   />
                 </div>
-                <Button
-                  variant="danger"
+                <button
                   onClick={() => removeItems(index)}
                 >
                   remove
-                </Button>
+                </button>
               </div>
             )
         )}
-    </Box>
+    </div>
   );
 };
 

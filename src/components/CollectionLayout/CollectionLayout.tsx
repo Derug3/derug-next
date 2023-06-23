@@ -1,4 +1,3 @@
-import { Box, SplitPageLayout } from "@primer/react";
 import { FC, ReactNode } from "react";
 
 interface ICollectionLayoutProps {
@@ -15,13 +14,13 @@ export const CollectionLayout: FC<ICollectionLayoutProps> = ({
 }) => {
   return (
     <>
-      <Box
-        sx={{
+      <div
+        style={{
           overflowY: "auto",
         }}
       >
-        <Box
-          sx={{
+        <div
+          style={{
             position: "sticky",
             top: 0,
             display: "grid",
@@ -29,32 +28,25 @@ export const CollectionLayout: FC<ICollectionLayoutProps> = ({
           }}
         >
           {header}
-        </Box>
+        </div>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "55% 45%" }}>
-          <Box
-            sx={{
+        <div style={{ display: "grid", gridTemplateColumns: "55% 45%" }}>
+          <div
+            style={{
               maxHeight: "30em",
               overflowY: "scroll",
             }}
           >
             {pane}{" "}
-          </Box>
-          <Box>{content}</Box>
-        </Box>
-      </Box>
-      <SplitPageLayout>
+          </div>
+          <div>{content}</div>
+        </div>
+      </div>
+      <div>
         {/* <SplitPageLayout.Content>{content}</SplitPageLayout.Content> */}
-        <SplitPageLayout.Pane
-          sticky
-          offsetHeader={64}
-          padding="none"
-          resizable
-          position="end"
-          width="large"
-        >
-          <Box
-            sx={{
+        <div>
+          <div
+            style={{
               width: "100%",
               maxWidth: "100%",
               overflowY: "auto",
@@ -65,9 +57,9 @@ export const CollectionLayout: FC<ICollectionLayoutProps> = ({
             }}
           >
             {proposals}
-          </Box>
-        </SplitPageLayout.Pane>
-      </SplitPageLayout>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

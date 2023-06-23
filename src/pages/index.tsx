@@ -18,9 +18,7 @@ import { getAllActiveCollections } from "@/solana/methods/derug-request";
 import { collectionsStore } from "@/stores/collectionsStore";
 import { FADE_DOWN_ANIMATION_VARIANTS } from "@/utilities/constants";
 import { selectStylesPrimary } from "@/utilities/styles";
-import { Text, Box } from "@primer/react";
 import Select from "react-select";
-import { motion } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import useDebounce from "@/hooks/useDebounce";
@@ -171,8 +169,8 @@ const Home = () => {
   }, []);
 
   return (
-    <Box
-      sx={{
+    <div
+      style={{
         width: "100%",
         margin: "auto",
         display: "flex",
@@ -182,37 +180,31 @@ const Home = () => {
         overflowX: "hidden",
       }}
     >
-      <Box
-        sx={{
+      <div
+        style={{
           width: "100%",
           display: "flex",
           flexDirection: "column",
         }}
-      ></Box>
+      ></div>
 
-      <Box
-        sx={{
+      <div
+        style={{
           width: "50%",
           margin: "auto",
           position: "relative",
           marginBottom: "80px",
         }}
       >
-        <motion.h1
-          className="py-5 align-center"
-          variants={FADE_DOWN_ANIMATION_VARIANTS}
+        <h1
+          className="py-5 text-center"
         >
-          <Text
+          <div
             className="w-full animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 text-5xl font-black bg-clip-text text-center font-display  tracking-[-0.02em] text-transparent drop-shadow-sm md:text-2xl align-center font-mono animate-[wiggle_1s_ease-in-out_infinite]"
-            sx={{
-              "@media (max-width: 768px)": {
-                fontSize: "1em",
-              },
-            }}
           >
             Getting rugged collections back to life
-          </Text>
-        </motion.h1>
+          </div>
+        </h1>
         {renderSelect}
         {/* <Text
           onClick={() =>
@@ -231,7 +223,7 @@ const Home = () => {
             how it works?
           </span>
         </Text> */}
-      </Box>
+      </div>
 
       {activeCollections && activeCollections.length ? (
         <div className="flex w-full">
@@ -245,15 +237,15 @@ const Home = () => {
 
       {/* todo refactor this into component */}
       {topVolumeCollections && topVolumeCollections.length > 0 && (
-        <Box className="w-full">
+        <div className="w-full">
           <HotCollections
             collections={topVolumeCollections}
             filter={filter}
             setFilter={setFilter}
           />
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 

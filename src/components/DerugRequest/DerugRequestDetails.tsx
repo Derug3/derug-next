@@ -1,13 +1,10 @@
-import { Dialog } from "@primer/react";
 import dayjs from "dayjs";
-import { motion } from "framer-motion";
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { FaTwitter } from "react-icons/fa";
 import { getUserTwitterData } from "../../api/twitter.api";
 import { IRequest } from "../../interface/collections.interface";
 import { IUserData } from "../../interface/user.interface";
 import { getTrimmedPublicKey } from "../../solana/helpers";
-import { FADE_DOWN_ANIMATION_VARIANTS } from "../../utilities/constants";
 import solanaLogo from "../../assets/solanaLogo.jpeg";
 import solanaFm from "../../assets/solanaFm.jpeg";
 
@@ -35,7 +32,7 @@ const DerugRequestDetails: FC<{
         storedCreators.push(
           await getUserTwitterData(creator.address.toString())
         );
-      } catch (error) {}
+      } catch (error) { }
     }
     setCreatorsData(storedCreators);
   };
@@ -79,11 +76,10 @@ const DerugRequestDetails: FC<{
       return (
         <div
           onClick={() => setSelectedUtility(u)}
-          className={`border-[1px] rounded-md bg-${
-            selecterUtility.title === u.title
-              ? "main-blue/[0.7]"
-              : "transparent"
-          } border-main-blue px-3 py-1`}
+          className={`border-[1px] rounded-md bg-${selecterUtility.title === u.title
+            ? "main-blue/[0.7]"
+            : "transparent"
+            } border-main-blue px-3 py-1`}
         >
           <p className="font-bold text-white">{u.title}</p>
         </div>
@@ -92,27 +88,23 @@ const DerugRequestDetails: FC<{
   }, [derugRequest.utility, selecterUtility]);
 
   return (
-    <Dialog
-      returnFocusRef={returnFocusRef}
-      isOpen={isOpen}
-      onDismiss={() => setIsOpen(false)}
-      sx={{
+    <div
+      style={{
         width: "900px",
         height: "100%",
         overflow: "scroll",
       }}
       aria-labelledby="header-id"
     >
-      <motion.div
+      <div
         className="flex w-full flex-col"
-        variants={FADE_DOWN_ANIMATION_VARIANTS}
       >
-        <Dialog.Header
+        <div
           className="flex justify-between items-center bg-gray-800"
           id="header-id"
         >
           Derug Request Details
-        </Dialog.Header>
+        </div>
         <div className="w-full flex flex-col gap-10 p-5">
           {derugRequest.userData && (
             <div className="flex items-center  w-full  justify-between">
@@ -247,8 +239,8 @@ const DerugRequestDetails: FC<{
             </button>
           </div>
         </div>
-      </motion.div>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 

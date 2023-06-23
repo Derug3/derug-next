@@ -1,4 +1,3 @@
-import { Button, ProgressBar, TextInput, Tooltip } from "@primer/react";
 import { useWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import dayjs from "dayjs";
 import solanaFm from "../../assets/solanaFm.jpeg";
@@ -129,7 +128,7 @@ export const DerugRequestItem: FC<{
                 </div>
               )}
             </div>
-            <div className="flex gap-4 items-center">
+            {/* <div className="flex gap-4 items-center">
               <p className="text-lg">Utilities : </p>
               {derugRequest.utility &&
                 derugRequest.utility
@@ -165,20 +164,20 @@ export const DerugRequestItem: FC<{
                       </div>
                     </Tooltip>
                   ))}
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="flex flex-col items-end w-full">
           <div className="flex items-center justify-end w-full">
             {showClaimButton() && (
-              <Button variant="invisible" sx={{ color: "rgba(9,194,246)" }}>
+              <button style={{ color: "rgba(9,194,246)" }}>
                 Claim victory
-              </Button>
+              </button>
             )}
             {showRemintButton() && (
-              <Button variant="invisible" sx={{ color: "rgba(9,194,246)" }}>
+              <button style={{ color: "rgba(9,194,246)" }}>
                 Remint
-              </Button>
+              </button>
             )}
 
             <div className="relative">
@@ -190,7 +189,7 @@ export const DerugRequestItem: FC<{
                   }}
                 />
               )}
-              <ProgressBar
+              {/* <ProgressBar
                 progress={
                   (derugRequest.voteCount /
                     (collectionDerug?.totalSupply ?? 1)) *
@@ -205,7 +204,7 @@ export const DerugRequestItem: FC<{
                     width: "200px",
                   },
                 }}
-              />
+              /> */}
             </div>
             <Balancer className="text-lg cursor-pointer text-white font-mono px-5">
               <span

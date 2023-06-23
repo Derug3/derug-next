@@ -1,4 +1,3 @@
-import { Box, Button, ProgressBar, Text, Tooltip } from "@primer/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import React, { FC, useContext, useMemo, useState } from "react";
 import { IRequest } from "../../interface/collections.interface";
@@ -31,30 +30,31 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
   const renderUtilities = useMemo(() => {
     return request.utility.map((u, i) => {
       return (
-        <Tooltip
-          sx={{
-            "::after": {
-              fontSize: "1em",
-              backgroundColor: "#282C34",
-              width: "fit-content",
-            },
-          }}
-          aria-label={u.description}
-          noDelay={true}
-        >
-          <div
-            className="text-sm font-mono"
-            style={{
-              borderRightWidth:
-                i !== request.utility.length - 1 ? "1px" : "0px",
-              paddingRight: i !== request.utility.length - 1 ? "1em" : "0px",
-              color: "rgb(9, 194, 246)",
-            }}
-          >
-            {" "}
-            {u.title}
-          </div>
-        </Tooltip>
+        // <Tooltip
+        //   sx={{
+        //     "::after": {
+        //       fontSize: "1em",
+        //       backgroundColor: "#282C34",
+        //       width: "fit-content",
+        //     },
+        //   }}
+        //   aria-label={u.description}
+        //   noDelay={true}
+        // >
+        //   <div
+        //     className="text-sm font-mono"
+        //     style={{
+        //       borderRightWidth:
+        //         i !== request.utility.length - 1 ? "1px" : "0px",
+        //       paddingRight: i !== request.utility.length - 1 ? "1em" : "0px",
+        //       color: "rgb(9, 194, 246)",
+        //     }}
+        //   >
+        //     {" "}
+        //     {u.title}
+        //   </div>
+        // </Tooltip>
+        <></>
       );
     });
   }, []);
@@ -110,46 +110,46 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
   };
 
   return (
-    <Box className="flex flex-row justify-between items-center w-full relative mt-5 pl-10 pr-4">
-      <Box
+    <div className="flex flex-row justify-between items-center w-full relative mt-5 pl-10 pr-4">
+      <div
         className="flex flex-col gap-5 w-full"
-        sx={{
+        style={{
           border:
             "1px solid animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500",
           boxShadow: "0 0 0 1px #B78E1B",
+          padding: "2em",
         }}
-        padding="2em"
       >
-        <Box className="flex flex-row justify-between ">
+        <div className="flex flex-row justify-between ">
           <div className="flex items-center gap-1">
-            <Text className="font-mono flex justify-center text-sm text-yellow-500	">
+            <span className="font-mono flex justify-center text-sm text-yellow-500	">
               Winning request
-            </Text>
+            </span>
             ☀️
           </div>
-        </Box>
-        <Box
+        </div>
+        <div
           className="flex flex-row gap-3 justify-between w-full items-center"
-          sx={{
+          style={{
             color: "rgb(45, 212, 191)",
             border: "1px solid rgba(9,194,246,.15)",
             padding: "1em",
           }}
         >
-          <Text className="font-mono text-neutral-400 flex justify-center text-sm">
+          <span className="font-mono text-neutral-400 flex justify-center text-sm">
             {getTrimmedPublicKey(request.derugger.toString())}
-          </Text>
-          <Box className="flex flex-row gap-3">{renderUtilities}</Box>
-        </Box>
-        <Box className="flex flex-col gap-5 items-center w-full">
-          <Box className="flex font-mono flex-row items-center justify-between w-full gap-4 ">
+          </span>
+          <div className="flex flex-row gap-3">{renderUtilities}</div>
+        </div>
+        <div className="flex flex-col gap-5 items-center w-full">
+          <div className="flex font-mono flex-row items-center justify-between w-full gap-4 ">
             {collectionDerug &&
               collectionDerug.status !== DerugStatus.Reminting &&
               collectionDerug.status !== DerugStatus.UploadingMetadata &&
               wallet.publicKey?.toString() === request.derugger.toString() && (
-                <Button
+                <button
                   className="animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 "
-                  sx={{
+                  style={{
                     color: "white",
                     padding: "1.25em",
                     width: "30%",
@@ -157,11 +157,11 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
                   onClick={claimDerugVictory}
                 >
                   <span className="text-xl lowercase">Claim victory</span>
-                </Button>
+                </button>
               )}
             <div className="flex w-full justify-between">
               <div className="flex items-center gap-5">
-                <ProgressBar
+                {/* <ProgressBar
                   progress={
                     (request.voteCount / (collectionDerug?.totalSupply ?? 1)) *
                     100
@@ -175,26 +175,26 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
                       width: "200px",
                     },
                   }}
-                />
+                /> */}
 
-                <Text
+                <span
                   className="text-white font-mono flex"
                   color={"rgb(9, 194, 246)"}
-                  sx={{
+                  style={{
                     whiteSpace: "nowrap",
                   }}
                 >
                   {request.voteCount} / {collectionDerug?.totalSupply}
-                </Text>
+                </span>
               </div>
               {remintConfig &&
                 (dayjs(remintConfig.privateMintEnd).isBefore(dayjs()) ||
                   (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
                 wallet.publicKey?.toString() === request.derugger.toString() &&
                 collectionDerug?.status !== DerugStatus.UploadingMetadata && (
-                  <Button
+                  <button
                     className="animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 p-1 "
-                    sx={{
+                    style={{
                       color: "white",
                     }}
                     onClick={initPublicMinting}
@@ -206,13 +206,13 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
                     ) : (
                       <Oval color="rgb(9, 194, 246)" height={"3em"} />
                     )}
-                  </Button>
+                  </button>
                 )}
             </div>
-          </Box>
-        </Box>
-      </Box>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,4 +1,3 @@
-import { Box, Button, TabNav } from "@primer/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import dayjs from "dayjs";
 import { FC, useContext, useMemo } from "react";
@@ -49,22 +48,11 @@ export const HeaderTabs: FC<{
   font-mono text-gray-700 leading-6 px-10 pb-2 border-none justify-end"
     >
       <div className="w-full gap-5 flex justify-end">
-        <Box
+        <div
           className="w-1/2 flex pl-8"
-          sx={{
-            "@media (max-width: 768px)": {
-              width: "100%",
-            },
-          }}
         >
-          <Box
+          <div
             className="w-full flex justify-between"
-            sx={{
-              "@media (max-width: 768px)": {
-                flexDirection: "column-reverse",
-                gap: "2em",
-              },
-            }}
           >
             {wallet &&
               wallet.publicKey &&
@@ -74,8 +62,8 @@ export const HeaderTabs: FC<{
               !derugRequests?.find(
                 (dr) => dr.derugger.toString() === wallet.publicKey?.toString()
               ) && (
-                <Button
-                  sx={{
+                <button
+                  style={{
                     padding: "1.25em 3.25em",
                     color: "rgba(9, 194, 246)",
                   }}
@@ -85,9 +73,9 @@ export const HeaderTabs: FC<{
                   <span className="text-sm uppercase rounded-lg">
                     Add derug request
                   </span>
-                </Button>
+                </button>
               )}
-            <TabNav
+            <div
               aria-label="Main"
               className="flex justify-end w-fit border-none"
               style={{
@@ -100,50 +88,50 @@ export const HeaderTabs: FC<{
                 (collectionDerug!.status === DerugStatus.Reminting ||
                   collectionDerug?.status === DerugStatus.UploadingMetadata) &&
                 wallet.publicKey?.toString() ===
-                  derugRequests
-                    ?.find(
-                      (req) =>
-                        req.address.toString() ===
-                        collectionDerug.winningRequest?.toString()
-                    )
-                    ?.derugger.toString() && (
-                  <TabNav.Link
+                derugRequests
+                  ?.find(
+                    (req) =>
+                      req.address.toString() ===
+                      collectionDerug.winningRequest?.toString()
+                  )
+                  ?.derugger.toString() && (
+                  <div
                     onClick={() => setSelectedData("traits")}
-                    sx={getNavStyling(selectedData, "traits")}
+                    style={getNavStyling(selectedData, "traits")}
                   >
                     DERUG INFO
-                  </TabNav.Link>
+                  </div>
                 )}
-              <TabNav.Link
+              <div
                 onClick={() => setSelectedData("listed")}
-                sx={getNavStyling(selectedData, "listed")}
+                style={getNavStyling(selectedData, "listed")}
               >
                 NFTS
-              </TabNav.Link>
+              </div>
               {traits && traits.length > 0 && (
-                <TabNav.Link
+                <div
                   onClick={() => setSelectedData("traits")}
-                  sx={getNavStyling(selectedData, "traits")}
+                  style={getNavStyling(selectedData, "traits")}
                 >
                   TRAITS
-                </TabNav.Link>
+                </div>
               )}
 
-              <TabNav.Link
+              <div
                 onClick={() => setSelectedData("statistics")}
-                sx={getNavStyling(selectedData, "statistics")}
+                style={getNavStyling(selectedData, "statistics")}
               >
                 STATISTICS
-              </TabNav.Link>
-              <TabNav.Link
+              </div>
+              <div
                 onClick={() => setSelectedData("solanafm")}
-                sx={getNavStyling(selectedData, "solanafm")}
+                style={getNavStyling(selectedData, "solanafm")}
               >
                 SOLANAFM
-              </TabNav.Link>
-            </TabNav>
-          </Box>
-        </Box>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
