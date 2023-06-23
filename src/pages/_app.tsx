@@ -10,7 +10,7 @@ import HeaderNav from "@/components/Header/HeaderNav";
 function DerugApp({ Component, pageProps }: any) {
   return (
     <>
-      <ApolloProvider client={gqlClient}>
+      <ApolloProvider client={gqlClient} children={""}>
         <Toaster
           position="bottom-right"
           toastOptions={{

@@ -1,5 +1,5 @@
 import derugPfp from "../../assets/derugPfp.png";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { WalletMultiButton } from "@solana/wallet-adapter-nextjs-starter";
 import { FC, useCallback, useEffect, useState } from "react";
 
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
@@ -90,7 +90,7 @@ const HeaderNav: FC = () => {
               className="font-mono"
               {...FADE_IN_ANIMATION_SETTINGS}
             > */}
-            <WalletMultiButton
+            {/* <WalletMultiButton
               className="p-4 border border-gray-200 rounded-lg shadow"
               style={{
                 // backgroundColor: "rgba(0,183,234,15px)",
@@ -98,7 +98,7 @@ const HeaderNav: FC = () => {
                 fontFamily: "monospace",
                 // filter: "drop-shadow(rgb(9, 194, 246) 0px 0px 15px)",
               }}
-            />
+            /> */}
             {/* </motion.button> */}
             {wallet && wallet.publicKey && (
               <div
