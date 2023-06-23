@@ -38,9 +38,19 @@ import {
 } from "@/interface/collections.interface";
 import { IGraphData, IRemintConfig } from "@/interface/derug.interface";
 import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const slug = context.params.id;
+  return {
+    props: {
+      slug,
+    },
+  };
+}
 
 
-export const Collections: FC = () => {
+export const Collections: FC<{ slug: string }> = ({ slug }) => {
   dayjs.extend(utc);
   const [collectionStats, setCollectionStats] = useState<ICollectionStats>();
 
@@ -64,9 +74,6 @@ export const Collections: FC = () => {
   const [derugRequests, setDerugRequests] = useState<IRequest[]>();
   const iframeRef = useRef(null);
   const router = useRouter();
-
-  const slug = router.query.id as string;
-
 
   let derug = router.query;
   const [remintConfig, setRemintConfig] = useState<IRemintConfig | undefined>();
