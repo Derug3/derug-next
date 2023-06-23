@@ -22,13 +22,13 @@ const HeadingItem: FC<{
   }, [collectionDerug]);
 
   return (
-    <div className="flex flex-row items-center justify-between w-full">
+    <div className="flex flex-row items-center justify-between w-full gap-3">
       <span
         className="text-sm border-1 p-2 w-1/2 rounded-lg text-gray-400"
         style={{
           fontFamily: "monospace",
           fontWeight: 200,
-          border: "1px solid rgba(9,194,246,.35)",
+          border: "1px solid rgba(9,194,246,.15)",
         }}
       >
         {title}
@@ -38,7 +38,7 @@ const HeadingItem: FC<{
           className="text-sm p-2 w-1/2 rounded-lg text-white"
           style={{
             fontFamily: "monospace",
-            border: "1px solid rgba(9,194,246,.35)",
+            border: "1px solid rgba(9,194,246,.75)",
           }}
         >
           {amount} <span>{desc}</span>

@@ -100,7 +100,7 @@ const ListedNftItem: FC<{ listedNft: INftListing; imageUrl: string }> = ({
               onClick={() => window.open(getUrl, "_blank")}
             >
               <div
-                className="flex align-centar justify-between cursor-pointer"
+                className="flex items-center justify-between cursor-pointer"
                 style={{ color: "rgba(9, 194, 246)" }}
               >
                 <img

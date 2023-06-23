@@ -25,7 +25,7 @@ export const CollectionStats: FC<{
       : undefined;
 
   return (
-    <div className="flex flex-row items-start justify-between w-full px-10 mt-5">
+    <div className="flex flex-row items-start justify-between w-full px-10 mt-5 gap-3">
       <div className="flex flex-col gap-5 border-1 w-1/2">
         <HeadingItem
           amount={collection?.fp}
@@ -56,7 +56,7 @@ export const CollectionStats: FC<{
         )}
       </div>
 
-      <div className="flex flex-col gap-5 w-1/2">
+      <div className="flex flex-col gap-5 w-1/2 gap-3">
         <HeadingItem
           descColor="#2dd4bf"
           title="TOTAL SUPPLY"

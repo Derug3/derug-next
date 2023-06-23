@@ -91,15 +91,15 @@ const HeaderNav: FC = () => {
         
       </motion.button>
     </Header.Item> */}
-          <div className="flex gap-10">
-            {/* <WalletMultiButton
+          <div className="flex">
+            <WalletMultiButton
               className="w-full hover:bg-main-blue hover:text-white"
               style={{
                 fontSize: "1em",
                 fontFamily: "monospace",
                 fontWeight: "bold",
               }}
-            /> */}
+            />
             {wallet && wallet.publicKey && (
               <div
                 className="flex flex-row gap-3 cursor-pointer"

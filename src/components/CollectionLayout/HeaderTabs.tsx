@@ -64,11 +64,7 @@ export const HeaderTabs: FC<{
                 (dr) => dr.derugger.toString() === wallet.publicKey?.toString()
               ) && (
                 <button
-                  style={{
-                    padding: "1.25em 3.25em",
-                    color: "rgba(9, 194, 246)",
-                  }}
-                  className="rounded-lg"
+                  className="rounded-lg text-red px-3 text-white border border-main-blue hover:bg-main-blue"
                   onClick={() => openDerugModal(true)}
                 >
                   <span className="text-sm uppercase rounded-lg">
