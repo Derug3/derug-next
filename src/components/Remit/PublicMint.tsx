@@ -83,14 +83,13 @@ const PublicMint = () => {
         const minted = await mintNftFromCandyMachine(remintConfig, wallet);
 
         if (!minted) throw new Error();
-        const nftImg = (await (await fetch(minted?.uri!)).json()).image;
 
-        setNftImage(nftImg);
+        setNftImage(minted.json.image);
 
         setCandyMachine(await getCandyMachine(remintConfig.candyMachine));
         toast.success(`Successfully minted ${minted.name}`);
         setNfts((prevValue) => [
-          { name: minted.name, image: nftImg },
+          { name: minted.name, image: minted.json.image },
           ...prevValue,
         ]);
       }
@@ -118,7 +117,7 @@ const PublicMint = () => {
       candyMachine?.data.itemsAvailable &&
       candyMachine.itemsRedeemed &&
       Number(candyMachine?.data.itemsAvailable) >
-      Number(candyMachine?.itemsRedeemed)
+        Number(candyMachine?.itemsRedeemed)
     );
   }, [candyMachine, wallet]);
 
@@ -131,14 +130,14 @@ const PublicMint = () => {
         <div className="overflow-y-scroll grid grid-cols-3 gap-5">
           {loading
             ? generateSkeletonArrays(15).map((_, index) => (
-              <Skeleton
-                key={index}
-                height={100}
-                width={110}
-                baseColor="rgb(22,27,34)"
-                highlightColor="rgb(29,35,44)"
-              />
-            ))
+                <Skeleton
+                  key={index}
+                  height={100}
+                  width={110}
+                  baseColor="rgb(22,27,34)"
+                  highlightColor="rgb(29,35,44)"
+                />
+              ))
             : renderNfts}
         </div>
       </div>
