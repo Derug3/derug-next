@@ -1,4 +1,3 @@
-import { Box, Button, ProgressBar } from "@primer/react";
 import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
@@ -103,12 +102,12 @@ const PublicMint = () => {
   };
 
   const renderNfts = useMemo(() => {
-    return nfts.map((n) => {
+    return nfts.map((n, index) => {
       return (
-        <Box className="flex flex-col items-center">
+        <div key={index} className="flex flex-col items-center">
           <img src={n.image} alt="" className="w-36 h-28" />
           <p className="text-white text-sm w-full break-all">{n.name}</p>
-        </Box>
+        </div>
       );
     });
   }, [nfts]);
@@ -119,30 +118,31 @@ const PublicMint = () => {
       candyMachine?.data.itemsAvailable &&
       candyMachine.itemsRedeemed &&
       Number(candyMachine?.data.itemsAvailable) >
-        Number(candyMachine?.itemsRedeemed)
+      Number(candyMachine?.itemsRedeemed)
     );
   }, [candyMachine, wallet]);
 
   return (
-    <Box className="m-auto grid grid-cols-3 gap-10 m-10">
-      <Box className="flex flex-col items-start ml-10">
+    <div className="m-auto grid grid-cols-3 gap-10 m-10">
+      <div className="flex flex-col items-start ml-10">
         <p className="text-main-blue text-xl mb-2 flex">
           Your {remintConfig?.newName ?? collection?.name} NFTs
         </p>
-        <Box className="overflow-y-scroll grid grid-cols-3 gap-5">
+        <div className="overflow-y-scroll grid grid-cols-3 gap-5">
           {loading
-            ? generateSkeletonArrays(15).map(() => (
-                <Skeleton
-                  height={100}
-                  width={110}
-                  baseColor="rgb(22,27,34)"
-                  highlightColor="rgb(29,35,44)"
-                />
-              ))
+            ? generateSkeletonArrays(15).map((_, index) => (
+              <Skeleton
+                key={index}
+                height={100}
+                width={110}
+                baseColor="rgb(22,27,34)"
+                highlightColor="rgb(29,35,44)"
+              />
+            ))
             : renderNfts}
-        </Box>
-      </Box>
-      <Box className="flex flex-col gap-10 items-center">
+        </div>
+      </div>
+      <div className="flex flex-col gap-10 items-center">
         {collection ? (
           <img
             style={{ width: "15em" }}
@@ -177,7 +177,7 @@ const PublicMint = () => {
             <span>Mint</span>
           )}
         </button>
-      </Box>
+      </div>
       {/* <Box className="flex flex-col items-start gap-3 ">
         <p className="text-white text-lg">MINT DETAILS</p>
         <Box className="flex flex-col gap-3 items-start">
@@ -256,7 +256,7 @@ const PublicMint = () => {
           </Button>
         )}
       </Box> */}
-    </Box>
+    </div>
   );
 };
 

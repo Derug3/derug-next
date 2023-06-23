@@ -1,4 +1,3 @@
-import { Box, Button, Text } from "@primer/react";
 import React, { useContext, useEffect, useState } from "react";
 import { CollectionContext } from "../../stores/collectionContext";
 import { FaTwitter } from "react-icons/fa";
@@ -16,8 +15,8 @@ const CollectionData = () => {
     }, 2000);
   }, [collection]);
   return (
-    <Box className="flex flex-col gap-5 pr-2 text-white">
-      <Box className="flex flex-row items-start gap-5">
+    <div className="flex flex-col gap-5 pr-2 text-white">
+      <div className="flex flex-row items-start gap-5">
         {collection?.image ? (
           <img
             src={collection?.image}
@@ -34,14 +33,9 @@ const CollectionData = () => {
             className="rounded-[50%]"
           />
         )}
-        <Box className="flex flex-col gap-4 items-start">
-          <Text
+        <div className="flex flex-col gap-4 items-start">
+          <div
             className="font-bold font-monospace text-white-500 text-4xl"
-            sx={{
-              "@media screen and (max-width: 768px)": {
-                alignItems: "flex-start",
-              },
-            }}
           >
             {collection?.name ?? (
               <Skeleton
@@ -50,34 +44,21 @@ const CollectionData = () => {
                 highlightColor="rgb(29,35,44)"
               />
             )}
-          </Text>
+          </div>
           {chainCollectionData ? (
-            <Text
-              sx={{
-                "@media screen and (max-width: 768px)": {
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  justifyContent: "flex-start",
-                  width: "100%",
-                },
-              }}
-            >
+            <div>
               Rugged by:
-              <Text
+              <span
                 className="text-yellow-500 font-mon italic"
-                sx={{
+                style={{
                   fontSize: "1em",
                   marginLeft: "0.5em",
                   color: "rgba(9,194,246)",
-                  "@media screen and (max-width: 768px)": {
-                    marginLeft: "0",
-                  },
                 }}
               >
                 {getTrimmedPublicKey(chainCollectionData.rugUpdateAuthority)}
-              </Text>
-            </Text>
+              </span>
+            </div>
           ) : (
             <Skeleton
               width={200}
@@ -85,7 +66,7 @@ const CollectionData = () => {
               highlightColor="rgb(29,35,44)"
             />
           )}
-          <Box className="flex flex-row gap-5">
+          <div className="flex flex-row gap-5">
             {collection?.discord ? (
               <a href={collection.discord} target={"_blank"} rel="noreferrer">
                 <FaDiscord
@@ -126,10 +107,10 @@ const CollectionData = () => {
                 highlightColor="rgb(29,35,44)"
               />
             )}
-          </Box>
-        </Box>
-      </Box>
-      <Text
+          </div>
+        </div>
+      </div>
+      <div
         className="text-left text-md text-white opacity-80 font-mono max-h-24 overflow-auto"
         style={{ minHeight: "5.125em" }}
       >
@@ -140,8 +121,8 @@ const CollectionData = () => {
             height={32}
           ></Skeleton>
         )}
-      </Text>
-    </Box>
+      </div>
+    </div>
   );
 };
 

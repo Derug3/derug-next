@@ -13,7 +13,6 @@ import dayjs from "dayjs";
 import { getRecentActivities } from "../../api/tensor";
 import toast from "react-hot-toast";
 import { Oval } from "react-loader-spinner";
-import { Box } from "@primer/react";
 import { mapByDates } from "../../api/graphql/mapper";
 import { IGraphData } from "../../interface/derug.interface";
 const ListingsGraph = () => {
@@ -106,22 +105,22 @@ const ListingsGraph = () => {
           <canvas ref={chartRef} />
         </div>
       ) : (
-        <Box className="flex flex-col items-center mt-50">
+        <div className="flex flex-col items-center mt-50">
           {loading ? (
-            <Box className="mt-40">
+            <div className="mt-40">
               <Oval
                 width={"5em"}
                 height={"3em"}
                 color="rgb(9, 194, 246)"
                 secondaryColor="rgba(9,194,246,.15)"
               />
-            </Box>
+            </div>
           ) : (
-            <Box sx={{ marginTop: "10%" }}>
+            <div style={{ marginTop: "10%" }}>
               <p>No listings data for collection</p>
-            </Box>
+            </div>
           )}
-        </Box>
+        </div>
       )}
     </>
   );

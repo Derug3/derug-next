@@ -1,6 +1,4 @@
-import { Box, Text } from "@primer/react";
-import { motion } from "framer-motion";
-import { FC, useMemo } from "react";
+import { FC } from "react";
 import {
   IChainCollectionData,
   ICollectionData,
@@ -103,28 +101,27 @@ export const ActiveListings: FC<{
 }> = ({ activeListings }) => (
   <>
     {activeListings && (
-      <Box className="flex flex-col w-full gap-5">
-        <Box className="flex flex-col justify-between items-start">
-          <Text className="text-2xl font-mono text-gray-500	font-bold flex w-full text-center">
-            <span className="w-full px-4">ACTIVE DERUGS 🛠</span>
-          </Text>
-        </Box>
-        <Box
+      <div className="flex flex-col w-full gap-5">
+        <div className="flex flex-col justify-between items-start">
+          <span className="text-2xl font-mono text-gray-500	font-bold flex w-full text-centerw-full px-4">ACTIVE DERUGS 🛠</span>
+        </div>
+        <div
           className="grid grid-cols-3 gap-5 cursor-pointer overflow-hidden w-full"
           style={{
             overflowY: "scroll",
           }}
         >
-          {activeListings.map((cd) => {
+          {activeListings.map((cd, index) => {
             return (
               <ActiveListingItem
+                key={index}
                 derugData={cd.derug}
                 collectionData={cd.collection}
               />
             );
           })}
-        </Box>
-      </Box>
+        </div>
+      </div>
     )}
   </>
 );

@@ -1,4 +1,3 @@
-import { Box, Button, Text } from "@primer/react";
 import { FC, useContext, useMemo, useState } from "react";
 import magicEdenLogo from "../../assets/magicEdenLogo.png";
 import tensorLogo from "../../assets/tensorLogo.png";
@@ -42,7 +41,7 @@ const ListedNftItem: FC<{ listedNft: INftListing; imageUrl: string }> = ({
   }, []);
 
   return (
-    <Box
+    <div
       className="flex relative flex-col gap-5 items-start border-cyan-500 ease-in duration-300"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -79,22 +78,22 @@ const ListedNftItem: FC<{ listedNft: INftListing; imageUrl: string }> = ({
         </div>
       )}
       {hover && (
-        <Box className="flex absolute flex-col w-full h-full gap-2 items-center justify-center text-white font-mono">
-          <Box className="flex flex-row  items-center">
-            <Box className="flex flex-col">
-              <Text
+        <div className="flex absolute flex-col w-full h-full gap-2 items-center justify-center text-white font-mono">
+          <div className="flex flex-row  items-center">
+            <div className="flex flex-col">
+              <div
                 className="text-sm font-bold"
-                sx={{ color: "rgba(9, 194, 246)" }}
+                style={{ color: "rgba(9, 194, 246)" }}
               >
                 {listedNft.price} SOL
-              </Text>
-            </Box>
-          </Box>
-          <Box className="flex flex-row gap-5 items-center">
-            <Button
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-row gap-5 items-center">
+            <button
               className="bg-transparent font-mono font-bold text-lg"
-              sx={{
-                bg: "transparent",
+              style={{
+                background: "transparent",
                 fontFamily: "monospace",
                 padding: "1em",
               }}
@@ -111,11 +110,11 @@ const ListedNftItem: FC<{ listedNft: INftListing; imageUrl: string }> = ({
                 />{" "}
                 Details
               </div>
-            </Button>
-          </Box>
-        </Box>
+            </button>
+          </div>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 

@@ -3,7 +3,6 @@ import App, { AppContext, AppProps } from "next/app";
 import WalletWrapper from "@/components/WalletWrapper/WalletWrapper";
 import { gqlClient } from "@/utilities/utilities";
 import { ApolloProvider } from "@apollo/client";
-import { Header } from "@primer/react";
 import { Toaster } from "react-hot-toast";
 import { Router } from "react-router";
 import HeaderNav from "@/components/Header/HeaderNav";
@@ -27,7 +26,7 @@ function DerugApp({ Component, pageProps }: any) {
         <WalletWrapper>
           <>
             <HeaderNav />
-            <Header />
+            {/* <Header /> */}
             <Component {...pageProps} />
           </>
         </WalletWrapper>

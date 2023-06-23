@@ -1,5 +1,4 @@
 import { IRequest } from "../../interface/collections.interface";
-import { Box, Button } from "@primer/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import React, { FC, useContext, useEffect, useMemo, useState } from "react";
 import {
@@ -54,7 +53,7 @@ export const Remint: FC<{
         setNonMintedNfts(
           await getNonMinted(collectionDerug?.address.toString())
         );
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getCollectionNfts = async () => {
@@ -161,7 +160,7 @@ export const Remint: FC<{
   }, [collectionNfts, collectionDerug]);
 
   return (
-    <Box className="w-full flex-col gap-10">
+    <div className="w-full flex-col gap-10">
       <WinningRequest request={getWinningRequest!} />
       <>
         {collectionDerug?.status === DerugStatus.UploadingMetadata ? (
@@ -176,14 +175,14 @@ export const Remint: FC<{
             {collectionDerug &&
               collectionDerug.status === DerugStatus.Reminting &&
               dayjs(remintConfig?.privateMintEnd).isAfter(dayjs()) && (
-                <Box className="flex flex-col items-center gap-10 w-full mt-10">
+                <div className="flex flex-col items-center gap-10 w-full mt-10">
                   {!loading &&
                     collectionNfts &&
                     collectionNfts?.length > 0 &&
                     showRemintButton && (
-                      <Button
+                      <button
                         onClick={remintNfts}
-                        sx={{
+                        style={{
                           background: "rgb(9, 194, 246)",
                           borderRadius: "4px",
                           color: "black",
@@ -192,11 +191,6 @@ export const Remint: FC<{
                           fontSize: "1.5em",
                           padding: "1em 2em",
                           fontFamily: "monospace",
-                          "&:hover": {
-                            border: "1px solid rgb(9, 194, 246)",
-                            background: "transparent",
-                            color: "rgb(9, 194, 246)",
-                          },
                         }}
                       >
                         {!isReminting ? (
@@ -208,25 +202,25 @@ export const Remint: FC<{
                             secondaryColor="transparent"
                           />
                         )}
-                      </Button>
+                      </button>
                     )}
-                  <Box className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 px-10 ">
+                  <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 px-10 ">
                     {loading ? (
                       <>
-                        {generateSkeletonArrays(5).map(() => {
-                          return <Skeleton baseColor="red" />;
+                        {generateSkeletonArrays(5).map((_, index) => {
+                          return <Skeleton baseColor="red" key={index} />;
                         })}
                       </>
                     ) : (
                       <>{renderCollectionNfts}</>
                     )}
-                  </Box>
-                </Box>
+                  </div>
+                </div>
               )}
           </>
         )}
       </>
-    </Box>
+    </div>
   );
 };
 

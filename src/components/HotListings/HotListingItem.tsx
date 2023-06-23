@@ -1,5 +1,3 @@
-import { Box } from "@primer/react";
-import { motion } from "framer-motion";
 import { FC, useState } from "react";
 import { ICollectionData } from "../../interface/collections.interface";
 
@@ -17,8 +15,8 @@ export const HotListingItem: FC<{
 
   const { push: navigate } = useRouter();
   return (
-    <motion.div variants={FADE_DOWN_ANIMATION_VARIANTS} className="flex w-1/2">
-      <Box className="flex w-full flex-row items-start gap-5 p-2 bg-transparent">
+    <div className="flex w-1/2">
+      <div className="flex w-full flex-row items-start gap-5 p-2 bg-transparent">
         <img
           src={collectionData.image}
           onClick={() => navigate(`${COLLECTION}/${collectionData.symbol}`)}
@@ -70,8 +68,8 @@ export const HotListingItem: FC<{
             <p>{collectionData.description}</p>
           </div>
         </div>
-      </Box>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 

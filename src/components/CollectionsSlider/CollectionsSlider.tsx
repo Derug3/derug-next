@@ -4,7 +4,6 @@ import "react-alice-carousel/lib/alice-carousel.css";
 import { collectionsStore } from "../../stores/collectionsStore";
 import Balancer from "react-wrap-balancer";
 import { COLLECTION } from "../../utilities/constants";
-import { Box, Text } from "@primer/react";
 import { useRouter } from "next/router";
 
 const CollectionsSlider: FC = () => {
@@ -18,7 +17,7 @@ const CollectionsSlider: FC = () => {
   const renderCollections = useMemo(() => {
     return collections.map((c, index) => {
       return (
-        <Box
+        <div
           className="box-content cursor-pointer h-36 w-36 overflow-hidden"
           key={index}
           style={{ border: "1px solid rgb(9, 194, 246)", opacity: 0.7 }}
@@ -44,13 +43,13 @@ const CollectionsSlider: FC = () => {
           ) : (
             <img src={c.image} alt="collectionImg" />
           )}
-        </Box>
+        </div>
       );
     });
   }, [collections, hoveredCollection]);
   return (
-    <Box className="relative">
-      <Text
+    <div className="relative">
+      <div
         className="text-xl font-mono text-main-blue flex justify-center w-full absolute"
         style={{ transform: "translateY(-100%)" }}
       >
@@ -64,8 +63,8 @@ const CollectionsSlider: FC = () => {
         >
           browse derugs
         </span>
-      </Text>
-      <Box className="w-full">
+      </div>
+      <div className="w-full">
         <Marqee
           pauseOnHover
           loop={0}
@@ -84,8 +83,8 @@ const CollectionsSlider: FC = () => {
         >
           {renderCollections}
         </Marqee>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

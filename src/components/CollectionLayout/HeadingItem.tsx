@@ -1,5 +1,3 @@
-import { Heading, Text } from "@primer/react";
-import dayjs from "dayjs";
 import React, { FC, useCallback, useContext } from "react";
 import Countdown from "react-countdown";
 import { getCollectionDerugData } from "../../solana/methods/derug";
@@ -24,33 +22,27 @@ const HeadingItem: FC<{
   }, [collectionDerug]);
 
   return (
-    <Heading className="flex flex-row items-center justify-between w-full">
-      <Text
+    <div className="flex flex-row items-center justify-between w-full">
+      <span
         className="text-sm border-1 p-2 w-1/2 rounded-lg text-gray-400"
-        sx={{
+        style={{
           fontFamily: "monospace",
           fontWeight: 200,
           border: "1px solid rgba(9,194,246,.35)",
-          "@media (max-width: 768px)": {
-            fontSize: "0.6rem",
-          },
         }}
       >
         {title}
-      </Text>
+      </span>
       {!isCounter ? (
-        <Text
+        <span
           className="text-sm p-2 w-1/2 rounded-lg text-white"
-          sx={{
+          style={{
             fontFamily: "monospace",
             border: "1px solid rgba(9,194,246,.35)",
-            "@media (max-width: 768px)": {
-              fontSize: "0.6rem",
-            },
           }}
         >
           {amount} <span>{desc}</span>
-        </Text>
+        </span>
       ) : (
         <div
           className="flex w-1/2 items-center justify-center"
@@ -66,7 +58,7 @@ const HeadingItem: FC<{
           />
         </div>
       )}
-    </Heading>
+    </div>
   );
 };
 

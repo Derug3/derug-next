@@ -1,4 +1,3 @@
-import { Box, Text } from "@primer/react";
 import React, { FC, useMemo } from "react";
 import { FaDiscord, FaTwitter } from "react-icons/fa";
 import { CollectionVolumeFilter } from "../../enums/collections.enums";
@@ -24,18 +23,18 @@ const HotCollectionItem: FC<{
     }
   }, [filter]);
   return (
-    <Box
+    <div
       onClick={() => navigate(`${COLLECTION}/${collection.symbol}`)}
       className="flex gap-3 items-center p-6 border border-gray-500 rounded-lg dark:border-gray dark:hover:bg-gray-800"
       style={{ background: "#0d1117" }}
     >
       <img src={collection.collection.image} className="w-24 rounded-sm " />
-      <Box className="flex flex-col items-start gap-5 w-full">
-        <Box className="w-full flex justify-between">
-          <Text className="text-xl text-gray-400 uppercase font-mono">
+      <div className="flex flex-col items-start gap-5 w-full">
+        <div className="w-full flex justify-between">
+          <span className="text-xl text-gray-400 uppercase font-mono">
             {collection.collection.name}
-          </Text>
-          <Box className="flex gap-4">
+          </span>
+          <div className="flex gap-4">
             <img
               className="w-8 rounded-lg shadow-xl"
               src={tensorLogo.src}
@@ -58,14 +57,14 @@ const HotCollectionItem: FC<{
                 );
               }}
             />
-          </Box>
-        </Box>
-        <Box className="flex w-full justify-between w-full font-mono">
-          <Text className="text-text-color">
+          </div>
+        </div>
+        <div className="flex w-full justify-between w-full font-mono">
+          <div className="text-text-color">
             <span className="font-bold"> {getFilterText[0]}: </span>
             <span className="text-green-color"> {getFilterText[1]}</span>
-          </Text>
-          <Box className="flex items-center gap-3">
+          </div>
+          <div className="flex items-center gap-3">
             {collection.collection.twitter && (
               <FaTwitter
                 onClick={(e) => {
@@ -92,10 +91,10 @@ const HotCollectionItem: FC<{
                 }}
               />
             )}
-          </Box>
-        </Box>
-      </Box>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

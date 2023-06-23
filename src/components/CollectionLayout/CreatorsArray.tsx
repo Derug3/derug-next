@@ -1,4 +1,3 @@
-import { Box, Button, Label, Textarea, TextInput } from "@primer/react";
 import "rc-slider/assets/index.css";
 import { FC, useState } from "react";
 
@@ -34,7 +33,7 @@ const CreatorsArray: FC<{
 
 
   return (
-    <Box className="w-full">
+    <div className="w-full">
       {creators &&
         creators.map((creator, index) => (
           <div
@@ -42,33 +41,32 @@ const CreatorsArray: FC<{
             className="flex w-full justify-between creators-start gap-3"
           >
             <div className="flex w-full flex-row">
-              <TextInput
+              <input
                 placeholder="Address"
                 value={creator.address}
-                sx={{ width: "100%" }}
+                style={{ width: "100%" }}
                 onChange={(e) =>
                   handleItemsAddressChange(e.target.value, index)
                 }
               />
-              <TextInput
+              <input
                 placeholder="Percentage"
                 value={creator.share}
-                sx={{ width: "30%" }}
+                style={{ width: "30%" }}
                 onChange={(e) =>
                   handleItemsPercentageChange(e.target.value, index)
                 }
               />
             </div>
 
-            <Button
-              variant="danger"
+            <button
               onClick={() => removeItems(index)}
             >
               remove
-            </Button>
+            </button>
           </div>
         ))}
-    </Box>
+    </div>
   );
 };
 
