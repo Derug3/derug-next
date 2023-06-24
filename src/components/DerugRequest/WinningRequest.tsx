@@ -1,7 +1,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import React, { FC, useContext, useMemo, useState } from "react";
 import { IRequest } from "../../interface/collections.interface";
-import { claimVictory, getCandyMachine } from "../../solana/methods/remint";
+import { claimVictory } from "../../solana/methods/remint";
 import { CollectionContext } from "../../stores/collectionContext";
 import { toast } from "react-hot-toast";
 import { getCollectionDerugData } from "../../solana/methods/derug";
@@ -9,6 +9,7 @@ import { DerugStatus } from "../../enums/collections.enums";
 import { getTrimmedPublicKey } from "../../solana/helpers";
 import dayjs from "dayjs";
 import {
+  getDerugCandyMachine,
   initCandyMachine,
   storeCandyMachineItems,
 } from "../../solana/methods/public-mint";
@@ -79,7 +80,6 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
       toast.error(error.message);
     }
   };
-
   const initPublicMinting = async () => {
     try {
       toggleLoading(true);
@@ -92,7 +92,7 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
           );
 
           if (candyMachineAddress)
-            setCandyMachine(await getCandyMachine(candyMachineAddress));
+            setCandyMachine(await getDerugCandyMachine(remintConfig, wallet));
         }
         await storeCandyMachineItems(
           request,
@@ -100,7 +100,7 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
           wallet,
           collectionDerug
         );
-        setCandyMachine(await getCandyMachine(remintConfig.candyMachine));
+        setCandyMachine(await getDerugCandyMachine(remintConfig, wallet));
       }
       toast.success("Public minting successfully initialized");
     } catch (error) {

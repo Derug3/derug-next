@@ -17,7 +17,7 @@ import Remint from "@/components/Remit/Remint";
 import { getDummyCollectionData } from "@/solana/dummy";
 import { getCollectionDerugData } from "@/solana/methods/derug";
 import { getAllDerugRequest } from "@/solana/methods/derug-request";
-import { getCandyMachine, getRemintConfig } from "@/solana/methods/remint";
+import { getRemintConfig } from "@/solana/methods/remint";
 import { derugProgramFactory } from "@/solana/utilities";
 import { CollectionContext } from "@/stores/collectionContext";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -34,9 +34,14 @@ import {
   ICollectionDerugData,
   IRequest,
 } from "@/interface/collections.interface";
-import { IGraphData, IRemintConfig } from "@/interface/derug.interface";
+import {
+  IDerugCandyMachine,
+  IGraphData,
+  IRemintConfig,
+} from "@/interface/derug.interface";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
+import { getDerugCandyMachine } from "@/solana/methods/public-mint";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const slug = context.params.id;
@@ -65,7 +70,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   const [collectionDerug, setCollectionDerug] =
     useState<ICollectionDerugData>();
   const [graphData, setGraphData] = useState<IGraphData>();
-  const [candyMachine, setCandyMachine] = useState<CandyMachine>();
+  const [candyMachine, setCandyMachine] = useState<IDerugCandyMachine>();
 
   const [derugRequests, setDerugRequests] = useState<IRequest[]>();
   const iframeRef = useRef(null);
@@ -110,7 +115,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   };
   useEffect(() => {
     if (basicCollectionData) void getChainCollectionDetails();
-  }, [basicCollectionData]);
+  }, [basicCollectionData, wallet.publicKey]);
   const getChainCollectionDetails = async () => {
     try {
       //TODO
@@ -136,8 +141,8 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         );
         setRemintConfig(remintConfigData);
 
-        if (remintConfigData && remintConfigData.candyMachine) {
-          const cm = await getCandyMachine(remintConfigData.candyMachine);
+        if (remintConfigData && remintConfigData.candyMachine && wallet) {
+          const cm = await getDerugCandyMachine(remintConfigData, wallet);
           if (cm) setCandyMachine(cm);
         }
         setCollectionDerug(
@@ -283,9 +288,9 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               (dayjs(remintConfig.privateMintEnd).isBefore(dayjs()) ||
                 (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
               candyMachine &&
-              Number(candyMachine.itemsLoaded) > 0 &&
-              Number(candyMachine.itemsLoaded) ===
-                Number(candyMachine.data.itemsAvailable) ? (
+              Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
+              Number(candyMachine.candyMachine.itemsLoaded) ===
+                Number(candyMachine.candyMachine.data.itemsAvailable) ? (
                 <PublicMint />
               ) : (
                 collectionDerug &&

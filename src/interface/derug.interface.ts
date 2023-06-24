@@ -1,3 +1,4 @@
+import { CandyMachine } from "@metaplex-foundation/mpl-candy-machine";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import { Keypair, TransactionInstruction } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
@@ -111,4 +112,32 @@ export interface StoreCandyMachineData {
   derugRequest: string;
   updateAuthority: string;
   derugData: string;
+}
+
+export interface MintingCurrency {
+  name: string;
+  decimals: number;
+}
+
+export interface WhitelistConfig {
+  endDate: Date;
+  walletLimit?: number;
+  price: number;
+  currency: MintingCurrency;
+  groupName: string;
+  isWhitelisted?: boolean;
+  isActive: boolean;
+}
+
+export interface PublicConfig {
+  startDate: Date;
+  currency: MintingCurrency;
+  groupName: string;
+  price: number;
+}
+
+export interface IDerugCandyMachine {
+  candyMachine: CandyMachine;
+  whitelistingConfig: WhitelistConfig;
+  publicConfig: PublicConfig;
 }

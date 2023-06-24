@@ -105,7 +105,7 @@ export const claimVictory = async (
       remainingAccounts.push({
         isSigner: false,
         isWritable: false,
-        pubkey: new PublicKey(candyMachineCreator),
+        pubkey: new PublicKey(candyMachineCreator[0]),
       });
 
       if (request.mintCurrency) {
@@ -489,20 +489,3 @@ export async function getRemintConfig(
     return undefined;
   }
 }
-
-export const getCandyMachine = async (candyMachineKey: PublicKey) => {
-  try {
-    const candyMachine = await fetchCandyMachine(
-      umi,
-      publicKey(candyMachineKey)
-    );
-
-    // const guardPda = findCandyGuardPda(umi, {
-    //   base: publicKey(candyMachineKey),
-    // });
-    // const guard = await fetchCandyGuard(umi, guardPda);
-    return candyMachine;
-  } catch (error) {
-    return undefined;
-  }
-};

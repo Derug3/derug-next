@@ -1,10 +1,4 @@
-import {
-  getCandyMachineSize,
-  Nft,
-  toBigNumber,
-  TransactionBuilder,
-  walletAdapterIdentity,
-} from "@metaplex-foundation/js";
+import { walletAdapterIdentity } from "@metaplex-foundation/js";
 import {
   addConfigLines,
   mintV2,
@@ -21,6 +15,11 @@ import {
   route,
   fetchCandyMachine,
   getMerkleProof,
+  fetchCandyGuard,
+  CandyGuard,
+  DefaultGuardSet,
+  fetchMintCounter,
+  GuardGroup,
 } from "@metaplex-foundation/mpl-candy-machine";
 import { walletAdapterIdentity as umiAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 import {
@@ -35,6 +34,7 @@ import {
   base58PublicKey,
 } from "@metaplex-foundation/umi";
 
+dayjs.extend(utc);
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import {
   Keypair,
@@ -55,8 +55,12 @@ import {
 } from "../../interface/collections.interface";
 import {
   CandyMachineDto,
+  IDerugCandyMachine,
   IDerugInstruction,
   IRemintConfig,
+  MintingCurrency,
+  PublicConfig,
+  WhitelistConfig,
 } from "../../interface/derug.interface";
 import { remintConfigSeed } from "../seeds";
 import { derugProgramFactory, metaplex, umi } from "../utilities";
@@ -82,6 +86,8 @@ import {
   some,
 } from "@metaplex-foundation/umi";
 import { setComputeUnitLimit } from "@metaplex-foundation/mpl-toolbox";
+import { SolanaTokenListResolutionStrategy } from "@solana/spl-token-registry";
+import { divide, pow } from "mathjs";
 
 dayjs.extend(utc);
 
@@ -498,4 +504,125 @@ export const closeCandyMachine = async (
     console.log(error);
     throw error;
   }
+};
+
+export async function getDerugCandyMachine(
+  remintConfig: IRemintConfig,
+  wallet?: AnchorWallet
+): Promise<IDerugCandyMachine> {
+  try {
+    const candyMachine = await fetchCandyMachine(
+      umi,
+      publicKey(remintConfig.candyMachine)
+    );
+
+    const guardPda = findCandyGuardPda(umi, {
+      base: publicKey(remintConfig.candyMachine),
+    });
+
+    const guards = await fetchCandyGuard(umi, guardPda);
+
+    return {
+      candyMachine,
+      publicConfig: await getPublicConfiguration(guards),
+      whitelistingConfig: await getWhitelistingConfig(guards, wallet),
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const getWhitelistingConfig = async (
+  guards: CandyGuard<DefaultGuardSet>,
+  wallet?: AnchorWallet
+): Promise<WhitelistConfig> => {
+  const wlGroup = guards.groups.find((g) => g.label === "wl");
+
+  let isWhitelisted = false;
+
+  if (wlGroup.guards.allowList !== none()) {
+    //TODO:remove ekser
+    const wlConfig = await getWlConfig("nice-mice");
+    const wallets = JSON.parse(wlConfig.wallets);
+    isWhitelisted = !!wallets.find(
+      (w) => w.wallet === wallet?.publicKey?.toString()
+    );
+  }
+
+  let endDate = dayjs();
+  let walletLimit: number | undefined = undefined;
+
+  if (wlGroup.guards.endDate.__option === "Some") {
+    endDate = dayjs.unix(Number(wlGroup.guards.endDate.value.date.toString()));
+  }
+
+  if (wlGroup.guards.mintLimit.__option === "Some") {
+    walletLimit = wlGroup.guards.mintLimit.value.limit;
+  }
+
+  const { currency, price } = await getGuardPayment(wlGroup);
+
+  return {
+    currency,
+    endDate: endDate.toDate(),
+    groupName: "wl",
+    price,
+    walletLimit,
+    isWhitelisted,
+    isActive: endDate.isAfter(dayjs()),
+  };
+};
+
+export const getPublicConfiguration = async (
+  guards: CandyGuard<DefaultGuardSet>
+): Promise<PublicConfig> => {
+  const wlGroup = guards.groups.find((g) => g.label === "all");
+
+  const { price, currency } = await getGuardPayment(wlGroup);
+
+  let startDate = dayjs();
+
+  if (wlGroup.guards.startDate.__option === "Some") {
+    startDate = dayjs.unix(Number(wlGroup.guards.startDate.value.date));
+  }
+
+  return {
+    currency,
+    groupName: "all",
+    startDate: startDate.toDate(),
+    price,
+  };
+};
+
+export const getGuardPayment = async (wlGroup: GuardGroup<DefaultGuardSet>) => {
+  let price: number | undefined = undefined;
+  let currency: MintingCurrency | undefined = undefined;
+
+  if (wlGroup.guards.solPayment.__option === "Some") {
+    currency = {
+      decimals: wlGroup.guards.solPayment.value.lamports.decimals,
+      name: wlGroup.guards.solPayment.value.lamports.identifier,
+    };
+    price = divide(
+      Number(wlGroup.guards.solPayment.value.lamports.basisPoints),
+      pow(10, wlGroup.guards.solPayment.value.lamports.decimals)
+    ) as number;
+  }
+
+  if (wlGroup.guards.tokenPayment.__option === "Some") {
+    const mint = wlGroup.guards.tokenPayment.value.mint;
+    price = Number(wlGroup.guards.tokenPayment.value.amount);
+    const tokenList = await new SolanaTokenListResolutionStrategy().resolve();
+    const relatedToken = tokenList.find(
+      (t) => t.address.toString() === mint.toString()
+    );
+    if (relatedToken) {
+      currency = {
+        decimals: relatedToken.decimals,
+        name: relatedToken.name,
+      };
+    }
+  }
+
+  return { price, currency };
 };
