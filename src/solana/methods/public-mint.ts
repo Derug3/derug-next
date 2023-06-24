@@ -427,6 +427,61 @@ export const mintNftFromCandyMachine = async (
   }
 };
 
+export const mintPublic = async (
+  remintConfig: IRemintConfig,
+  wallet: AnchorWallet
+) => {
+  metaplex.use(walletAdapterIdentity(wallet));
+  try {
+    umi.use(umiAdapterIdentity(wallet));
+    const nftMint = generateSigner(umi);
+
+    const guardPda = findCandyGuardPda(umi, {
+      base: publicKey(remintConfig.candyMachine),
+    });
+    //TODO:remove ekser
+    const wlConfig = await getWlConfig("nice-mice");
+
+    const wallets = JSON.parse(wlConfig.wallets).map((w) => w.wallet);
+    const merkleRoot = getMerkleRoot(wallets);
+
+    await toast.promise(
+      mintV2(umi, {
+        candyMachine: publicKey(remintConfig.candyMachine),
+        nftMint: nftMint,
+        collectionMint: publicKey(remintConfig.collection),
+        collectionUpdateAuthority: publicKey(remintConfig.authority),
+        group: some("all"),
+        tokenStandard: TokenStandard.NonFungible,
+        candyGuard: guardPda,
+        mintArgs: {
+          solPayment: some({
+            destination: publicKey(remintConfig.authority),
+          }),
+        },
+      })
+        .add(setComputeUnitLimit(umi, { units: 800_000 }))
+        .sendAndConfirm(umi),
+      {
+        error: "Failed to mint!",
+        loading: "Minting...",
+        success: "Successfully minted!",
+      }
+    );
+    return await metaplex
+      .nfts()
+      .findByMint({ mintAddress: new PublicKey(nftMint.publicKey) });
+  } catch (error: any) {
+    console.log(JSON.parse(JSON.stringify(error)));
+
+    const parsedError = JSON.parse(JSON.stringify(error)).cause;
+    if (parsedError.logs.find((l: any) => l.includes("NotEnoughToken"))) {
+      throw new Error(" Not enough tokens to pay for this minting.");
+    }
+    throw new Error(parseTransactionError(parsedError));
+  }
+};
+
 export const closeCandyMachine = async (
   remintConfig: IRemintConfig,
   wallet: AnchorWallet

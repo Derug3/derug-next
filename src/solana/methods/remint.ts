@@ -102,7 +102,6 @@ export const claimVictory = async (
         isWritable: true,
         pubkey: candyMachine.publicKey,
       });
-      // const candyMachineCreator=findCandyMachineAuthorityPda(umi,{publicKey})
       remainingAccounts.push({
         isSigner: false,
         isWritable: false,

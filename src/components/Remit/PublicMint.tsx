@@ -10,6 +10,7 @@ import { NftWithToken } from "@metaplex-foundation/js";
 import {
   closeCandyMachine,
   mintNftFromCandyMachine,
+  mintPublic,
 } from "../../solana/methods/public-mint";
 import toast from "react-hot-toast";
 import { getCandyMachine } from "../../solana/methods/remint";
@@ -81,7 +82,8 @@ const PublicMint = () => {
     setNftImage(undefined);
     try {
       if (wallet && remintConfig) {
-        const minted = await mintNftFromCandyMachine(remintConfig, wallet);
+        // const minted = await mintNftFromCandyMachine(remintConfig, wallet);
+        const minted = await mintPublic(remintConfig, wallet);
 
         if (!minted) throw new Error();
 
