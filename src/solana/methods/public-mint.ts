@@ -11,17 +11,18 @@ import {
   findCandyGuardPda,
   SolPayment,
   TokenPayment,
-  CandyMachine,
   route,
   fetchCandyMachine,
   getMerkleProof,
+  findMintCounterPda,
   fetchCandyGuard,
   CandyGuard,
   DefaultGuardSet,
-  fetchMintCounter,
   GuardGroup,
+  fetchMintCounter,
 } from "@metaplex-foundation/mpl-candy-machine";
 import { walletAdapterIdentity as umiAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
+
 import {
   createSignerFromKeypair,
   percentAmount,
@@ -32,6 +33,7 @@ import {
   createBigInt,
   transactionBuilder,
   base58PublicKey,
+  Pda,
 } from "@metaplex-foundation/umi";
 
 dayjs.extend(utc);
@@ -525,7 +527,12 @@ export async function getDerugCandyMachine(
     return {
       candyMachine,
       publicConfig: await getPublicConfiguration(guards),
-      whitelistingConfig: await getWhitelistingConfig(guards, wallet),
+      whitelistingConfig: await getWhitelistingConfig(
+        guards,
+        wallet,
+        remintConfig.candyMachine,
+        guardPda
+      ),
     };
   } catch (error) {
     console.log(error);
@@ -534,7 +541,9 @@ export async function getDerugCandyMachine(
 
 export const getWhitelistingConfig = async (
   guards: CandyGuard<DefaultGuardSet>,
-  wallet?: AnchorWallet
+  wallet: AnchorWallet,
+  candyMachine: PublicKey,
+  guardPda: Pda<string, number>
 ): Promise<WhitelistConfig> => {
   const wlGroup = guards.groups.find((g) => g.label === "wl");
 
@@ -558,6 +567,21 @@ export const getWhitelistingConfig = async (
 
   if (wlGroup.guards.mintLimit.__option === "Some") {
     walletLimit = wlGroup.guards.mintLimit.value.limit;
+  }
+
+  if (wlGroup.guards.mintLimit.__option === "Some") {
+    const pda = findMintCounterPda(umi, {
+      id: 1,
+      user: publicKey(wallet.publicKey),
+      candyMachine: publicKey(candyMachine),
+      candyGuard: publicKey(guardPda[0]),
+    });
+    try {
+      const mintCounterAccount = await fetchMintCounter(umi, pda);
+      walletLimit = mintCounterAccount.count;
+    } catch (error) {
+      walletLimit = 0;
+    }
   }
 
   const { currency, price } = await getGuardPayment(wlGroup);

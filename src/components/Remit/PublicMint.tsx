@@ -126,6 +126,18 @@ const PublicMint = () => {
     );
   }, [candyMachine, wallet]);
 
+  const showMintButton = useMemo(() => {
+    return (
+      (candyMachine.whitelistingConfig.isActive &&
+        candyMachine.whitelistingConfig.isWhitelisted &&
+        (candyMachine.whitelistingConfig.walletLimit
+          ? //TODO:remove ekser
+            3 - candyMachine.whitelistingConfig.walletLimit > 0
+          : true)) ||
+      !candyMachine.whitelistingConfig.isActive
+    );
+  }, [candyMachine]);
+
   return (
     <div className="m-auto grid grid-cols-3  m-10 mb-32">
       <div className="flex flex-col items-start ml-10">
@@ -165,9 +177,7 @@ const PublicMint = () => {
         {mintedNft && (
           <p className="text-main-blue font-bold">{mintedNft.name}</p>
         )}
-        {((candyMachine.whitelistingConfig.isActive &&
-          candyMachine.whitelistingConfig.isWhitelisted) ||
-          !candyMachine.whitelistingConfig.isActive) && (
+        {showMintButton && (
           <button
             style={{ border: "1px solid rgb(9, 194, 246)" }}
             className="w-40 text-white py-1 
@@ -258,6 +268,13 @@ const PublicMint = () => {
                 />
               }
             </Text>
+
+            {candyMachine.whitelistingConfig.walletLimit >= 0 && (
+              <Text className="text-white font-bold font-mono text-sm">
+                Remaining mints{" "}
+                {3 - candyMachine.whitelistingConfig?.walletLimit} / {3}
+              </Text>
+            )}
 
             {!candyMachine.whitelistingConfig.isWhitelisted && (
               <Text className="text-main-green text-sm text-white font-mono font-bold">
