@@ -233,7 +233,11 @@ export const initCandyMachine = async (
           isMutable: true,
           symbol: remintConfigAccount.newSymbol,
           tokenMetadataProgram: publicKey(PROGRAM_ID),
-          guards: {},
+          guards: {
+            tokenPayment: tokenPaymentConfig,
+            solPayment: solPaymentConfig,
+            allowList: allowListConfig,
+          },
           collectionMint: publicKey(remintConfigAccount.collection),
           collectionUpdateAuthority: createNoopSigner(
             publicKey(remintConfigAccount.authority)
@@ -287,105 +291,105 @@ export const storeCandyMachineItems = async (
     umi.use(umiAdapterIdentity(wallet));
 
     const instructions: IDerugInstruction[] = [];
-    for (const [index, nonMintedChunk] of chunkedNonMinted.entries()) {
-      const candyMachine = await fetchCandyMachine(
-        umi,
-        publicKey(new PublicKey(candyMachineKeys.publicKey))
-      );
 
-      await toast.promise(
-        addConfigLines(umi, {
-          candyMachine: publicKey(candyMachineKeys.publicKey),
-          configLines: nonMintedChunk.map((nmc) => ({
-            name: " #" + nmc.newName.split("#")[1],
-            uri: nmc.newUri.split("/")[3],
-          })),
-          index: candyMachine.itemsLoaded,
-        }).sendAndConfirm(umi),
-        {
-          error: "Failed to insert items in candy machine",
-          loading: `Inserting ${chunkedNonMinted.length} NFTs in candy machine`,
-          success: "Succesfully inserted NFTs",
-        }
-      );
-      // nonMintedChunk.map((nmc) => console.log(nmc.newUri.split("/")));
-      // const addLines = addConfigLines(umi, {
+    let sumInserted = 0;
+    for (const [index, nonMintedChunk] of chunkedNonMinted.entries()) {
+      // await toast.promise(
+
+      // const tx = await addConfigLines(umi, {
       //   candyMachine: publicKey(candyMachineKeys.publicKey),
       //   configLines: nonMintedChunk.map((nmc) => ({
-      //     name: nmc.newName.split(" ")[1],
+      //     name: " #" + nmc.newName.split("#")[1],
       //     uri: nmc.newUri.split("/")[3],
       //   })),
-      //   index: (index + 1) * nonMintedChunk.length,
-      // }).getInstructions();
-      // instructions.push({
-      //   instructions: addLines.map((ix) => ({
-      //     data: Buffer.from(ix.data),
-      //     programId: new PublicKey(ix.programId),
-      //     keys: ix.keys.map((k) => {
-      //       return {
-      //         isSigner: k.isSigner,
-      //         isWritable: k.isWritable,
-      //         pubkey: new PublicKey(k.pubkey),
-      //       };
-      //     }),
-      //   })),
-      //   pendingDescription: `Inserting batch of ${chunkedNonMinted.length} NFTs`,
-      //   successDescription: "Successfullu inserted NFTs",
-      // });
+      //   index: candyMachine.itemsLoaded,
+      // }).
+
+      //   {
+      //     error: "Failed to insert items in candy machine",
+      //     loading: `Inserting ${chunkedNonMinted.length} NFTs in candy machine`,
+      //     success: "Succesfully inserted NFTs",
+      //   }
+      // );
+
+      console.log(sumInserted + nonMintedChunk.length);
+
+      const addLines = addConfigLines(umi, {
+        candyMachine: publicKey(candyMachineKeys.publicKey),
+        configLines: nonMintedChunk.map((nmc) => ({
+          name: nmc.newName.split(" ")[1],
+          uri: nmc.newUri.split("/")[3],
+        })),
+        index: sumInserted,
+      }).getInstructions();
+      instructions.push({
+        instructions: addLines.map((ix) => ({
+          data: Buffer.from(ix.data),
+          programId: new PublicKey(ix.programId),
+          keys: ix.keys.map((k) => {
+            return {
+              isSigner: k.isSigner,
+              isWritable: k.isWritable,
+              pubkey: new PublicKey(k.pubkey),
+            };
+          }),
+        })),
+        pendingDescription: `Inserting batch of ${chunkedNonMinted.length} NFTs`,
+        successDescription: "Successfullu inserted NFTs",
+      });
+
+      sumInserted += nonMintedChunk.length;
     }
 
-    // const transactions: Transaction[] = [];
-    // for (const [index, ix] of instructions.entries()) {
-    //   const tx = new Transaction({
-    //     feePayer: wallet.publicKey,
-    //     recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
-    //   });
-    //   ix.instructions.forEach((inst) => tx.add(inst));
+    const transactions: Transaction[] = [];
+    for (const [index, ix] of instructions.entries()) {
+      const tx = new Transaction({
+        feePayer: wallet.publicKey,
+        recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
+      });
+      ix.instructions.forEach((inst) => tx.add(inst));
 
-    //   transactions.push(tx);
-    // }
-    // const failed: any[] = [];
-    // const signedTxs = await wallet.signAllTransactions(transactions);
-    // for (const [index, tx] of signedTxs.entries()) {
-    //   try {
-    //     const txSig = await RPC_CONNECTION.sendRawTransaction(tx.serialize());
-    //     await RPC_CONNECTION.confirmTransaction(txSig);
-    //     toast.success("Inserted NFTs batch!");
-    //   } catch (error) {
-    //     console.log(JSON.parse(JSON.stringify(error)));
+      transactions.push(tx);
+    }
+    const failed: any[] = [];
+    const signedTxs = await wallet.signAllTransactions(transactions);
+    for (const [index, tx] of signedTxs.entries()) {
+      try {
+        const txSig = await RPC_CONNECTION.sendRawTransaction(tx.serialize());
+        await RPC_CONNECTION.confirmTransaction(txSig);
+        toast.success("Inserted NFTs batch!");
+      } catch (error) {
+        console.log(JSON.parse(JSON.stringify(error)));
 
-    //     toast.error("Failed to insert NFTs");
-    //     const relatedFailed = chunkedNonMinted[index];
-    //     failed.push([...relatedFailed]);
-    //   }
-    // }
+        toast.error("Failed to insert NFTs");
+        const relatedFailed = chunkedNonMinted[index];
+        failed.push([...relatedFailed]);
+      }
+    }
     //TODO:store failed in db and retry
   } catch (error: any) {
     throw error;
   }
 };
-
 export const mintNftFromCandyMachine = async (
   remintConfig: IRemintConfig,
   wallet: AnchorWallet
 ) => {
   metaplex.use(walletAdapterIdentity(wallet));
   try {
-    debugger;
     umi.use(umiAdapterIdentity(wallet));
     const nftMint = generateSigner(umi);
 
     const guardPda = findCandyGuardPda(umi, {
       base: publicKey(remintConfig.candyMachine),
     });
-
     //TODO:remove ekser
     const wlConfig = await getWlConfig("nice-mice");
 
     const wallets = JSON.parse(wlConfig.wallets).map((w) => w.wallet);
     const merkleRoot = getMerkleRoot(wallets);
 
-    toast.promise(
+    await toast.promise(
       route(umi, {
         guard: "allowList",
         candyMachine: publicKey(remintConfig.candyMachine),
@@ -421,7 +425,6 @@ export const mintNftFromCandyMachine = async (
         success: "Successfully minted!",
       }
     );
-
     return await metaplex
       .nfts()
       .findByMint({ mintAddress: new PublicKey(nftMint.publicKey) });

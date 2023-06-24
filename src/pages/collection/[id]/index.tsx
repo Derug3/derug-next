@@ -73,18 +73,13 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   const iframeRef = useRef(null);
   const router = useRouter();
 
-  let derug = router.query;
   const [remintConfig, setRemintConfig] = useState<IRemintConfig | undefined>();
 
   const wallet = useWallet();
 
   useEffect(() => {
     void getBasicCollectionData();
-    if (derug) {
-      setDerugRequestVisible(true);
-    }
   }, []);
-
   const getBasicCollectionData = async () => {
     try {
       setBasicCollectionData(await getSingleCollection(slug ?? ""));
@@ -115,13 +110,9 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       toggleLoading(false);
     }
   };
-
-  console.log(candyMachine);
-
   useEffect(() => {
     if (basicCollectionData) void getChainCollectionDetails();
   }, [basicCollectionData]);
-
   const getChainCollectionDetails = async () => {
     try {
       //TODO

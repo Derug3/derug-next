@@ -51,7 +51,7 @@ const HeaderNav: FC = () => {
   }, []);
 
   const unlinkTwitter = useCallback(async () => {
-    if (wallet && userData) {
+    if (wallet && userData && userData.twitterName) {
       try {
         await deleteTwitterData(wallet.publicKey.toString());
         setUserData(undefined);
@@ -106,18 +106,24 @@ const HeaderNav: FC = () => {
             {wallet && wallet.publicKey && (
               <div
                 className="flex flex-row gap-3 cursor-pointer"
-                onClick={userData ? unlinkTwitter : linkTwitter}
+                onClick={
+                  userData && userData.twitterHandle
+                    ? unlinkTwitter
+                    : linkTwitter
+                }
               >
-                <div className="flex items-center w-full">
-                  {userData && <img src={userData.image} className="w-10" />}
+                <div className="flex items-center w-full gap-3">
+                  {userData && (
+                    <img src={userData.image} className="w-8 rounded-[50%]" />
+                  )}
                   <p className="flex gap-3 text-md">
                     {userData && userData.twitterHandle ? (
                       userData.twitterHandle
                     ) : (
-                      <>
+                      <div className="flex gap-2 items-center">
                         <FaTwitter color="rgb(9, 194, 246)" />
                         <span>link twitter </span>
-                      </>
+                      </div>
                     )}
                   </p>
                 </div>

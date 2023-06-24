@@ -15,7 +15,7 @@ export const HotListingItem: FC<{
 
   const { push: navigate } = useRouter();
   return (
-    <div className="flex w-1/2">
+    <div className="flex w-1/2 cursor-pointer">
       <div className="flex w-full flex-row items-start gap-5 p-2 bg-transparent">
         <img
           src={collectionData.image}
