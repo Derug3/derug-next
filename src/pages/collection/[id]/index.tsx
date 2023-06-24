@@ -47,8 +47,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       slug,
     },
   };
-}
-
+};
 
 export const Collections: FC<{ slug: string }> = ({ slug }) => {
   dayjs.extend(utc);
@@ -126,11 +125,11 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
 
   const getChainCollectionDetails = async () => {
     try {
+      //TODO
       // const chainDetails = await getCollectionChainData(
       //   basicCollectionData!,
       //   listings?.at(0)
       // );
-
       const derugProgram = derugProgramFactory();
 
       derugProgram.addEventListener("PrivateMintStarted", async (data) => {
@@ -151,9 +150,9 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
 
         setRemintConfig(remintConfigData);
         if (remintConfigData) {
-          setCandyMachine(
-            await getCandyMachine(remintConfigData.candyMachine.toString())
-          );
+          // setCandyMachine(
+          //   // await getCandyMachine(chainDetails.derugDataAddress.toString())
+          // );
         }
 
         setCollectionDerug(
@@ -230,9 +229,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           zoom: "85%",
         }}
       >
-        <div
-          className="overflow-y-clip flex flex-col"
-        >
+        <div className="overflow-y-clip flex flex-col">
           {wallet && (
             <AddDerugRequst
               isOpen={derugRequestVisible}
@@ -246,7 +243,9 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               setSelectedInfo={setSelectedInfo}
               selectedData={selectedData}
               setSelectedData={setSelectedData}
-              openDerugModal={setDerugRequestVisible}
+              openDerugModal={(val) => {
+                setDerugRequestVisible(val);
+              }}
             />
           </div>
 
@@ -292,16 +291,16 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         <>
           {(collectionDerug.status === DerugStatus.Initialized ||
             collectionDerug.status === DerugStatus.Voting) &&
-            showDerugRequests &&
-            !hasWinning ? (
+          showDerugRequests &&
+          !hasWinning ? (
             <DerugRequest />
           ) : (
             <>
               {remintConfig &&
-                (dayjs(remintConfig.privateMintEnd).isBefore(dayjs()) ||
-                  (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
-                candyMachine &&
-                Number(candyMachine.data.itemsAvailable) > 0 ? (
+              (dayjs(remintConfig.privateMintEnd).isBefore(dayjs()) ||
+                (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
+              candyMachine &&
+              Number(candyMachine.data.itemsAvailable) > 0 ? (
                 <PublicMint />
               ) : (
                 collectionDerug &&

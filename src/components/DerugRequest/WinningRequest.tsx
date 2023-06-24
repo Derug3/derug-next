@@ -200,11 +200,11 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
                     onClick={initPublicMinting}
                   >
                     {!loading ? (
-                      <span className="text-xl lowercase">
+                      <span className="text-xl lowercase min-w-full">
                         Initialize public mint
                       </span>
                     ) : (
-                      <Oval color="rgb(9, 194, 246)" height={"3em"} />
+                      <Oval color="rgb(9, 194, 246)" height={"1em"} />
                     )}
                   </button>
                 )}

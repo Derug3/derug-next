@@ -267,7 +267,7 @@ export const claimVictory = async (
   storeAllNfts({
     derugData: derug.address.toString(),
     derugRequest: request.address.toString(),
-    updateAuthority: chainCollectionData.rugUpdateAuthority,
+    updateAuthority: chainCollectionData.firstCreator,
   });
 };
 
@@ -497,9 +497,12 @@ export const getCandyMachine = async (candyMachineKey: PublicKey) => {
       publicKey(candyMachineKey)
     );
 
-    // const guards = await fetchCandyGuard(umi, publicKey(candyMachine));
+    const guards = await fetchCandyGuard(umi, publicKey(candyMachine));
 
-    return [] as any;
+    console.log(guards, "GUARDS");
+    console.log(candyMachine, "CM");
+
+    return candyMachine;
   } catch (error) {
     return undefined;
   }

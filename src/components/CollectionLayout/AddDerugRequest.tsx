@@ -17,6 +17,7 @@ import "rc-slider/assets/index.css";
 import UtilityArray from "./UtilityArray";
 import { FaTwitter } from "react-icons/fa";
 import CreatorsArray from "./CreatorsArray";
+import { Box, Dialog, TextInput, Button, Label } from "@primer/react";
 import MintDetails, { ITreasuryTokenAccInfo } from "./MintDetails";
 import { getTrimmedPublicKey } from "../../solana/helpers";
 import { PublicKey } from "@solana/web3.js";
@@ -93,7 +94,6 @@ export const AddDerugRequst: FC<{
 
   const submitRequest = async (data: any) => {
     try {
-      debugger;
       if (wallet && chainCollectionData && utility && collectionStats && data) {
         const requestAddress = await createOrUpdateDerugRequest(
           wallet,
@@ -125,7 +125,7 @@ export const AddDerugRequst: FC<{
             selectedMint.address.toString() !== WRAPPED_SOL_MINT.toString()
             ? selectedMint.address
             : //TODO:Remove before mainnet
-            undefined,
+              undefined,
           activeListings ? activeListings[0] : undefined
         );
         const addedRequests = [...(derugRequests ?? [])];
@@ -175,22 +175,21 @@ export const AddDerugRequst: FC<{
   const storeUserData = async () => {
     try {
       setUserData(await getUserTwitterData(wallet.publicKey?.toString()!));
-    } catch (error) { }
+    } catch (error) {}
   };
 
   return (
-    <div
-      className="flex w-full flex-col"
-    >
+    <div className="flex w-full flex-col">
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(submitRequest)}>
-          {/* <Dialog
+          <Dialog
             returnFocusRef={returnFocusRef}
             isOpen={isOpen}
             onDismiss={() => setIsOpen(false)}
             sx={{
               width: "90%",
               maxHeight: "100%",
+              background: "black",
             }}
             aria-labelledby="header-id"
           >
@@ -269,7 +268,7 @@ export const AddDerugRequst: FC<{
                             methods.clearErrors("name");
                         }}
                         placeholder="new collection name"
-                        className="text-gray-400"
+                        className="text-gray-400 "
                         value={newName}
                         sx={{
                           width: "100%",
@@ -371,15 +370,15 @@ export const AddDerugRequst: FC<{
                     {" "}
                     {(methods.formState.errors.creatorsFees ||
                       methods.formState.errors.creatorsKey) && (
-                        <p className="text-red-500 text-xs">
-                          {
-                            (
-                              methods.formState.errors.creatorsFees ??
-                              methods.formState.errors.creatorsKey
-                            )?.message
-                          }
-                        </p>
-                      )}
+                      <p className="text-red-500 text-xs">
+                        {
+                          (
+                            methods.formState.errors.creatorsFees ??
+                            methods.formState.errors.creatorsKey
+                          )?.message
+                        }
+                      </p>
+                    )}
                   </>
                 </div>
               </Box>
@@ -422,7 +421,7 @@ export const AddDerugRequst: FC<{
                   Utilities
                 </span>
                 <Box className="flex flex-wrap px-3">
-                  {utility.map(
+                  {/* {utility.map(
                     (item, index) =>
                       item.title && (
                         <Label
@@ -435,9 +434,9 @@ export const AddDerugRequst: FC<{
                           {item.title}
                         </Label>
                       )
-                  )}
+                  )} */}
                 </Box>
-                <Box className="flex flex-col w-full justify-start items-start">
+                {/* <Box className="flex flex-col w-full justify-start items-start">
                   {utility && (
                     <UtilityArray
                       selectedUtility={selectedUtility}
@@ -446,7 +445,7 @@ export const AddDerugRequst: FC<{
                       setItems={setUtility}
                     ></UtilityArray>
                   )}
-                </Box>
+                </Box> */}
                 <Button
                   size="large"
                   variant="outline"
@@ -460,17 +459,22 @@ export const AddDerugRequst: FC<{
               <Button
                 size="large"
                 type="button"
-                variant="danger"
+                className="bg-gray-800 my-10 border-[1px] text-white hover:bg-red-300 hover:text-black rounded-md"
                 disabled={false}
                 onClick={() => setIsOpen(false)}
               >
                 Cancel request
               </Button>
-              <Button size="large" disabled={false} type="submit">
-                Submit request
+              <Button
+                size="large"
+                disabled={false}
+                type="submit"
+                className="bg-gray-800 text-lg text-white font-bold my-10 font-mono rounded-md hover:bg-main-blue hover:text-black"
+              >
+                Submit requests
               </Button>
             </Box>
-          </Dialog> */}
+          </Dialog>
         </form>
       </FormProvider>
     </div>

@@ -27,7 +27,10 @@ export const saveCandyMachineData = async (
 };
 
 export const getCandyMachine = async (derugData: string) => {
-  return await get(`${PUBLIC_REMINT}/${derugData}`);
+  const res = await get(`${PUBLIC_REMINT}/${derugData}`);
+  console.log(res);
+
+  return res;
 };
 
 export const getNonMinted = async (
@@ -49,7 +52,8 @@ export const getPrivateMintNft = (metadata: string): Promise<INonMinted> => {
 export const getWlConfig = async (
   derugAddress: string
 ): Promise<WlSettingsDto> => {
-  return get(`${WALLET_WL}${ALL}/${derugAddress}`);
+  //TODO:remove ekser
+  return get(`${WALLET_WL}${ALL}/${"nice-mice"}`);
 };
 
 export const storeWlConfig = async (wlDto: SaveWlSettingsDto) => {

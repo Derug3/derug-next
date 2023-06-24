@@ -1,22 +1,21 @@
 import {
-  IdentityClient,
+  getCandyMachineSize,
   toBigNumber,
-  toDateTime,
-  token,
+  TransactionBuilder,
   walletAdapterIdentity,
-  WalletAdapterIdentityDriver,
 } from "@metaplex-foundation/js";
 import {
   addConfigLines,
   fetchCandyMachine,
-  mint,
   mintV2,
   getMerkleRoot,
   AllowList,
   create,
   DefaultGuardSetArgs,
   GuardGroupArgs,
+  initializeCandyMachineV2,
   MintLimit,
+  createCandyMachineV2,
 } from "@metaplex-foundation/mpl-candy-machine";
 import { walletAdapterIdentity as umiAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 
@@ -25,7 +24,6 @@ import {
   percentAmount,
   publicKey,
   createNoopSigner,
-  TransactionBuilder,
   sol,
   generateSigner,
 } from "@metaplex-foundation/umi";
@@ -35,6 +33,7 @@ import {
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
+  SystemProgram,
   Transaction,
 } from "@solana/web3.js";
 import toast from "react-hot-toast";
@@ -74,6 +73,8 @@ import {
   signerIdentity,
   some,
 } from "@metaplex-foundation/umi";
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+import { BN } from "bn.js";
 
 dayjs.extend(utc);
 
@@ -146,8 +147,10 @@ export const initCandyMachine = async (
 
     let allowListConfig: OptionOrNullable<AllowList> = none();
 
-    if (wlConfig && wlConfig.type === WlType.AllowList) {
-      const merkleRoot = getMerkleRoot(wlConfig.wallets!);
+    if (wlConfig && wlConfig.wlType === WlType.AllowList) {
+      const merkleRoot = getMerkleRoot(
+        JSON.parse(wlConfig.wallets!).map((walletWl) => walletWl.wallet)
+      );
 
       allowListConfig = some({
         merkleRoot,
@@ -170,7 +173,7 @@ export const initCandyMachine = async (
       },
     ];
 
-    if (wlConfig && wlConfig.type === WlType.AllowList && wlConfig.duration) {
+    if (wlConfig && wlConfig.wlType === WlType.AllowList && wlConfig.duration) {
       groups.unshift({
         label: "wl",
         guards: {
@@ -188,8 +191,9 @@ export const initCandyMachine = async (
       secretKey: candyMachine.secretKey,
     });
 
-    umi.use(umiAdapterIdentity(wallet));
+    metaplex.use(walletAdapterIdentity(wallet));
 
+    umi.use(umiAdapterIdentity(wallet));
     await toast.promise(
       (
         await create(umi, {
@@ -204,6 +208,13 @@ export const initCandyMachine = async (
             percentageShare: c.share,
             verified: true,
           })),
+          configLineSettings: some({
+            isSequential: false,
+            nameLength: 4,
+            prefixUri: "",
+            uriLength: 0,
+            prefixName: "",
+          }),
           groups,
           authority: publicKey(remintConfigAccount.authority),
           tokenStandard: TokenStandard.NonFungible,
@@ -218,7 +229,11 @@ export const initCandyMachine = async (
             publicKey(remintConfigAccount.authority)
           ),
         })
-      ).sendAndConfirm(umi),
+      ).sendAndConfirm(umi, {
+        confirm: {
+          commitment: "confirmed",
+        },
+      }),
       {
         error: "Failed to create candy machine",
         loading: "Creating candy machine",
@@ -228,7 +243,7 @@ export const initCandyMachine = async (
 
     return candyMachine.publicKey;
   } catch (error: any) {
-    console.log(error);
+    console.log(JSON.parse(JSON.stringify(error)));
 
     throw error;
   }

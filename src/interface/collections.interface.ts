@@ -94,7 +94,7 @@ export interface INftListing {
 
 export interface IChainCollectionData {
   slug: string;
-  rugUpdateAuthority: string;
+  firstCreator: string;
   collectionMint: string;
   derugDataAddress: PublicKey;
   totalSupply: number;
@@ -148,9 +148,9 @@ export interface ICollectionVolume {
 }
 
 export interface WlSettingsDto {
-  type: WlType;
+  wlType: WlType;
   derugAddress: string;
-  wallets: string[];
+  wallets: string;
   duration?: number;
   derugger: string;
 }

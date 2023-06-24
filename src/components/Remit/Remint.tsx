@@ -21,6 +21,8 @@ import nftStore from "../../stores/nftStore";
 import { Oval } from "react-loader-spinner";
 import dayjs from "dayjs";
 import { getNonMinted } from "../../api/public-mint.api";
+import { RelativeTime } from "@primer/react";
+import Countdown from "react-countdown";
 export const Remint: FC<{
   getWinningRequest: IRequest | undefined;
 }> = ({ getWinningRequest }) => {
@@ -53,7 +55,7 @@ export const Remint: FC<{
         setNonMintedNfts(
           await getNonMinted(collectionDerug?.address.toString())
         );
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getCollectionNfts = async () => {
@@ -99,10 +101,24 @@ export const Remint: FC<{
   }, [nfts]);
 
   const renderCollectionNfts = useMemo(() => {
-    return collectionNfts?.map((cnft) => {
-      return <RemintNft nft={cnft} key={cnft.mint.toString()} />;
-    });
-  }, [collectionNfts, collectionDerug]);
+    return collectionNfts?.length > 0 ? (
+      collectionNfts?.map((cnft) => {
+        return <RemintNft nft={cnft} key={cnft.mint.toString()} />;
+      })
+    ) : (
+      <div className="w-full text-center">
+        <p className="text-xl font-mono font-bold">
+          You don't have NFTs from collection! Public mint will be in{" "}
+          <Countdown
+            className="font-mono text-sm
+            text-orange-800 p-2"
+            date={remintConfig?.privateMintEnd}
+          />
+          <RelativeTime />
+        </p>
+      </div>
+    );
+  }, [collectionNfts, collectionDerug, remintConfig]);
 
   const remintNfts = async () => {
     try {
@@ -188,8 +204,9 @@ export const Remint: FC<{
                           color: "black",
                           fontWeight: "bold",
                           border: "1px solid none",
+                          minWidth: "10em",
                           fontSize: "1.5em",
-                          padding: "1em 2em",
+                          padding: " 0.25em 1em",
                           fontFamily: "monospace",
                         }}
                       >
@@ -198,7 +215,8 @@ export const Remint: FC<{
                         ) : (
                           <Oval
                             color="black"
-                            width={"1.5em"}
+                            wrapperClass="px-4 py-6 h-6 text-black font-lg"
+                            width={"1em"}
                             secondaryColor="transparent"
                           />
                         )}
@@ -212,7 +230,7 @@ export const Remint: FC<{
                         })}
                       </>
                     ) : (
-                      <>{renderCollectionNfts}</>
+                      <div className="w-full">{renderCollectionNfts}</div>
                     )}
                   </div>
                 </div>

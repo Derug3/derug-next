@@ -2,7 +2,7 @@ import derugPfp from "../../assets/derugPfp.png";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { FC, useCallback, useEffect, useState } from "react";
 
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import { FaTwitter } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { userStore } from "@/stores/userStore";
@@ -11,9 +11,10 @@ import {
   authorizeTwitter,
   deleteTwitterData,
 } from "@/api/twitter.api";
-import Link from 'next/link'
+import Link from "next/link";
 import { HOME } from "@/utilities/constants";
 import { useRouter } from "next/router";
+import { getTrimmedPublicKey } from "@/solana/helpers";
 const settings = ["Twitter", "Discord"];
 
 const HeaderNav: FC = () => {
@@ -25,6 +26,8 @@ const HeaderNav: FC = () => {
   const slug = router.pathname;
 
   const wallet = useAnchorWallet();
+
+  const { connect, disconnect, connected, publicKey } = useWallet();
 
   useEffect(() => {
     if (wallet) void storeUserData();
@@ -112,9 +115,7 @@ const HeaderNav: FC = () => {
                       userData.twitterHandle
                     ) : (
                       <>
-                        <FaTwitter
-                          color="rgb(9, 194, 246)"
-                        />
+                        <FaTwitter color="rgb(9, 194, 246)" />
                         <span>link twitter </span>
                       </>
                     )}

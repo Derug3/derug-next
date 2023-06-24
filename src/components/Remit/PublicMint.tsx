@@ -14,6 +14,7 @@ import {
 import toast from "react-hot-toast";
 import { getCandyMachine } from "../../solana/methods/remint";
 import { Oval } from "react-loader-spinner";
+import { Box, Button, ProgressBar } from "@primer/react";
 
 const PublicMint = () => {
   const {
@@ -177,7 +178,7 @@ const PublicMint = () => {
           )}
         </button>
       </div>
-      {/* <Box className="flex flex-col items-start gap-3 ">
+      <Box className="flex flex-col items-start gap-3 ">
         <p className="text-white text-lg">MINT DETAILS</p>
         <Box className="flex flex-col gap-3 items-start">
           <p className="text-bold text-green-color text-md">Private Mint</p>
@@ -238,7 +239,7 @@ const PublicMint = () => {
                   className="rounded-[50px] w-6"
                   src={
                     remintConfig?.splTokenData?.image ??
-                    getMintCurrencyData?.logo
+                    getMintCurrencyData?.logo.src
                   }
                   alt=""
                 />
@@ -254,7 +255,7 @@ const PublicMint = () => {
             Stop minting
           </Button>
         )}
-      </Box> */}
+      </Box>
     </div>
   );
 };
