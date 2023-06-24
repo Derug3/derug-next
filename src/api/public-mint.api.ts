@@ -28,7 +28,6 @@ export const saveCandyMachineData = async (
 
 export const getCandyMachine = async (derugData: string) => {
   const res = await get(`${PUBLIC_REMINT}/${derugData}`);
-  console.log(res);
 
   return res;
 };

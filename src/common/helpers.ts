@@ -62,7 +62,7 @@ export const getNftsFromDeruggedCollection = async (
             image: (await (await fetch(nft.uri)).json()).image,
           });
         }
-      } catch (error) { }
+      } catch (error) {}
     }
 
     return collectionNfts;

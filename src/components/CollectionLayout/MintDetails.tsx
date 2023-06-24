@@ -260,6 +260,8 @@ const MintDetails: FC<{
                   type={"number"}
                   placeholder="price"
                   value={price}
+                  min="0"
+                  step={"0.00001"}
                   accept="number"
                   onChange={(e) => {
                     setPrice && setPrice(+e.target.value);
@@ -296,8 +298,8 @@ const MintDetails: FC<{
                   })}
                   className="bg-gray-800"
                   type={"number"}
-                  min="0.1"
-                  step={"0.1"}
+                  min="0"
+                  step={"0.001"}
                   placeholder="duration"
                   value={duration}
                   style={{ width: "100%" }}

@@ -39,17 +39,17 @@ const PublicMint = () => {
     if (!nfts || nfts.length === 0) void getNfts();
   }, [wallet?.publicKey]);
 
-  const stopMint = useCallback(async () => {
-    try {
-      if (remintConfig && wallet) {
-        await closeCandyMachine(remintConfig, wallet);
+  // const stopMint = useCallback(async () => {
+  //   try {
+  //     if (remintConfig && wallet) {
+  //       await closeCandyMachine(remintConfig, wallet);
 
-        setCandyMachine(undefined);
-      }
-    } catch (error) {
-      toast.error("Failed to stop minting ");
-    }
-  }, [remintConfig, wallet]);
+  //       setCandyMachine(undefined);
+  //     }
+  //   } catch (error) {
+  //     toast.error("Failed to stop minting ");
+  //   }
+  // }, [remintConfig, wallet]);
 
   const getNfts = async () => {
     toggleLoading(true);
@@ -86,7 +86,6 @@ const PublicMint = () => {
         if (!minted) throw new Error();
 
         setNftImage(minted.json.image);
-
         setCandyMachine(await getCandyMachine(remintConfig.candyMachine));
         toast.success(`Successfully minted ${minted.name}`);
         setNfts((prevValue) => [
@@ -104,9 +103,11 @@ const PublicMint = () => {
   const renderNfts = useMemo(() => {
     return nfts.map((n, index) => {
       return (
-        <div key={index} className="flex flex-col items-center">
-          <img src={n.image} alt="" className="w-36 h-28" />
-          <p className="text-white text-sm w-full break-all">{n.name}</p>
+        <div key={index} className="flex flex-col items-center justify-center">
+          <img src={n.image} alt="" className="w-28 h-26" />
+          <p className="text-white text-center text-sm w-full break-all">
+            {n.name}
+          </p>
         </div>
       );
     });
@@ -123,7 +124,7 @@ const PublicMint = () => {
   }, [candyMachine, wallet]);
 
   return (
-    <div className="m-auto grid grid-cols-3 gap-10 m-10">
+    <div className="m-auto grid grid-cols-3 gap-5 m-10">
       <div className="flex flex-col items-start ml-10">
         <p className="text-main-blue text-xl mb-2 flex">
           Your {remintConfig?.newName ?? collection?.name} NFTs
@@ -249,7 +250,7 @@ const PublicMint = () => {
         </Box>
         {showCloseMinitngButton && (
           <Button
-            onClick={stopMint}
+            // onClick={stopMint}
             className="boder-[2px] border-main-blue px-3 py-1 rounded-sm bg-transparent hover:shadow-lg hover:shadow-main-blue"
           >
             Stop minting

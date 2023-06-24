@@ -230,7 +230,7 @@ export const Remint: FC<{
                         })}
                       </>
                     ) : (
-                      <div className="w-full">{renderCollectionNfts}</div>
+                      <>{renderCollectionNfts}</>
                     )}
                   </div>
                 </div>

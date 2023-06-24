@@ -6,7 +6,6 @@ import { CandyMachine } from "@metaplex-foundation/mpl-candy-machine";
 import { LeftPane } from "@/components/CollectionLayout/LeftPane";
 import { RightPane } from "@/components/CollectionLayout/RightPane";
 import { getSingleCollection } from "@/api/collections.api";
-import { getCandyMachine } from "@/api/public-mint.api";
 import { getFloorPrice, getListings, getTraits } from "@/api/tensor";
 import { DERUG } from "@/api/url.api";
 import { AddDerugRequst } from "@/components/CollectionLayout/AddDerugRequest";
@@ -19,7 +18,7 @@ import Remint from "@/components/Remit/Remint";
 import { getDummyCollectionData } from "@/solana/dummy";
 import { getCollectionDerugData } from "@/solana/methods/derug";
 import { getAllDerugRequest } from "@/solana/methods/derug-request";
-import { getRemintConfig } from "@/solana/methods/remint";
+import { getCandyMachine, getRemintConfig } from "@/solana/methods/remint";
 import { derugProgramFactory } from "@/solana/utilities";
 import { CollectionContext } from "@/stores/collectionContext";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -130,6 +129,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       //   basicCollectionData!,
       //   listings?.at(0)
       // );
+
       const derugProgram = derugProgramFactory();
 
       derugProgram.addEventListener("PrivateMintStarted", async (data) => {
@@ -138,23 +138,18 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           setRemintConfig(await getRemintConfig(data.derugData));
         }
       });
-
       const chainDetails = await getDummyCollectionData();
-
       chainDetails.slug = slug!;
       setChainCollectionData(chainDetails);
       if (chainDetails.hasActiveDerugData) {
         const remintConfigData = await getRemintConfig(
           chainDetails.derugDataAddress
         );
-
         setRemintConfig(remintConfigData);
-        if (remintConfigData) {
-          // setCandyMachine(
-          //   // await getCandyMachine(chainDetails.derugDataAddress.toString())
-          // );
+        if (remintConfig && remintConfig.candyMachine) {
+          const cm = await getCandyMachine(remintConfig.candyMachine);
+          if (cm) setCandyMachine(cm);
         }
-
         setCollectionDerug(
           await getCollectionDerugData(chainDetails.derugDataAddress)
         );
@@ -166,13 +161,11 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       console.log(error);
     }
   };
-
   const getWinningRequest = useMemo(() => {
     return derugRequests?.sort((a, b) => a.voteCount - b.voteCount)[
       derugRequests.length - 1
     ];
   }, [derugRequests]);
-
   const showDerugRequests = useMemo(() => {
     if (collectionDerug) {
       return !!!collectionDerug.winningRequest;
@@ -230,7 +223,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         }}
       >
         <div className="overflow-y-clip flex flex-col">
-          {wallet && (
+          {wallet && derugRequestVisible && (
             <AddDerugRequst
               isOpen={derugRequestVisible}
               setIsOpen={(val) => setDerugRequestVisible(val)}
@@ -300,7 +293,9 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               (dayjs(remintConfig.privateMintEnd).isBefore(dayjs()) ||
                 (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
               candyMachine &&
-              Number(candyMachine.data.itemsAvailable) > 0 ? (
+              Number(candyMachine.itemsLoaded) > 0 &&
+              Number(candyMachine.itemsLoaded) ===
+                Number(candyMachine.data.itemsAvailable) ? (
                 <PublicMint />
               ) : (
                 collectionDerug &&

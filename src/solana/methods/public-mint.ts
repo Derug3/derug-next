@@ -1,24 +1,28 @@
 import {
   getCandyMachineSize,
+  Nft,
   toBigNumber,
   TransactionBuilder,
   walletAdapterIdentity,
 } from "@metaplex-foundation/js";
 import {
   addConfigLines,
-  fetchCandyMachine,
   mintV2,
   getMerkleRoot,
   AllowList,
   create,
   DefaultGuardSetArgs,
   GuardGroupArgs,
-  initializeCandyMachineV2,
   MintLimit,
-  createCandyMachineV2,
+  findCandyGuardPda,
+  SolPayment,
+  TokenPayment,
+  CandyMachine,
+  route,
+  fetchCandyMachine,
+  getMerkleProof,
 } from "@metaplex-foundation/mpl-candy-machine";
 import { walletAdapterIdentity as umiAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
-
 import {
   createSignerFromKeypair,
   percentAmount,
@@ -26,6 +30,9 @@ import {
   createNoopSigner,
   sol,
   generateSigner,
+  createBigInt,
+  transactionBuilder,
+  base58PublicKey,
 } from "@metaplex-foundation/umi";
 
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
@@ -48,6 +55,7 @@ import {
 } from "../../interface/collections.interface";
 import {
   CandyMachineDto,
+  IDerugInstruction,
   IRemintConfig,
 } from "../../interface/derug.interface";
 import { remintConfigSeed } from "../seeds";
@@ -73,8 +81,7 @@ import {
   signerIdentity,
   some,
 } from "@metaplex-foundation/umi";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { BN } from "bn.js";
+import { setComputeUnitLimit } from "@metaplex-foundation/mpl-toolbox";
 
 dayjs.extend(utc);
 
@@ -127,25 +134,9 @@ export const initCandyMachine = async (
 
     const wlConfig = await getWlConfig(collectionDerug.address.toString());
 
-    const paymentConfig: any = {
-      solPayment: remintConfigAccount.mintCurrency
-        ? none()
-        : some({
-            destination: publicKey(remintConfigAccount.authority),
-            lamports: sol(
-              remintConfigAccount.publicMintPrice.toNumber() / LAMPORTS_PER_SOL
-            ),
-          }),
-      tokenPayment: remintConfigAccount.mintCurrency
-        ? some({
-            amount: Number(remintConfigAccount.mintPrice),
-            mint: publicKey(remintConfigAccount.mintCurrency),
-            destinationAta: publicKey(remintConfigAccount.mintFeeTreasury!),
-          })
-        : none(),
-    };
-
     let allowListConfig: OptionOrNullable<AllowList> = none();
+    let solPaymentConfig: OptionOrNullable<SolPayment> = none();
+    let tokenPaymentConfig: OptionOrNullable<TokenPayment> = none();
 
     if (wlConfig && wlConfig.wlType === WlType.AllowList) {
       const merkleRoot = getMerkleRoot(
@@ -157,6 +148,21 @@ export const initCandyMachine = async (
       });
     }
 
+    if (!remintConfigAccount.mintCurrency) {
+      solPaymentConfig = {
+        destination: publicKey(remintConfigAccount.authority),
+        lamports: sol(
+          remintConfigAccount.publicMintPrice.toNumber() / LAMPORTS_PER_SOL
+        ),
+      };
+    } else {
+      tokenPaymentConfig = {
+        amount: createBigInt(Number(remintConfigAccount.mintPrice)),
+        mint: publicKey(remintConfigAccount.mintCurrency),
+        destinationAta: publicKey(remintConfigAccount.mintFeeTreasury!),
+      };
+    }
+
     // //TODO:handle mint limit per wallet
     let mintLimit: OptionOrNullable<MintLimit> = none();
 
@@ -164,7 +170,8 @@ export const initCandyMachine = async (
       {
         label: "all",
         guards: {
-          ...paymentConfig,
+          solPayment: solPaymentConfig,
+          tokenPayment: tokenPaymentConfig,
           startDate:
             wlConfig && wlConfig.duration
               ? some({ date: dayjs().add(wlConfig.duration, "hours").toDate() })
@@ -181,7 +188,8 @@ export const initCandyMachine = async (
           endDate: some({
             date: dayjs().add(wlConfig.duration, "hours").toDate(),
           }),
-          ...paymentConfig,
+          solPayment: solPaymentConfig,
+          tokenPayment: tokenPaymentConfig,
         },
       });
     }
@@ -193,7 +201,11 @@ export const initCandyMachine = async (
 
     metaplex.use(walletAdapterIdentity(wallet));
 
+    const collectionNft = await metaplex
+      .nfts()
+      .findByMint({ mintAddress: remintConfigAccount.collection });
     umi.use(umiAdapterIdentity(wallet));
+
     await toast.promise(
       (
         await create(umi, {
@@ -210,20 +222,18 @@ export const initCandyMachine = async (
           })),
           configLineSettings: some({
             isSequential: false,
-            nameLength: 4,
-            prefixUri: "",
-            uriLength: 0,
-            prefixName: "",
+            nameLength: 5 + remintConfigAccount.newName.length,
+            prefixUri: "https://arweave.net/",
+            uriLength: collectionNft.uri.split("/")[3].length,
+            prefixName: remintConfigAccount.newName,
           }),
-          groups,
+          groups: groups,
           authority: publicKey(remintConfigAccount.authority),
           tokenStandard: TokenStandard.NonFungible,
           isMutable: true,
           symbol: remintConfigAccount.newSymbol,
           tokenMetadataProgram: publicKey(PROGRAM_ID),
-          guards: {
-            allowList: allowListConfig,
-          },
+          guards: {},
           collectionMint: publicKey(remintConfigAccount.collection),
           collectionUpdateAuthority: createNoopSigner(
             publicKey(remintConfigAccount.authority)
@@ -261,28 +271,34 @@ export const storeCandyMachineItems = async (
     ) {
       throw new Error("Derug request missmatch");
     }
-
     const nonMintedNfts = await getNonMinted(derug.address.toString());
     const nonMinted = nonMintedNfts.filter((nm) => !nm.hasReminted);
 
-    const chunkedNonMinted = chunk(nonMinted, 10);
+    const chunkedNonMinted = chunk(nonMinted, 15);
+
     const candyMachineData = await getCandyMachine(derug.address.toString());
+
+    const candyMachineKeys = Keypair.fromSecretKey(
+      parseKeyArray(candyMachineData.candyMachineSecretKey)
+    );
 
     metaplex.use(walletAdapterIdentity(wallet));
 
     umi.use(umiAdapterIdentity(wallet));
-    for (const nonMintedChunk of chunkedNonMinted) {
+
+    const instructions: IDerugInstruction[] = [];
+    for (const [index, nonMintedChunk] of chunkedNonMinted.entries()) {
       const candyMachine = await fetchCandyMachine(
         umi,
-        publicKey(new PublicKey(candyMachineData.candyMachineKey))
+        publicKey(new PublicKey(candyMachineKeys.publicKey))
       );
 
       await toast.promise(
         addConfigLines(umi, {
-          candyMachine: publicKey(candyMachineData.candyMachineSecretKey),
+          candyMachine: publicKey(candyMachineKeys.publicKey),
           configLines: nonMintedChunk.map((nmc) => ({
-            name: nmc.name,
-            uri: nmc.uri,
+            name: " #" + nmc.newName.split("#")[1],
+            uri: nmc.newUri.split("/")[3],
           })),
           index: candyMachine.itemsLoaded,
         }).sendAndConfirm(umi),
@@ -292,7 +308,58 @@ export const storeCandyMachineItems = async (
           success: "Succesfully inserted NFTs",
         }
       );
+      // nonMintedChunk.map((nmc) => console.log(nmc.newUri.split("/")));
+      // const addLines = addConfigLines(umi, {
+      //   candyMachine: publicKey(candyMachineKeys.publicKey),
+      //   configLines: nonMintedChunk.map((nmc) => ({
+      //     name: nmc.newName.split(" ")[1],
+      //     uri: nmc.newUri.split("/")[3],
+      //   })),
+      //   index: (index + 1) * nonMintedChunk.length,
+      // }).getInstructions();
+      // instructions.push({
+      //   instructions: addLines.map((ix) => ({
+      //     data: Buffer.from(ix.data),
+      //     programId: new PublicKey(ix.programId),
+      //     keys: ix.keys.map((k) => {
+      //       return {
+      //         isSigner: k.isSigner,
+      //         isWritable: k.isWritable,
+      //         pubkey: new PublicKey(k.pubkey),
+      //       };
+      //     }),
+      //   })),
+      //   pendingDescription: `Inserting batch of ${chunkedNonMinted.length} NFTs`,
+      //   successDescription: "Successfullu inserted NFTs",
+      // });
     }
+
+    // const transactions: Transaction[] = [];
+    // for (const [index, ix] of instructions.entries()) {
+    //   const tx = new Transaction({
+    //     feePayer: wallet.publicKey,
+    //     recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
+    //   });
+    //   ix.instructions.forEach((inst) => tx.add(inst));
+
+    //   transactions.push(tx);
+    // }
+    // const failed: any[] = [];
+    // const signedTxs = await wallet.signAllTransactions(transactions);
+    // for (const [index, tx] of signedTxs.entries()) {
+    //   try {
+    //     const txSig = await RPC_CONNECTION.sendRawTransaction(tx.serialize());
+    //     await RPC_CONNECTION.confirmTransaction(txSig);
+    //     toast.success("Inserted NFTs batch!");
+    //   } catch (error) {
+    //     console.log(JSON.parse(JSON.stringify(error)));
+
+    //     toast.error("Failed to insert NFTs");
+    //     const relatedFailed = chunkedNonMinted[index];
+    //     failed.push([...relatedFailed]);
+    //   }
+    // }
+    //TODO:store failed in db and retry
   } catch (error: any) {
     throw error;
   }
@@ -304,29 +371,63 @@ export const mintNftFromCandyMachine = async (
 ) => {
   metaplex.use(walletAdapterIdentity(wallet));
   try {
+    debugger;
     umi.use(umiAdapterIdentity(wallet));
     const nftMint = generateSigner(umi);
 
-    await toast.promise(
-      mintV2(umi, {
+    const guardPda = findCandyGuardPda(umi, {
+      base: publicKey(remintConfig.candyMachine),
+    });
+
+    //TODO:remove ekser
+    const wlConfig = await getWlConfig("nice-mice");
+
+    const wallets = JSON.parse(wlConfig.wallets).map((w) => w.wallet);
+    const merkleRoot = getMerkleRoot(wallets);
+
+    toast.promise(
+      route(umi, {
+        guard: "allowList",
         candyMachine: publicKey(remintConfig.candyMachine),
-        nftMint: nftMint,
-        collectionMint: publicKey(remintConfig.collection),
-        collectionUpdateAuthority: publicKey(remintConfig.authority),
-      }).sendAndConfirm(umi),
+        routeArgs: {
+          merkleRoot,
+          path: "proof",
+          merkleProof: getMerkleProof(wallets, publicKey(umi.identity)),
+        },
+        group: some("wl"),
+      })
+        .add(setComputeUnitLimit(umi, { units: 800_000 }))
+        .add(
+          mintV2(umi, {
+            candyMachine: publicKey(remintConfig.candyMachine),
+            nftMint: nftMint,
+            collectionMint: publicKey(remintConfig.collection),
+            collectionUpdateAuthority: publicKey(remintConfig.authority),
+            group: some("wl"),
+            tokenStandard: TokenStandard.NonFungible,
+            candyGuard: guardPda,
+            mintArgs: {
+              allowList: some({ merkleRoot }),
+              solPayment: some({
+                destination: publicKey(remintConfig.authority),
+              }),
+            },
+          })
+        )
+        .sendAndConfirm(umi),
       {
         error: "Failed to mint!",
-        success: "Successfully minted",
         loading: "Minting...",
+        success: "Successfully minted!",
       }
     );
 
-    const nft = await metaplex
+    return await metaplex
       .nfts()
       .findByMint({ mintAddress: new PublicKey(nftMint.publicKey) });
-
-    return nft;
   } catch (error: any) {
+    console.log(JSON.parse(JSON.stringify(error)));
+
     const parsedError = JSON.parse(JSON.stringify(error)).cause;
     if (parsedError.logs.find((l: any) => l.includes("NotEnoughToken"))) {
       throw new Error(" Not enough tokens to pay for this minting.");

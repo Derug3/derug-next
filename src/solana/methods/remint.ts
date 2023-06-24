@@ -61,6 +61,7 @@ import utc from "dayjs/plugin/utc";
 import {
   fetchCandyMachine,
   fetchCandyGuard,
+  findCandyGuardPda,
 } from "@metaplex-foundation/mpl-candy-machine";
 import { getFungibleTokenMetadata, stringifyData } from "../../common/helpers";
 import { UPLOAD_METADATA_FEE } from "../../common/constants";
@@ -497,11 +498,10 @@ export const getCandyMachine = async (candyMachineKey: PublicKey) => {
       publicKey(candyMachineKey)
     );
 
-    const guards = await fetchCandyGuard(umi, publicKey(candyMachine));
-
-    console.log(guards, "GUARDS");
-    console.log(candyMachine, "CM");
-
+    // const guardPda = findCandyGuardPda(umi, {
+    //   base: publicKey(candyMachineKey),
+    // });
+    // const guard = await fetchCandyGuard(umi, guardPda);
     return candyMachine;
   } catch (error) {
     return undefined;

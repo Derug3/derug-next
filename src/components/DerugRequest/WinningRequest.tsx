@@ -83,12 +83,14 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
   const initPublicMinting = async () => {
     try {
       toggleLoading(true);
+
       if (collectionDerug && wallet && remintConfig) {
         if (!candyMachine) {
           const candyMachineAddress = await initCandyMachine(
             collectionDerug,
             wallet
           );
+
           if (candyMachineAddress)
             setCandyMachine(await getCandyMachine(candyMachineAddress));
         }
@@ -151,7 +153,7 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
                   className="animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 "
                   style={{
                     color: "white",
-                    padding: "1.25em",
+                    padding: "0.5em",
                     width: "30%",
                   }}
                   onClick={claimDerugVictory}
