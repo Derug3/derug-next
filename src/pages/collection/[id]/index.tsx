@@ -7,7 +7,6 @@ import { LeftPane } from "@/components/CollectionLayout/LeftPane";
 import { RightPane } from "@/components/CollectionLayout/RightPane";
 import { getSingleCollection } from "@/api/collections.api";
 import { getFloorPrice, getListings, getTraits } from "@/api/tensor";
-import { DERUG } from "@/api/url.api";
 import { AddDerugRequst } from "@/components/CollectionLayout/AddDerugRequest";
 import { CollectionStats } from "@/components/CollectionLayout/CollectionStats";
 import { HeaderTabs } from "@/components/CollectionLayout/HeaderTabs";
@@ -136,8 +135,9 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           chainDetails.derugDataAddress
         );
         setRemintConfig(remintConfigData);
-        if (remintConfig && remintConfig.candyMachine) {
-          const cm = await getCandyMachine(remintConfig.candyMachine);
+
+        if (remintConfigData && remintConfigData.candyMachine) {
+          const cm = await getCandyMachine(remintConfigData.candyMachine);
           if (cm) setCandyMachine(cm);
         }
         setCollectionDerug(

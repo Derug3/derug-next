@@ -190,6 +190,11 @@ export const initCandyMachine = async (
           }),
           solPayment: solPaymentConfig,
           tokenPayment: tokenPaymentConfig,
+          //TODO:remove ekser
+          mintLimit: some({
+            id: 1,
+            limit: 3,
+          }),
         },
       });
     }
@@ -294,24 +299,6 @@ export const storeCandyMachineItems = async (
 
     let sumInserted = 0;
     for (const [index, nonMintedChunk] of chunkedNonMinted.entries()) {
-      // await toast.promise(
-
-      // const tx = await addConfigLines(umi, {
-      //   candyMachine: publicKey(candyMachineKeys.publicKey),
-      //   configLines: nonMintedChunk.map((nmc) => ({
-      //     name: " #" + nmc.newName.split("#")[1],
-      //     uri: nmc.newUri.split("/")[3],
-      //   })),
-      //   index: candyMachine.itemsLoaded,
-      // }).
-
-      //   {
-      //     error: "Failed to insert items in candy machine",
-      //     loading: `Inserting ${chunkedNonMinted.length} NFTs in candy machine`,
-      //     success: "Succesfully inserted NFTs",
-      //   }
-      // );
-
       console.log(sumInserted + nonMintedChunk.length);
 
       const addLines = addConfigLines(umi, {
@@ -415,6 +402,7 @@ export const mintNftFromCandyMachine = async (
               solPayment: some({
                 destination: publicKey(remintConfig.authority),
               }),
+              mintLimit: some({ id: 1 }),
             },
           })
         )

@@ -60,8 +60,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {
   fetchCandyMachine,
-  fetchCandyGuard,
-  findCandyGuardPda,
+  findCandyMachineAuthorityPda,
 } from "@metaplex-foundation/mpl-candy-machine";
 import { getFungibleTokenMetadata, stringifyData } from "../../common/helpers";
 import { UPLOAD_METADATA_FEE } from "../../common/constants";
@@ -88,6 +87,10 @@ export const claimVictory = async (
     try {
       const candyMachine = Keypair.generate();
 
+      const candyMachineCreator = findCandyMachineAuthorityPda(umi, {
+        candyMachine: publicKey(candyMachine.publicKey),
+      });
+
       await saveCandyMachineData({
         candyMachineKey: candyMachine.publicKey.toString(),
         candyMachineSecretKey: stringifyData(candyMachine.secretKey),
@@ -99,14 +102,11 @@ export const claimVictory = async (
         isWritable: true,
         pubkey: candyMachine.publicKey,
       });
-      const [candyMachineCreator] = PublicKey.findProgramAddressSync(
-        [candyMachineSeed, candyMachine.publicKey.toBuffer()],
-        candyMachineProgramId
-      );
+      // const candyMachineCreator=findCandyMachineAuthorityPda(umi,{publicKey})
       remainingAccounts.push({
         isSigner: false,
         isWritable: false,
-        pubkey: candyMachineCreator,
+        pubkey: new PublicKey(candyMachineCreator),
       });
 
       if (request.mintCurrency) {

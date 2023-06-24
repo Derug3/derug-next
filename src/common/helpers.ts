@@ -47,22 +47,29 @@ export const getNftsFromDeruggedCollection = async (
   try {
     const collectionNfts: { image: string; name: string }[] = [];
 
-    const nftss = await metaplex.nfts().findAllByOwner({
+    const nfts = await metaplex.nfts().findAllByOwner({
       owner: owner,
     });
 
-    for (const nft of nftss) {
+    debugger;
+
+    for (const nft of nfts) {
       try {
         if (
-          nft.creators[0].address.toString() ===
-          remintConfig.candyMachineCreator.toString()
+          nft.creators.find(
+            (c) =>
+              remintConfig.candyMachineCreator.toString() ===
+              c.address.toString()
+          )
         ) {
           collectionNfts.push({
             name: nft.name,
             image: (await (await fetch(nft.uri)).json()).image,
           });
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     return collectionNfts;
