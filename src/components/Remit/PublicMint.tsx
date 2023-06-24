@@ -124,7 +124,7 @@ const PublicMint = () => {
   }, [candyMachine, wallet]);
 
   return (
-    <div className="m-auto grid grid-cols-3 gap-5 m-10">
+    <div className="m-auto grid grid-cols-3 gap-5 m-10 mb-32">
       <div className="flex flex-col items-start ml-10">
         <p className="text-main-blue text-xl mb-2 flex">
           Your {remintConfig?.newName ?? collection?.name} NFTs

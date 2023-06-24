@@ -47,7 +47,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
-
 export const Collections: FC<{ slug: string }> = ({ slug }) => {
   dayjs.extend(utc);
   const [collectionStats, setCollectionStats] = useState<ICollectionStats>();
