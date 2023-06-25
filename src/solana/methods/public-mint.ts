@@ -591,7 +591,9 @@ export const getWhitelistingConfig = async (
 
   return {
     currency,
-    endDate: endDate,
+    endDate: dayjs()
+      .add(unix - currUnix, "milliseconds")
+      .toDate(),
     groupName: "wl",
     price,
     walletLimit,
