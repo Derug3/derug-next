@@ -32,6 +32,7 @@ import {
   generateSigner,
   createBigInt,
   Pda,
+  dateTime,
 } from "@metaplex-foundation/umi";
 import timezone from "dayjs/plugin/timezone";
 
@@ -179,7 +180,7 @@ export const initCandyMachine = async (
           startDate:
             wlConfig && wlConfig.duration
               ? //TODO:remove ekser before nm
-                some({ date: dayjs.utc().add(5, "minutes").toDate() })
+                some({ date: dateTime(dayjs.utc().add(5, "minutes").toDate()) })
               : none(),
         },
       },
@@ -555,13 +556,19 @@ export const getWhitelistingConfig = async (
     );
   }
 
-  let endDate = dayjs.utc();
+  let endDate = dayjs();
   let walletLimit: number | undefined = undefined;
 
   if (wlGroup.guards.endDate.__option === "Some") {
+    const timezoneOffset = new Date(
+      Number(wlGroup.guards.endDate.value.date) * 1000
+    ).getTimezoneOffset();
+
     endDate = dayjs
       .unix(Number(wlGroup.guards.endDate.value.date.toString()))
-      .utc();
+      .utc()
+      //TODO:ekser
+      .add(timezoneOffset, "minutes");
   }
 
   if (wlGroup.guards.mintLimit.__option === "Some") {
