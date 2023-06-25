@@ -602,7 +602,7 @@ export const getPublicConfiguration = async (
   let startDate = dayjs.utc();
 
   if (wlGroup.guards.startDate.__option === "Some") {
-    startDate = dayjs.unix(Number(wlGroup.guards.startDate.value.date)).utc();
+    startDate = dayjs.unix(Number(wlGroup.guards.startDate.value.date));
   }
 
   return {
