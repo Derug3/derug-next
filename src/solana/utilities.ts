@@ -28,20 +28,14 @@ export const metadataUploaderWallet = new PublicKey(
 
 //TODO:load from env
 export const umi = createUmi(
-  "https://rpc-devnet.helius.xyz/?api-key=76364121-f4ee-4093-ba51-283f482a11d0",
+  "https://mainnet.helius-rpc.com/?api-key=05a3a206-18c8-492f-bc34-9bff0beccaf2",
   {
     commitment: "confirmed",
   }
 ).use(mplCandyMachine());
 
 //TODO mainnet: load this from env file
-export const metaplex = new Metaplex(RPC_CONNECTION).use(
-  bundlrStorage({
-    address: "https://devnet.bundlr.network",
-    providerUrl: "https://api.devnet.solana.com",
-    timeout: 60000,
-  })
-);
+export const metaplex = new Metaplex(RPC_CONNECTION);
 
 export const candyMachineProgramId = new PublicKey(
   "cndy3Z4yapfJBmL3ShUp5exZKqR3z33thTzeNMm2gRZ"

@@ -74,7 +74,7 @@ export const createOrUpdateDerugRequest = async (
         collection,
         wallet,
         collectionStats,
-        new PublicKey("CCRQEcQmXxN5GDVkMKcgnXaSLv3KeD3Qfp9zEXaBB1Nx")
+        new PublicKey(listedNft.mint)
       )
     );
   }

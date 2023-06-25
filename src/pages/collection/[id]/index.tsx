@@ -42,6 +42,7 @@ import {
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { getDerugCandyMachine } from "@/solana/methods/public-mint";
+import { getCollectionChainData } from "@/solana/collections";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const slug = context.params.id;
@@ -118,11 +119,10 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   }, [basicCollectionData, wallet.publicKey]);
   const getChainCollectionDetails = async () => {
     try {
-      //TODO
-      // const chainDetails = await getCollectionChainData(
-      //   basicCollectionData!,
-      //   listings?.at(0)
-      // );
+      const chainDetails = await getCollectionChainData(
+        basicCollectionData!,
+        listings?.at(0)
+      );
 
       const derugProgram = derugProgramFactory();
 
@@ -132,7 +132,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           setRemintConfig(await getRemintConfig(data.derugData));
         }
       });
-      const chainDetails = await getDummyCollectionData();
+
       chainDetails.slug = slug!;
       setChainCollectionData(chainDetails);
       if (chainDetails.hasActiveDerugData) {
