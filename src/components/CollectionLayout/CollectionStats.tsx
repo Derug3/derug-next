@@ -19,8 +19,8 @@ export const CollectionStats: FC<{
 
   const remintConfigTime =
     remintConfig &&
-      dayjs(remintConfig.privateMintEnd).isAfter(dayjs()) &&
-      collectionDerug?.status === DerugStatus.Reminting
+    dayjs(remintConfig.privateMintEnd).isAfter(dayjs()) &&
+    collectionDerug?.status === DerugStatus.Reminting
       ? remintConfig.privateMintEnd
       : undefined;
 
@@ -87,7 +87,7 @@ export const CollectionStats: FC<{
           collectionDerug.status === DerugStatus.Reminting && (
             <HeadingItem
               descColor="#2dd4bf"
-              title="TOTAL REMINTED"
+              title="OLD REMINTED"
               amount={collectionDerug.totalReminted}
               desc=""
             />

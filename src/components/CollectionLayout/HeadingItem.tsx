@@ -22,7 +22,7 @@ const HeadingItem: FC<{
   }, [collectionDerug]);
 
   return (
-    <div className="flex flex-row items-center justify-between w-full gap-3">
+    <div className="flex flex-row items-center justify-between text-center w-full gap-3">
       <span
         className="text-sm border-1 p-2 w-1/2 rounded-lg text-gray-400"
         style={{

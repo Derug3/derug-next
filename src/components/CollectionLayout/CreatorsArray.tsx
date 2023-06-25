@@ -31,7 +31,6 @@ const CreatorsArray: FC<{
     setCreators(temp);
   };
 
-
   return (
     <div className="w-full">
       {creators &&
@@ -43,6 +42,7 @@ const CreatorsArray: FC<{
             <div className="flex w-full flex-row">
               <input
                 placeholder="Address"
+                className="bg-gray-800"
                 value={creator.address}
                 style={{ width: "100%" }}
                 onChange={(e) =>
@@ -51,6 +51,7 @@ const CreatorsArray: FC<{
               />
               <input
                 placeholder="Percentage"
+                className="bg-gray-800"
                 value={creator.share}
                 style={{ width: "30%" }}
                 onChange={(e) =>
@@ -59,11 +60,7 @@ const CreatorsArray: FC<{
               />
             </div>
 
-            <button
-              onClick={() => removeItems(index)}
-            >
-              remove
-            </button>
+            <button onClick={() => removeItems(index)}>remove</button>
           </div>
         ))}
     </div>

@@ -34,9 +34,7 @@ const CollectionData = () => {
           />
         )}
         <div className="flex flex-col gap-4 items-start">
-          <div
-            className="font-bold font-monospace text-white-500 text-4xl"
-          >
+          <div className="font-bold font-monospace text-white-500 text-4xl">
             {collection?.name ?? (
               <Skeleton
                 width={200}
@@ -56,7 +54,7 @@ const CollectionData = () => {
                   color: "rgba(9,194,246)",
                 }}
               >
-                {getTrimmedPublicKey(chainCollectionData.rugUpdateAuthority)}
+                {getTrimmedPublicKey(chainCollectionData.firstCreator)}
               </span>
             </div>
           ) : (

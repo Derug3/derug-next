@@ -107,6 +107,8 @@ export const createOrUpdateDerugRequest = async (
       privateMintDuration ? new BN(privateMintDuration) : null,
       newName,
       newSymbol,
+      //TODO:remove ekser
+      255,
       creators ?? []
     )
     .accounts({

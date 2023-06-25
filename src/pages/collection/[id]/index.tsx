@@ -6,9 +6,7 @@ import { CandyMachine } from "@metaplex-foundation/mpl-candy-machine";
 import { LeftPane } from "@/components/CollectionLayout/LeftPane";
 import { RightPane } from "@/components/CollectionLayout/RightPane";
 import { getSingleCollection } from "@/api/collections.api";
-import { getCandyMachine } from "@/api/public-mint.api";
 import { getFloorPrice, getListings, getTraits } from "@/api/tensor";
-import { DERUG } from "@/api/url.api";
 import { AddDerugRequst } from "@/components/CollectionLayout/AddDerugRequest";
 import { CollectionStats } from "@/components/CollectionLayout/CollectionStats";
 import { HeaderTabs } from "@/components/CollectionLayout/HeaderTabs";
@@ -36,9 +34,14 @@ import {
   ICollectionDerugData,
   IRequest,
 } from "@/interface/collections.interface";
-import { IGraphData, IRemintConfig } from "@/interface/derug.interface";
+import {
+  IDerugCandyMachine,
+  IGraphData,
+  IRemintConfig,
+} from "@/interface/derug.interface";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
+import { getDerugCandyMachine } from "@/solana/methods/public-mint";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const slug = context.params.id;
@@ -47,9 +50,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       slug,
     },
   };
-}
-
-
+};
 export const Collections: FC<{ slug: string }> = ({ slug }) => {
   dayjs.extend(utc);
   const [collectionStats, setCollectionStats] = useState<ICollectionStats>();
@@ -69,24 +70,19 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   const [collectionDerug, setCollectionDerug] =
     useState<ICollectionDerugData>();
   const [graphData, setGraphData] = useState<IGraphData>();
-  const [candyMachine, setCandyMachine] = useState<CandyMachine>();
+  const [candyMachine, setCandyMachine] = useState<IDerugCandyMachine>();
 
   const [derugRequests, setDerugRequests] = useState<IRequest[]>();
   const iframeRef = useRef(null);
   const router = useRouter();
 
-  let derug = router.query;
   const [remintConfig, setRemintConfig] = useState<IRemintConfig | undefined>();
 
   const wallet = useWallet();
 
   useEffect(() => {
     void getBasicCollectionData();
-    if (derug) {
-      setDerugRequestVisible(true);
-    }
   }, []);
-
   const getBasicCollectionData = async () => {
     try {
       setBasicCollectionData(await getSingleCollection(slug ?? ""));
@@ -117,15 +113,12 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       toggleLoading(false);
     }
   };
-
-  console.log(candyMachine);
-
   useEffect(() => {
     if (basicCollectionData) void getChainCollectionDetails();
-  }, [basicCollectionData]);
-
+  }, [basicCollectionData, wallet.publicKey]);
   const getChainCollectionDetails = async () => {
     try {
+      //TODO
       // const chainDetails = await getCollectionChainData(
       //   basicCollectionData!,
       //   listings?.at(0)
@@ -139,23 +132,19 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           setRemintConfig(await getRemintConfig(data.derugData));
         }
       });
-
       const chainDetails = await getDummyCollectionData();
-
       chainDetails.slug = slug!;
       setChainCollectionData(chainDetails);
       if (chainDetails.hasActiveDerugData) {
         const remintConfigData = await getRemintConfig(
           chainDetails.derugDataAddress
         );
-
         setRemintConfig(remintConfigData);
-        if (remintConfigData) {
-          setCandyMachine(
-            await getCandyMachine(remintConfigData.candyMachine.toString())
-          );
-        }
 
+        if (remintConfigData && remintConfigData.candyMachine && wallet) {
+          const cm = await getDerugCandyMachine(remintConfigData, wallet);
+          if (cm) setCandyMachine(cm);
+        }
         setCollectionDerug(
           await getCollectionDerugData(chainDetails.derugDataAddress)
         );
@@ -167,13 +156,11 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       console.log(error);
     }
   };
-
   const getWinningRequest = useMemo(() => {
     return derugRequests?.sort((a, b) => a.voteCount - b.voteCount)[
       derugRequests.length - 1
     ];
   }, [derugRequests]);
-
   const showDerugRequests = useMemo(() => {
     if (collectionDerug) {
       return !!!collectionDerug.winningRequest;
@@ -230,10 +217,8 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           zoom: "85%",
         }}
       >
-        <div
-          className="overflow-y-clip flex flex-col"
-        >
-          {wallet && (
+        <div className="overflow-y-clip flex flex-col">
+          {wallet && derugRequestVisible && (
             <AddDerugRequst
               isOpen={derugRequestVisible}
               setIsOpen={(val) => setDerugRequestVisible(val)}
@@ -246,7 +231,9 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               setSelectedInfo={setSelectedInfo}
               selectedData={selectedData}
               setSelectedData={setSelectedData}
-              openDerugModal={setDerugRequestVisible}
+              openDerugModal={(val) => {
+                setDerugRequestVisible(val);
+              }}
             />
           </div>
 
@@ -292,16 +279,18 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         <>
           {(collectionDerug.status === DerugStatus.Initialized ||
             collectionDerug.status === DerugStatus.Voting) &&
-            showDerugRequests &&
-            !hasWinning ? (
+          showDerugRequests &&
+          !hasWinning ? (
             <DerugRequest />
           ) : (
             <>
               {remintConfig &&
-                (dayjs(remintConfig.privateMintEnd).isBefore(dayjs()) ||
-                  (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
-                candyMachine &&
-                Number(candyMachine.data.itemsAvailable) > 0 ? (
+              (dayjs(remintConfig.privateMintEnd).isBefore(dayjs()) ||
+                (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
+              candyMachine &&
+              Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
+              Number(candyMachine.candyMachine.itemsLoaded) ===
+                Number(candyMachine.candyMachine.data.itemsAvailable) ? (
                 <PublicMint />
               ) : (
                 collectionDerug &&
