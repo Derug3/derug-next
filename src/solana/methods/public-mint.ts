@@ -171,7 +171,9 @@ export const initCandyMachine = async (
             wlConfig && wlConfig.duration
               ? //TODO:remove ekser before nm
                 some({
-                  date: dateTime(new Date().toISOString()),
+                  date: dateTime(
+                    new Date().setHours(new Date().getHours() + 1)
+                  ),
                 })
               : none(),
         },
@@ -185,9 +187,7 @@ export const initCandyMachine = async (
           allowList: allowListConfig,
           endDate: some({
             //TODO:remove ekser before nm
-            date: new Date().setHours(
-              new Date().getHours() + wlConfig.duration
-            ),
+            date: dateTime(new Date().setHours(new Date().getHours() + 1)),
           }),
           solPayment: solPaymentConfig,
           tokenPayment: tokenPaymentConfig,
@@ -556,14 +556,24 @@ export const getWhitelistingConfig = async (
     const unix = wlGroup.guards.endDate.value.date;
     endDate = new Date(Number(unix.toString())).toLocaleString();
     const [day, month, year, hour, minute, second] = endDate.match(/\d+/g);
-    endDate = new Date(
-      parseInt(year),
-      parseInt(month) - 1,
-      parseInt(day),
-      parseInt(hour),
-      parseInt(minute),
-      parseInt(second)
-    );
+    // endDate = new Date(
+    //   parseInt(year),
+    //   parseInt(month) - 1,
+    //   parseInt(day),
+    //   parseInt(hour),
+    //   parseInt(minute),
+    //   parseInt(second)
+    // );
+    // endDate = new Date(
+    //   Date.UTC(
+    //     parseInt(year),
+    //     parseInt(month) - 1,
+    //     parseInt(day),
+    //     parseInt(hour),
+    //     parseInt(minute),
+    //     parseInt(second)
+    //   )
+    // );
   }
 
   if (wlGroup.guards.mintLimit.__option === "Some") {
