@@ -27,8 +27,8 @@ export const RightPane: FC<{
               ref={iframeRef}
               height="600px"
               width="100%"
-              src={`https://solana.fm/address/${chainCollectionData?.collectionMint}?cluster=devnet-solana`}
-            // todo remove cluster once we migrate
+              src={`https://solana.fm/address/${chainCollectionData?.collectionMint}?cluster=mainnet-solana`}
+              // todo remove cluster once we migrate
             />
           </div>
         )}
