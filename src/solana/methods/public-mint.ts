@@ -34,7 +34,7 @@ import {
   Pda,
 } from "@metaplex-foundation/umi";
 
-dayjs.extend(utc);
+// dayjs.extend(utc);
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import {
   Keypair,
