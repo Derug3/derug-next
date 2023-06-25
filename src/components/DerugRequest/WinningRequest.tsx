@@ -80,6 +80,7 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
       toast.error(error.message);
     }
   };
+
   const initPublicMinting = async () => {
     try {
       toggleLoading(true);

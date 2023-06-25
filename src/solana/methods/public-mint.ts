@@ -32,13 +32,9 @@ import {
   generateSigner,
   createBigInt,
   Pda,
-  dateTime,
 } from "@metaplex-foundation/umi";
-import timezone from "dayjs/plugin/timezone";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault("UTC");
+const date = dayjs.extend(utc);
 
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import {
@@ -71,11 +67,7 @@ import { remintConfigSeed } from "../seeds";
 import { derugProgramFactory, metaplex, umi } from "../utilities";
 import dayjs from "dayjs";
 import { chunk } from "lodash";
-import {
-  getNftName,
-  parseKeyArray,
-  parseTransactionError,
-} from "../../common/helpers";
+import { parseKeyArray, parseTransactionError } from "../../common/helpers";
 import { RPC_CONNECTION } from "../../utilities/utilities";
 import {
   PROGRAM_ID,
@@ -87,7 +79,10 @@ import { setComputeUnitLimit } from "@metaplex-foundation/mpl-toolbox";
 import { SolanaTokenListResolutionStrategy } from "@solana/spl-token-registry";
 import { divide, pow } from "mathjs";
 import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
 
+dayjs.utc();
 export const initCandyMachine = async (
   collectionDerug: ICollectionDerugData,
   wallet: WalletContextState
@@ -131,9 +126,7 @@ export const initCandyMachine = async (
       privateMintEnd = new Date();
     } else {
       privateMintEnd = dayjs
-
         .unix(remintConfigAccount.privateMintEnd.toNumber() / 1000)
-        .utc()
         .toDate();
     }
 
@@ -180,7 +173,9 @@ export const initCandyMachine = async (
           startDate:
             wlConfig && wlConfig.duration
               ? //TODO:remove ekser before nm
-                some({ date: dateTime(dayjs.utc().add(5, "minutes").toDate()) })
+                some({
+                  date: dayjs.utc().add(wlConfig.duration, "hours").toDate(),
+                })
               : none(),
         },
       },
@@ -193,7 +188,7 @@ export const initCandyMachine = async (
           allowList: allowListConfig,
           endDate: some({
             //TODO:remove ekser before nm
-            date: dayjs.utc().add(5, "minutes").toDate(),
+            date: dayjs.utc().add(wlConfig.duration, "hours").toDate(),
           }),
           solPayment: solPaymentConfig,
           tokenPayment: tokenPaymentConfig,
@@ -205,6 +200,8 @@ export const initCandyMachine = async (
         },
       });
     }
+    const date = dayjs.utc().add(wlConfig.duration, "hours").utc();
+    debugger;
 
     const cmSigner = createSignerFromKeypair(umi, {
       publicKey: publicKey(candyMachine.publicKey),
@@ -245,12 +242,6 @@ export const initCandyMachine = async (
           isMutable: true,
           symbol: remintConfigAccount.newSymbol,
           tokenMetadataProgram: publicKey(PROGRAM_ID),
-          // guards: {
-          //   tokenPayment: tokenPaymentConfig,
-          //   solPayment: solPaymentConfig,
-          //   allowList: allowListConfig,
-
-          // },
           collectionMint: publicKey(remintConfigAccount.collection),
           collectionUpdateAuthority: createNoopSigner(
             publicKey(remintConfigAccount.authority)
@@ -289,76 +280,81 @@ export const storeCandyMachineItems = async (
       throw new Error("Derug request missmatch");
     }
     const nonMintedNfts = await getNonMinted(derug.address.toString());
+
     const nonMinted = nonMintedNfts.filter((nm) => !nm.hasReminted);
+    const globalChunk = chunk(nonMinted, 135);
 
-    const chunkedNonMinted = chunk(nonMinted, 15);
+    for (const c of globalChunk) {
+      const chunkedNonMinted = chunk(c, 15);
 
-    const candyMachineData = await getCandyMachine(derug.address.toString());
+      const candyMachineData = await getCandyMachine(derug.address.toString());
 
-    const candyMachineKeys = Keypair.fromSecretKey(
-      parseKeyArray(candyMachineData.candyMachineSecretKey)
-    );
+      const candyMachineKeys = Keypair.fromSecretKey(
+        parseKeyArray(candyMachineData.candyMachineSecretKey)
+      );
 
-    metaplex.use(walletAdapterIdentity(wallet));
+      metaplex.use(walletAdapterIdentity(wallet));
 
-    umi.use(umiAdapterIdentity(wallet));
+      umi.use(umiAdapterIdentity(wallet));
 
-    const instructions: IDerugInstruction[] = [];
+      const instructions: IDerugInstruction[] = [];
 
-    let sumInserted = 0;
-    for (const [index, nonMintedChunk] of chunkedNonMinted.entries()) {
-      console.log(sumInserted + nonMintedChunk.length);
+      let sumInserted = 0;
+      for (const [index, nonMintedChunk] of chunkedNonMinted.entries()) {
+        console.log(sumInserted + nonMintedChunk.length);
 
-      const addLines = addConfigLines(umi, {
-        candyMachine: publicKey(candyMachineKeys.publicKey),
-        configLines: nonMintedChunk.map((nmc) => ({
-          name: " " + nmc.newName.split(" ")[1],
-          uri: nmc.newUri.split("/")[3],
-        })),
-        index: sumInserted,
-      }).getInstructions();
-      instructions.push({
-        instructions: addLines.map((ix) => ({
-          data: Buffer.from(ix.data),
-          programId: new PublicKey(ix.programId),
-          keys: ix.keys.map((k) => {
-            return {
-              isSigner: k.isSigner,
-              isWritable: k.isWritable,
-              pubkey: new PublicKey(k.pubkey),
-            };
-          }),
-        })),
-        pendingDescription: `Inserting batch of ${chunkedNonMinted.length} NFTs`,
-        successDescription: "Successfullu inserted NFTs",
-      });
+        const addLines = addConfigLines(umi, {
+          candyMachine: publicKey(candyMachineKeys.publicKey),
+          configLines: nonMintedChunk.map((nmc) => ({
+            name: " " + nmc.newName.split(" ")[1],
+            uri: nmc.newUri.split("/")[3],
+          })),
+          index: sumInserted,
+        }).getInstructions();
+        instructions.push({
+          instructions: addLines.map((ix) => ({
+            data: Buffer.from(ix.data),
+            programId: new PublicKey(ix.programId),
+            keys: ix.keys.map((k) => {
+              return {
+                isSigner: k.isSigner,
+                isWritable: k.isWritable,
+                pubkey: new PublicKey(k.pubkey),
+              };
+            }),
+          })),
+          pendingDescription: `Inserting batch of ${chunkedNonMinted.length} NFTs`,
+          successDescription: "Successfullu inserted NFTs",
+        });
 
-      sumInserted += nonMintedChunk.length;
-    }
+        sumInserted += nonMintedChunk.length;
+      }
 
-    const transactions: Transaction[] = [];
-    for (const [index, ix] of instructions.entries()) {
-      const tx = new Transaction({
-        feePayer: wallet.publicKey,
-        recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
-      });
-      ix.instructions.forEach((inst) => tx.add(inst));
+      const transactions: Transaction[] = [];
+      for (const [index, ix] of instructions.entries()) {
+        const tx = new Transaction({
+          feePayer: wallet.publicKey,
+          recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash())
+            .blockhash,
+        });
+        ix.instructions.forEach((inst) => tx.add(inst));
 
-      transactions.push(tx);
-    }
-    const failed: any[] = [];
-    const signedTxs = await wallet.signAllTransactions(transactions);
-    for (const [index, tx] of signedTxs.entries()) {
-      try {
-        const txSig = await RPC_CONNECTION.sendRawTransaction(tx.serialize());
-        await RPC_CONNECTION.confirmTransaction(txSig);
-        toast.success("Inserted NFTs batch!");
-      } catch (error) {
-        console.log(JSON.parse(JSON.stringify(error)));
+        transactions.push(tx);
+      }
+      const failed: any[] = [];
+      const signedTxs = await wallet.signAllTransactions(transactions);
+      for (const [index, tx] of signedTxs.entries()) {
+        try {
+          const txSig = await RPC_CONNECTION.sendRawTransaction(tx.serialize());
+          await RPC_CONNECTION.confirmTransaction(txSig);
+          toast.success("Inserted NFTs batch!");
+        } catch (error) {
+          console.log(JSON.parse(JSON.stringify(error)));
 
-        toast.error("Failed to insert NFTs");
-        const relatedFailed = chunkedNonMinted[index];
-        failed.push([...relatedFailed]);
+          toast.error("Failed to insert NFTs");
+          const relatedFailed = chunkedNonMinted[index];
+          failed.push([...relatedFailed]);
+        }
       }
     }
     //TODO:store failed in db and retry
@@ -556,7 +552,7 @@ export const getWhitelistingConfig = async (
     );
   }
 
-  let endDate = dayjs();
+  let endDate = dayjs.utc();
   let walletLimit: number | undefined = undefined;
 
   if (wlGroup.guards.endDate.__option === "Some") {
@@ -566,9 +562,9 @@ export const getWhitelistingConfig = async (
 
     endDate = dayjs
       .unix(Number(wlGroup.guards.endDate.value.date.toString()))
-      .utc()
-      //TODO:ekser
-      .add(timezoneOffset, "minutes");
+      .utc();
+
+    //TODO:ekser
   }
 
   if (wlGroup.guards.mintLimit.__option === "Some") {
@@ -599,7 +595,7 @@ export const getWhitelistingConfig = async (
     price,
     walletLimit,
     isWhitelisted,
-    isActive: endDate.isAfter(dayjs.utc()),
+    isActive: endDate.isAfter(dayjs()),
   };
 };
 
