@@ -33,7 +33,7 @@ export async function getSingleCollection(
 }
 
 export async function getMagicEdenListingsBySlug(slug: string) {
-  return get(`${MAGIC_EDEN_COLLECTION}/${slug}/${LISTINGS}`, MAGIC_EDEN_URL);
+  return get(`${MAGIC_EDEN_COLLECTION}/${slug}${LISTINGS}`, MAGIC_EDEN_URL);
 }
 
 export const getCollectionsWithTopVolume = () => {
