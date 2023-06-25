@@ -312,7 +312,7 @@ export const storeCandyMachineItems = async (
       const addLines = addConfigLines(umi, {
         candyMachine: publicKey(candyMachineKeys.publicKey),
         configLines: nonMintedChunk.map((nmc) => ({
-          name: nmc.newName.split(" ")[1],
+          name: " " + nmc.newName.split(" ")[1],
           uri: nmc.newUri.split("/")[3],
         })),
         index: sumInserted,
