@@ -34,7 +34,7 @@ import {
   Pda,
 } from "@metaplex-foundation/umi";
 
-// dayjs.extend(utc);
+dayjs.extend(utc);
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import {
   Keypair,
@@ -81,6 +81,7 @@ import { none, OptionOrNullable, some } from "@metaplex-foundation/umi";
 import { setComputeUnitLimit } from "@metaplex-foundation/mpl-toolbox";
 import { SolanaTokenListResolutionStrategy } from "@solana/spl-token-registry";
 import { divide, pow } from "mathjs";
+import utc from "dayjs/plugin/utc";
 
 export const initCandyMachine = async (
   collectionDerug: ICollectionDerugData,
@@ -174,7 +175,7 @@ export const initCandyMachine = async (
           startDate:
             wlConfig && wlConfig.duration
               ? //TODO:remove ekser before nm
-                some({ date: dayjs().utc().add(5, "minutes").toDate() })
+                some({ date: dayjs.utc().add(5, "minutes").toDate() })
               : none(),
         },
       },
@@ -187,7 +188,7 @@ export const initCandyMachine = async (
           allowList: allowListConfig,
           endDate: some({
             //TODO:remove ekser before nm
-            date: dayjs().utc().add(5, "minutes").toDate(),
+            date: dayjs.utc().add(5, "minutes").toDate(),
           }),
           solPayment: solPaymentConfig,
           tokenPayment: tokenPaymentConfig,
@@ -550,7 +551,7 @@ export const getWhitelistingConfig = async (
     );
   }
 
-  let endDate = dayjs().utc();
+  let endDate = dayjs.utc();
   let walletLimit: number | undefined = undefined;
 
   if (wlGroup.guards.endDate.__option === "Some") {
@@ -587,7 +588,7 @@ export const getWhitelistingConfig = async (
     price,
     walletLimit,
     isWhitelisted,
-    isActive: endDate.isAfter(dayjs().utc()),
+    isActive: endDate.isAfter(dayjs.utc()),
   };
 };
 
@@ -598,7 +599,7 @@ export const getPublicConfiguration = async (
 
   const { price, currency } = await getGuardPayment(wlGroup);
 
-  let startDate = dayjs().utc();
+  let startDate = dayjs.utc();
 
   if (wlGroup.guards.startDate.__option === "Some") {
     startDate = dayjs.unix(Number(wlGroup.guards.startDate.value.date)).utc();
