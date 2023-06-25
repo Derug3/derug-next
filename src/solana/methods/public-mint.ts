@@ -553,10 +553,10 @@ export const getWhitelistingConfig = async (
   let walletLimit: number | undefined = undefined;
 
   if (wlGroup.guards.endDate.__option === "Some") {
-    const unix = wlGroup.guards.endDate.value.date;
+    const unix = Number(wlGroup.guards.endDate.value.date.toString());
 
-    endDate = new Date(Number(unix.toString())).toLocaleString();
-    debugger;
+    endDate = new Date(unix).toLocaleString();
+
     const [day, month, year, hour, minute, second] = endDate.match(/\d+/g);
     endDate = new Date(
       parseInt(year),
@@ -566,16 +566,6 @@ export const getWhitelistingConfig = async (
       parseInt(minute),
       parseInt(second)
     );
-    // endDate = new Date(
-    //   Date.UTC(
-    //     parseInt(year),
-    //     parseInt(month) - 1,
-    //     parseInt(day),
-    //     parseInt(hour),
-    //     parseInt(minute),
-    //     parseInt(second)
-    //   )
-    // );
   }
 
   if (wlGroup.guards.mintLimit.__option === "Some") {
