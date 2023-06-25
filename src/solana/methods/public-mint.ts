@@ -65,7 +65,6 @@ import {
 import { remintConfigSeed } from "../seeds";
 import { derugProgramFactory, metaplex, umi } from "../utilities";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import { chunk } from "lodash";
 import {
   getNftName,
@@ -82,8 +81,6 @@ import { none, OptionOrNullable, some } from "@metaplex-foundation/umi";
 import { setComputeUnitLimit } from "@metaplex-foundation/mpl-toolbox";
 import { SolanaTokenListResolutionStrategy } from "@solana/spl-token-registry";
 import { divide, pow } from "mathjs";
-
-dayjs.extend(utc);
 
 export const initCandyMachine = async (
   collectionDerug: ICollectionDerugData,
@@ -128,7 +125,9 @@ export const initCandyMachine = async (
       privateMintEnd = new Date();
     } else {
       privateMintEnd = dayjs
+
         .unix(remintConfigAccount.privateMintEnd.toNumber() / 1000)
+        .utc()
         .toDate();
     }
 
@@ -175,7 +174,7 @@ export const initCandyMachine = async (
           startDate:
             wlConfig && wlConfig.duration
               ? //TODO:remove ekser before nm
-                some({ date: dayjs().add(5, "minutes").toDate() })
+                some({ date: dayjs().utc().add(5, "minutes").toDate() })
               : none(),
         },
       },
@@ -188,7 +187,7 @@ export const initCandyMachine = async (
           allowList: allowListConfig,
           endDate: some({
             //TODO:remove ekser before nm
-            date: dayjs().add(5, "minutes").toDate(),
+            date: dayjs().utc().add(5, "minutes").toDate(),
           }),
           solPayment: solPaymentConfig,
           tokenPayment: tokenPaymentConfig,
@@ -551,11 +550,13 @@ export const getWhitelistingConfig = async (
     );
   }
 
-  let endDate = dayjs();
+  let endDate = dayjs().utc();
   let walletLimit: number | undefined = undefined;
 
   if (wlGroup.guards.endDate.__option === "Some") {
-    endDate = dayjs.unix(Number(wlGroup.guards.endDate.value.date.toString()));
+    endDate = dayjs
+      .unix(Number(wlGroup.guards.endDate.value.date.toString()))
+      .utc();
   }
 
   if (wlGroup.guards.mintLimit.__option === "Some") {
@@ -586,7 +587,7 @@ export const getWhitelistingConfig = async (
     price,
     walletLimit,
     isWhitelisted,
-    isActive: endDate.isAfter(dayjs()),
+    isActive: endDate.isAfter(dayjs().utc()),
   };
 };
 
@@ -597,10 +598,10 @@ export const getPublicConfiguration = async (
 
   const { price, currency } = await getGuardPayment(wlGroup);
 
-  let startDate = dayjs();
+  let startDate = dayjs().utc();
 
   if (wlGroup.guards.startDate.__option === "Some") {
-    startDate = dayjs.unix(Number(wlGroup.guards.startDate.value.date));
+    startDate = dayjs.unix(Number(wlGroup.guards.startDate.value.date)).utc();
   }
 
   return {
