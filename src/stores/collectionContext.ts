@@ -10,7 +10,11 @@ import {
   IRequest,
   ITrait,
 } from "../interface/collections.interface";
-import { IGraphData, IRemintConfig } from "../interface/derug.interface";
+import {
+  IDerugCandyMachine,
+  IGraphData,
+  IRemintConfig,
+} from "../interface/derug.interface";
 
 export interface CollectionContext {
   loading: boolean;
@@ -24,7 +28,7 @@ export interface CollectionContext {
   derugRequests: IRequest[] | undefined;
   graphData: IGraphData | undefined;
   remintConfig: IRemintConfig | undefined;
-  candyMachine: CandyMachine | undefined;
+  candyMachine: IDerugCandyMachine | undefined;
   toggleLoading(loading: boolean): void;
   setGraphData: (data: IGraphData) => void;
   setRequests: (requests: IRequest[]) => void;
@@ -36,7 +40,7 @@ export interface CollectionContext {
   setActiveListings: (activeListings: INftListing[]) => void;
   setCollectionStats: (stats: ICollectionStats) => void;
   setRemintConfig: (config: IRemintConfig) => void;
-  setCandyMachine: (candyMachine: CandyMachine | undefined) => void;
+  setCandyMachine: (candyMachine: IDerugCandyMachine | undefined) => void;
 }
 
 export const CollectionContext = React.createContext({} as CollectionContext);

@@ -3,13 +3,15 @@ import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { ICollectionRecentActivities } from "../interface/collections.interface";
 import { IRemintConfig, ISplTokenData } from "../interface/derug.interface";
-import { derugProgramFactory, metaplex } from "../solana/utilities";
+import { derugProgramFactory, metaplex, umi } from "../solana/utilities";
 import { ANCHOR_ERROR, ERROR_NUMBER } from "./constants";
 import { Strategy, TokenListProvider } from "@solana/spl-token-registry";
 import { IUserData } from "../interface/user.interface";
 import { getUserTwitterData } from "../api/twitter.api";
 import { NATIVE_MINT } from "@solana/spl-token";
 import { CollectionVolumeFilter } from "../enums/collections.enums";
+import { findCandyMachineAuthorityPda } from "@metaplex-foundation/mpl-candy-machine";
+import { publicKey } from "@metaplex-foundation/umi";
 export const splitTimestamps = (
   recentCollections: ICollectionRecentActivities[]
 ) => {
@@ -47,22 +49,29 @@ export const getNftsFromDeruggedCollection = async (
   try {
     const collectionNfts: { image: string; name: string }[] = [];
 
-    const nftss = await metaplex.nfts().findAllByOwner({
+    const nfts = await metaplex.nfts().findAllByOwner({
       owner: owner,
     });
 
-    for (const nft of nftss) {
+    const creator = findCandyMachineAuthorityPda(umi, {
+      candyMachine: publicKey(remintConfig.candyMachine),
+    });
+
+    for (const nft of nfts) {
       try {
         if (
-          nft.creators[0].address.toString() ===
-          remintConfig.candyMachineCreator.toString()
+          nft.creators.find(
+            (c) => creator[0].toString() === c.address.toString()
+          )
         ) {
           collectionNfts.push({
             name: nft.name,
             image: (await (await fetch(nft.uri)).json()).image,
           });
         }
-      } catch (error) { }
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     return collectionNfts;

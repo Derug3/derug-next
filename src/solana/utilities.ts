@@ -1,11 +1,21 @@
 import { bundlrStorage, Metaplex } from "@metaplex-foundation/js";
-import { AnchorProvider, Program, Wallet } from "@project-serum/anchor";
+import {
+  AnchorProvider,
+  Program,
+  Wallet,
+  getProvider,
+} from "@project-serum/anchor";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { DerugProgram, IDL } from "../solana/idl/derug_program";
 import { DERUG_PROGRAM_ID, RPC_CONNECTION } from "../utilities/utilities";
+import { mplCandyMachine } from "@metaplex-foundation/mpl-candy-machine";
 export const derugProgramFactory = () => {
-  return new Program<DerugProgram>(IDL, new PublicKey(DERUG_PROGRAM_ID));
+  return new Program<DerugProgram>(
+    IDL,
+    new PublicKey(DERUG_PROGRAM_ID),
+    new AnchorProvider(RPC_CONNECTION, {} as any, {})
+  );
 };
 
 export const feeWallet = new PublicKey(
@@ -17,16 +27,15 @@ export const metadataUploaderWallet = new PublicKey(
 );
 
 //TODO:load from env
-export const umi = createUmi("https://api.devnet.solana.com");
+export const umi = createUmi(
+  "https://mainnet.helius-rpc.com/?api-key=05a3a206-18c8-492f-bc34-9bff0beccaf2",
+  {
+    commitment: "confirmed",
+  }
+).use(mplCandyMachine());
 
 //TODO mainnet: load this from env file
-export const metaplex = new Metaplex(RPC_CONNECTION).use(
-  bundlrStorage({
-    address: "https://devnet.bundlr.network",
-    providerUrl: "https://api.devnet.solana.com",
-    timeout: 60000,
-  })
-);
+export const metaplex = new Metaplex(RPC_CONNECTION);
 
 export const candyMachineProgramId = new PublicKey(
   "cndy3Z4yapfJBmL3ShUp5exZKqR3z33thTzeNMm2gRZ"

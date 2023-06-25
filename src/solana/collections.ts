@@ -72,7 +72,7 @@ export async function getCollectionChainData(
 
   return {
     collectionMint: derugCollection,
-    rugUpdateAuthority: metadataAccount.updateAuthority.toString(),
+    firstCreator: metadataAccount.updateAuthority.toString(),
     slug: collection.symbol,
     totalSupply: collection.numMints!,
     derugDataAddress: derugData,

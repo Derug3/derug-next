@@ -2,7 +2,7 @@ import derugPfp from "../../assets/derugPfp.png";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { FC, useCallback, useEffect, useState } from "react";
 
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import { FaTwitter } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { userStore } from "@/stores/userStore";
@@ -11,9 +11,10 @@ import {
   authorizeTwitter,
   deleteTwitterData,
 } from "@/api/twitter.api";
-import Link from 'next/link'
+import Link from "next/link";
 import { HOME } from "@/utilities/constants";
 import { useRouter } from "next/router";
+import { getTrimmedPublicKey } from "@/solana/helpers";
 const settings = ["Twitter", "Discord"];
 
 const HeaderNav: FC = () => {
@@ -25,6 +26,8 @@ const HeaderNav: FC = () => {
   const slug = router.pathname;
 
   const wallet = useAnchorWallet();
+
+  const { connect, disconnect, connected, publicKey } = useWallet();
 
   useEffect(() => {
     if (wallet) void storeUserData();
@@ -48,7 +51,7 @@ const HeaderNav: FC = () => {
   }, []);
 
   const unlinkTwitter = useCallback(async () => {
-    if (wallet && userData) {
+    if (wallet && userData && userData.twitterName) {
       try {
         await deleteTwitterData(wallet.publicKey.toString());
         setUserData(undefined);
@@ -103,20 +106,24 @@ const HeaderNav: FC = () => {
             {wallet && wallet.publicKey && (
               <div
                 className="flex flex-row gap-3 cursor-pointer"
-                onClick={userData ? unlinkTwitter : linkTwitter}
+                onClick={
+                  userData && userData.twitterHandle
+                    ? unlinkTwitter
+                    : linkTwitter
+                }
               >
-                <div className="flex items-center w-full">
-                  {userData && <img src={userData.image} className="w-10" />}
+                <div className="flex items-center w-full gap-3">
+                  {userData && (
+                    <img src={userData.image} className="w-8 rounded-[50%]" />
+                  )}
                   <p className="flex gap-3 text-md">
                     {userData && userData.twitterHandle ? (
                       userData.twitterHandle
                     ) : (
-                      <>
-                        <FaTwitter
-                          color="rgb(9, 194, 246)"
-                        />
+                      <div className="flex gap-2 items-center">
+                        <FaTwitter color="rgb(9, 194, 246)" />
                         <span>link twitter </span>
-                      </>
+                      </div>
                     )}
                   </p>
                 </div>

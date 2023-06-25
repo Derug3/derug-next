@@ -74,7 +74,7 @@ export const createOrUpdateDerugRequest = async (
         collection,
         wallet,
         collectionStats,
-        new PublicKey("CCRQEcQmXxN5GDVkMKcgnXaSLv3KeD3Qfp9zEXaBB1Nx")
+        new PublicKey(listedNft.mint)
       )
     );
   }
@@ -107,6 +107,8 @@ export const createOrUpdateDerugRequest = async (
       privateMintDuration ? new BN(privateMintDuration) : null,
       newName,
       newSymbol,
+      //TODO:remove ekser
+      255,
       creators ?? []
     )
     .accounts({

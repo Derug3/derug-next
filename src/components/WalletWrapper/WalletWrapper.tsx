@@ -19,7 +19,7 @@ type Props = {
   children?: React.ReactElement;
 };
 const WalletWrapper: FC<Props> = (props) => {
-  const network = WalletAdapterNetwork.Devnet;
+  const network = WalletAdapterNetwork.Mainnet;
 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
@@ -39,7 +39,6 @@ const WalletWrapper: FC<Props> = (props) => {
         <WalletModalProvider>{props.children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
-
   );
 };
 

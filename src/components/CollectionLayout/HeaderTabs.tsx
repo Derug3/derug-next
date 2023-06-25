@@ -49,12 +49,8 @@ export const HeaderTabs: FC<{
   font-mono text-gray-700 leading-6 px-10 pb-2 border-none justify-end"
     >
       <div className="w-full gap-5 flex justify-end">
-        <div
-          className="w-1/2 flex pl-8"
-        >
-          <div
-            className="w-full flex justify-between"
-          >
+        <div className="w-1/2 flex pl-8">
+          <div className="w-full flex justify-between">
             {wallet &&
               wallet.publicKey &&
               (!collectionDerug ||
@@ -74,25 +70,8 @@ export const HeaderTabs: FC<{
               )}
             <div
               aria-label="Main"
-              className="sticky flex justify-end w-fit items-center">
-              {collectionDerug &&
-                (collectionDerug!.status === DerugStatus.Reminting ||
-                  collectionDerug?.status === DerugStatus.UploadingMetadata) &&
-                wallet.publicKey?.toString() ===
-                derugRequests
-                  ?.find(
-                    (req) =>
-                      req.address.toString() ===
-                      collectionDerug.winningRequest?.toString()
-                  )
-                  ?.derugger.toString() && (
-                  <div
-                    onClick={() => setSelectedData("traits")}
-                    style={getNavStyling(selectedData, "traits")}
-                  >
-                    DERUG INFO
-                  </div>
-                )}
+              className="sticky flex justify-end w-fit items-center"
+            >
               <div
                 onClick={() => setSelectedData("listed")}
                 style={getNavStyling(selectedData, "listed")}

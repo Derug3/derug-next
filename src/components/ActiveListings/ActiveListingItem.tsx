@@ -39,7 +39,7 @@ export const ActiveListingItem: FC<{
         request.derugger.toString()
       );
       setTwtiterUserData(userTwitterData);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getStatus = useMemo(() => {
@@ -144,7 +144,9 @@ export const ActiveListingItem: FC<{
           {(twitterUserData || winningRequest) && (
             <div className="flex justify-between">
               <span className="text-gray-200 font-bold font-mono">Won by:</span>
-              {twitterUserData && (
+              {twitterUserData &&
+              twitterUserData.image &&
+              twitterUserData.twitterName ? (
                 <div className="flex gap-2">
                   <img
                     className="w-16 rounded-[50px]"
@@ -155,6 +157,10 @@ export const ActiveListingItem: FC<{
                     {twitterUserData.twitterHandle}
                   </span>
                 </div>
+              ) : (
+                <span className="text-main-blue">
+                  {getTrimmedPublicKey(winningRequest.derugger.toString())}
+                </span>
               )}
               {!twitterUserData && winningRequest && (
                 <span className="text-gray-200 font-mono">

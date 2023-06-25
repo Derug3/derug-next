@@ -1,7 +1,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import React, { FC, useContext, useMemo, useState } from "react";
 import { IRequest } from "../../interface/collections.interface";
-import { claimVictory, getCandyMachine } from "../../solana/methods/remint";
+import { claimVictory } from "../../solana/methods/remint";
 import { CollectionContext } from "../../stores/collectionContext";
 import { toast } from "react-hot-toast";
 import { getCollectionDerugData } from "../../solana/methods/derug";
@@ -9,6 +9,7 @@ import { DerugStatus } from "../../enums/collections.enums";
 import { getTrimmedPublicKey } from "../../solana/helpers";
 import dayjs from "dayjs";
 import {
+  getDerugCandyMachine,
   initCandyMachine,
   storeCandyMachineItems,
 } from "../../solana/methods/public-mint";
@@ -83,14 +84,16 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
   const initPublicMinting = async () => {
     try {
       toggleLoading(true);
+
       if (collectionDerug && wallet && remintConfig) {
         if (!candyMachine) {
           const candyMachineAddress = await initCandyMachine(
             collectionDerug,
             wallet
           );
+
           if (candyMachineAddress)
-            setCandyMachine(await getCandyMachine(candyMachineAddress));
+            setCandyMachine(await getDerugCandyMachine(remintConfig, wallet));
         }
         await storeCandyMachineItems(
           request,
@@ -98,7 +101,7 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
           wallet,
           collectionDerug
         );
-        setCandyMachine(await getCandyMachine(remintConfig.candyMachine));
+        setCandyMachine(await getDerugCandyMachine(remintConfig, wallet));
       }
       toast.success("Public minting successfully initialized");
     } catch (error) {
@@ -151,7 +154,7 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
                   className="animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 "
                   style={{
                     color: "white",
-                    padding: "1.25em",
+                    padding: "0.5em",
                     width: "30%",
                   }}
                   onClick={claimDerugVictory}
@@ -200,11 +203,11 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
                     onClick={initPublicMinting}
                   >
                     {!loading ? (
-                      <span className="text-xl lowercase">
+                      <span className="text-xl lowercase min-w-full">
                         Initialize public mint
                       </span>
                     ) : (
-                      <Oval color="rgb(9, 194, 246)" height={"3em"} />
+                      <Oval color="rgb(9, 194, 246)" height={"1em"} />
                     )}
                   </button>
                 )}
