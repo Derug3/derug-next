@@ -554,16 +554,18 @@ export const getWhitelistingConfig = async (
 
   if (wlGroup.guards.endDate.__option === "Some") {
     const unix = wlGroup.guards.endDate.value.date;
+
     endDate = new Date(Number(unix.toString())).toLocaleString();
+    debugger;
     const [day, month, year, hour, minute, second] = endDate.match(/\d+/g);
-    // endDate = new Date(
-    //   parseInt(year),
-    //   parseInt(month) - 1,
-    //   parseInt(day),
-    //   parseInt(hour),
-    //   parseInt(minute),
-    //   parseInt(second)
-    // );
+    endDate = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(hour),
+      parseInt(minute),
+      parseInt(second)
+    );
     // endDate = new Date(
     //   Date.UTC(
     //     parseInt(year),
