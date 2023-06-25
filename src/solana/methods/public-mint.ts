@@ -551,10 +551,9 @@ export const getWhitelistingConfig = async (
 
   let endDate: Date | string = new Date();
   let walletLimit: number | undefined = undefined;
-
+  let unix: number = dayjs().unix();
   if (wlGroup.guards.endDate.__option === "Some") {
-    const unix = Number(wlGroup.guards.endDate.value.date.toString());
-
+    unix = Number(wlGroup.guards.endDate.value.date.toString());
     endDate = new Date(unix).toLocaleString();
 
     const [day, month, year, hour, minute, second] = endDate.match(/\d+/g);
@@ -588,6 +587,7 @@ export const getWhitelistingConfig = async (
   }
 
   const { currency, price } = await getGuardPayment(wlGroup);
+  const currUnix = dayjs().unix() * 1000;
 
   return {
     currency,
@@ -596,7 +596,7 @@ export const getWhitelistingConfig = async (
     price,
     walletLimit,
     isWhitelisted,
-    isActive: new Date() < endDate,
+    isActive: currUnix < unix,
   };
 };
 

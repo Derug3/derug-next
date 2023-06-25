@@ -257,7 +257,7 @@ const PublicMint = () => {
         )}
         {candyMachine.whitelistingConfig.isActive && (
           <Box className="flex flex-col gap-3">
-            <Text className="text-white font-mono text-sm">
+            {/* <Text className="text-white font-mono text-sm">
               Public mint in:{" "}
               {
                 <Countdown
@@ -271,7 +271,7 @@ const PublicMint = () => {
                   date={candyMachine.whitelistingConfig.endDate}
                 />
               }
-            </Text>
+            </Text> */}
 
             {candyMachine.whitelistingConfig.walletLimit >= 0 &&
               candyMachine.whitelistingConfig.isWhitelisted && (
