@@ -32,9 +32,10 @@ import {
   generateSigner,
   createBigInt,
   Pda,
+  dateTime,
 } from "@metaplex-foundation/umi";
 
-const date = dayjs.extend(utc);
+import { endDateGuardManifest } from "@metaplex-foundation/mpl-candy-machine";
 
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import {
@@ -65,7 +66,6 @@ import {
 } from "../../interface/derug.interface";
 import { remintConfigSeed } from "../seeds";
 import { derugProgramFactory, metaplex, umi } from "../utilities";
-import dayjs from "dayjs";
 import { chunk } from "lodash";
 import { parseKeyArray, parseTransactionError } from "../../common/helpers";
 import { RPC_CONNECTION } from "../../utilities/utilities";
@@ -80,9 +80,8 @@ import { SolanaTokenListResolutionStrategy } from "@solana/spl-token-registry";
 import { divide, pow } from "mathjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-dayjs.extend(utc);
+import dayjs from "dayjs";
 
-dayjs.utc();
 export const initCandyMachine = async (
   collectionDerug: ICollectionDerugData,
   wallet: WalletContextState
@@ -125,9 +124,7 @@ export const initCandyMachine = async (
     if (!remintConfigAccount.privateMintEnd) {
       privateMintEnd = new Date();
     } else {
-      privateMintEnd = dayjs
-        .unix(remintConfigAccount.privateMintEnd.toNumber() / 1000)
-        .toDate();
+      privateMintEnd = new Date(remintConfigAccount.privateMintEnd.toNumber());
     }
 
     const wlConfig = await getWlConfig(collectionDerug.address.toString());
@@ -174,7 +171,7 @@ export const initCandyMachine = async (
             wlConfig && wlConfig.duration
               ? //TODO:remove ekser before nm
                 some({
-                  date: dayjs.utc().add(wlConfig.duration, "hours").toDate(),
+                  date: dateTime(new Date().toISOString()),
                 })
               : none(),
         },
@@ -188,7 +185,9 @@ export const initCandyMachine = async (
           allowList: allowListConfig,
           endDate: some({
             //TODO:remove ekser before nm
-            date: dayjs.utc().add(wlConfig.duration, "hours").toDate(),
+            date: new Date().setHours(
+              new Date().getHours() + wlConfig.duration
+            ),
           }),
           solPayment: solPaymentConfig,
           tokenPayment: tokenPaymentConfig,
@@ -200,8 +199,6 @@ export const initCandyMachine = async (
         },
       });
     }
-    const date = dayjs.utc().add(wlConfig.duration, "hours").utc();
-    debugger;
 
     const cmSigner = createSignerFromKeypair(umi, {
       publicKey: publicKey(candyMachine.publicKey),
@@ -552,19 +549,21 @@ export const getWhitelistingConfig = async (
     );
   }
 
-  let endDate = dayjs.utc();
+  let endDate: Date | string = new Date();
   let walletLimit: number | undefined = undefined;
 
   if (wlGroup.guards.endDate.__option === "Some") {
-    const timezoneOffset = new Date(
-      Number(wlGroup.guards.endDate.value.date) * 1000
-    ).getTimezoneOffset();
-
-    endDate = dayjs
-      .unix(Number(wlGroup.guards.endDate.value.date.toString()))
-      .utc();
-
-    //TODO:ekser
+    const unix = wlGroup.guards.endDate.value.date;
+    endDate = new Date(Number(unix.toString())).toLocaleString();
+    const [day, month, year, hour, minute, second] = endDate.match(/\d+/g);
+    endDate = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(hour),
+      parseInt(minute),
+      parseInt(second)
+    );
   }
 
   if (wlGroup.guards.mintLimit.__option === "Some") {
@@ -590,12 +589,12 @@ export const getWhitelistingConfig = async (
 
   return {
     currency,
-    endDate: endDate.toDate(),
+    endDate: endDate,
     groupName: "wl",
     price,
     walletLimit,
     isWhitelisted,
-    isActive: endDate.isAfter(dayjs()),
+    isActive: new Date() < endDate,
   };
 };
 
@@ -606,16 +605,16 @@ export const getPublicConfiguration = async (
 
   const { price, currency } = await getGuardPayment(wlGroup);
 
-  let startDate = dayjs.utc();
+  let startDate = new Date();
 
   if (wlGroup.guards.startDate.__option === "Some") {
-    startDate = dayjs.unix(Number(wlGroup.guards.startDate.value.date));
+    startDate = new Date(Number(wlGroup.guards.startDate.value.date) * 1000);
   }
 
   return {
     currency,
     groupName: "all",
-    startDate: startDate.toDate(),
+    startDate: startDate,
     price,
   };
 };

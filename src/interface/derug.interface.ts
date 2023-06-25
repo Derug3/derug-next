@@ -120,7 +120,7 @@ export interface MintingCurrency {
 }
 
 export interface WhitelistConfig {
-  endDate: Date;
+  endDate: Date | string;
   walletLimit?: number;
   price: number;
   currency: MintingCurrency;
