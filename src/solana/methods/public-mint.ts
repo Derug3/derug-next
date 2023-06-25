@@ -174,7 +174,8 @@ export const initCandyMachine = async (
           tokenPayment: tokenPaymentConfig,
           startDate:
             wlConfig && wlConfig.duration
-              ? some({ date: dayjs().add(wlConfig.duration, "hours").toDate() })
+              ? //TODO:remove ekser before nm
+                some({ date: dayjs().add(5, "minutes").toDate() })
               : none(),
         },
       },
@@ -186,7 +187,8 @@ export const initCandyMachine = async (
         guards: {
           allowList: allowListConfig,
           endDate: some({
-            date: dayjs().add(wlConfig.duration, "hours").toDate(),
+            //TODO:remove ekser before nm
+            date: dayjs().add(5, "minutes").toDate(),
           }),
           solPayment: solPaymentConfig,
           tokenPayment: tokenPaymentConfig,
@@ -414,6 +416,8 @@ export const mintNftFromCandyMachine = async (
         success: "Successfully minted!",
       }
     );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     return await metaplex
       .nfts()
       .findByMint({ mintAddress: new PublicKey(nftMint.publicKey) });
@@ -464,6 +468,7 @@ export const mintPublic = async (
         success: "Successfully minted!",
       }
     );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     return await metaplex
       .nfts()
       .findByMint({ mintAddress: new PublicKey(nftMint.publicKey) });

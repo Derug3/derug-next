@@ -250,7 +250,7 @@ const PublicMint = () => {
               />
               <p>
                 {Number(candyMachine.candyMachine.itemsRedeemed)}/
-                {collectionDerug?.totalSupply ?? 400}
+                {Number(candyMachine.candyMachine.data.itemsAvailable)}
               </p>
             </Box>
           </Box>

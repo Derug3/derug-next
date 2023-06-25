@@ -124,8 +124,7 @@ export const AddDerugRequst: FC<{
           selectedMint?.address &&
             selectedMint.address.toString() !== WRAPPED_SOL_MINT.toString()
             ? selectedMint.address
-            : //TODO:Remove before mainnet
-              undefined,
+            : undefined,
           activeListings ? activeListings[0] : undefined
         );
         const addedRequests = [...(derugRequests ?? [])];
