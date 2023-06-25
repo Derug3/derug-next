@@ -31,8 +31,6 @@ import {
   sol,
   generateSigner,
   createBigInt,
-  transactionBuilder,
-  base58PublicKey,
   Pda,
 } from "@metaplex-foundation/umi";
 
@@ -75,18 +73,12 @@ import {
   parseTransactionError,
 } from "../../common/helpers";
 import { RPC_CONNECTION } from "../../utilities/utilities";
-import { sendTransaction, sendVersionedTx } from "../sendTransaction";
 import {
   PROGRAM_ID,
   TokenStandard,
 } from "@metaplex-foundation/mpl-token-metadata";
 import { WlType } from "../../enums/collections.enums";
-import {
-  none,
-  OptionOrNullable,
-  signerIdentity,
-  some,
-} from "@metaplex-foundation/umi";
+import { none, OptionOrNullable, some } from "@metaplex-foundation/umi";
 import { setComputeUnitLimit } from "@metaplex-foundation/mpl-toolbox";
 import { SolanaTokenListResolutionStrategy } from "@solana/spl-token-registry";
 import { divide, pow } from "mathjs";
@@ -246,11 +238,12 @@ export const initCandyMachine = async (
           isMutable: true,
           symbol: remintConfigAccount.newSymbol,
           tokenMetadataProgram: publicKey(PROGRAM_ID),
-          guards: {
-            tokenPayment: tokenPaymentConfig,
-            solPayment: solPaymentConfig,
-            allowList: allowListConfig,
-          },
+          // guards: {
+          //   tokenPayment: tokenPaymentConfig,
+          //   solPayment: solPaymentConfig,
+          //   allowList: allowListConfig,
+
+          // },
           collectionMint: publicKey(remintConfigAccount.collection),
           collectionUpdateAuthority: createNoopSigner(
             publicKey(remintConfigAccount.authority)
@@ -447,11 +440,6 @@ export const mintPublic = async (
     const guardPda = findCandyGuardPda(umi, {
       base: publicKey(remintConfig.candyMachine),
     });
-    //TODO:remove ekser
-    const wlConfig = await getWlConfig("nice-mice");
-
-    const wallets = JSON.parse(wlConfig.wallets).map((w) => w.wallet);
-    const merkleRoot = getMerkleRoot(wallets);
 
     await toast.promise(
       mintV2(umi, {

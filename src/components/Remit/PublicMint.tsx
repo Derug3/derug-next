@@ -106,14 +106,18 @@ const PublicMint = () => {
     return nfts.map((n, index) => {
       return (
         <div key={index} className="flex flex-col items-center justify-center">
-          <img src={n.image} alt="" className="w-28 h-26" />
+          <img
+            src={n.image}
+            alt=""
+            className="w-28 h-26 rounded-md border-[1px] border-main-blue"
+          />
           <p className="text-white text-center text-sm w-full break-all">
             {n.name}
           </p>
         </div>
       );
     });
-  }, [nfts]);
+  }, [nfts, wallet]);
 
   const showCloseMinitngButton = useMemo(() => {
     return (
@@ -141,7 +145,7 @@ const PublicMint = () => {
   return (
     <div className="m-auto grid grid-cols-3  m-10 mb-32">
       <div className="flex flex-col items-start ml-10">
-        <p className="text-main-blue text-xl mb-2 flex">
+        <p className="text-main-blue text-lg uppercase mb-2 flex font-mono">
           Your {remintConfig?.newName ?? collection?.name} NFTs
         </p>
         <div className="overflow-y-scroll grid  w-full grid-cols-3 gap-5 max-h-[17.5em]">
@@ -269,12 +273,13 @@ const PublicMint = () => {
               }
             </Text>
 
-            {candyMachine.whitelistingConfig.walletLimit >= 0 && (
-              <Text className="text-white font-bold font-mono text-sm">
-                Remaining mints{" "}
-                {3 - candyMachine.whitelistingConfig?.walletLimit} / {3}
-              </Text>
-            )}
+            {candyMachine.whitelistingConfig.walletLimit >= 0 &&
+              candyMachine.whitelistingConfig.isWhitelisted && (
+                <Text className="text-white font-bold font-mono text-sm">
+                  Remaining mints{" "}
+                  {3 - candyMachine.whitelistingConfig?.walletLimit} / {3}
+                </Text>
+              )}
 
             {!candyMachine.whitelistingConfig.isWhitelisted && (
               <Text className="text-main-green text-sm text-white font-mono font-bold">
