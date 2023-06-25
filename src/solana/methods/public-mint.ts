@@ -33,8 +33,11 @@ import {
   createBigInt,
   Pda,
 } from "@metaplex-foundation/umi";
+import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
+dayjs.extend(timezone);
+
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import {
   Keypair,
