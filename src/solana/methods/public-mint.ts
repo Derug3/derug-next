@@ -37,6 +37,7 @@ import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.tz.setDefault("UTC");
 
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import {
