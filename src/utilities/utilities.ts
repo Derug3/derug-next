@@ -8,7 +8,7 @@ export const gqlClient = new ApolloClient({
 });
 
 export const MAINNET_RPC_CONNECTION = new Connection(
-  "https://mainnet.helius-rpc.com/?api-key=336707c9-3b15-4455-af9a-a789b5b69e06"
+  "https://mainnet.helius-rpc.com/?api-key=76e80611-bd43-42c3-acbb-a7660642ab67"
 );
 
 export const METAPLEX_PROGRAM = new PublicKey(
