@@ -481,9 +481,7 @@ export async function getRemintConfig(
     return {
       address: remintConfigAddress,
       authority: remintConfigAccount.authority,
-      candyMachine: new PublicKey(
-        "8GXGuBMSpRbCfWf7AdgTZr73hffh1t8uaapNcXrLnZDb"
-      ),
+      candyMachine: remintConfigAccount.candyMachineKey,
       candyMachineCreator: remintConfigAccount.candyMachineCreator,
       collection: remintConfigAccount.collection,
       mintCurrency: remintConfigAccount.mintCurrency ?? undefined,
