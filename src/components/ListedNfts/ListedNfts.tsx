@@ -5,6 +5,7 @@ import ListedNftItem from "./ListedNftItem";
 const ListedNfts: FC = () => {
   const { activeListings, loading } = useContext(CollectionContext);
 
+  // test
   const renderListedNfts = () => {
     return activeListings
       ? activeListings?.map((ln) => {
