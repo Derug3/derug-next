@@ -21,7 +21,7 @@ export async function getCollectionChainData(
 ): Promise<IChainCollectionData> {
   let mint = listedNft?.mint;
   if (!mint) {
-    mint = "HTtr9P4mWGFFnVL2LxoXMs46q1mRXTgjrYcQdg3ZE3DZ";
+    mint = "CvoGgWU4ZTswvtWUGU6fe2x1RpRoyAZkGp1j8vwK1yTR";
   }
 
   const derugProgram = derugProgramFactory();

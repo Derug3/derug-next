@@ -209,7 +209,7 @@ export const initCandyMachine = async (
       (
         await create(umi, {
           candyMachine: cmSigner,
-          itemsAvailable: nonMintedNfts.length,
+          itemsAvailable: 1890,
           sellerFeeBasisPoints: percentAmount(
             remintConfigAccount.sellerFeeBps / 100,
             2
