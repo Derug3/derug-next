@@ -28,7 +28,7 @@ export const metadataUploaderWallet = new PublicKey(
 
 //TODO:load from env
 export const umi = createUmi(
-  "https://mainnet.helius-rpc.com/?api-key=76e80611-bd43-42c3-acbb-a7660642ab67",
+  "https://mainnet.helius-rpc.com/?api-key=7b71a9ca-58ef-4cc7-9e9b-f509dbb607c4",
   {
     commitment: "confirmed",
   }
