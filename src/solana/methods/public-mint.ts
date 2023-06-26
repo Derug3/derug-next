@@ -365,6 +365,7 @@ export const mintNftFromCandyMachine = async (
     const guardPda = findCandyGuardPda(umi, {
       base: publicKey(remintConfig.candyMachine),
     });
+
     //TODO:remove ekser
     // const wlConfig = await getWlConfig("nice-mice");
 
@@ -386,7 +387,7 @@ export const mintNftFromCandyMachine = async (
 
     await toast.promise(
       mintV2(umi, {
-        candyMachine: publicKey("DtGxFY6Y1EZyhCvrZ3E49qUYy2m3zqFzUo7EjwGXbNQn"),
+        candyMachine: publicKey(remintConfig.candyMachine),
         nftMint: nftMint,
         collectionMint: publicKey(remintConfig.collection),
         collectionUpdateAuthority: publicKey(remintConfig.authority),
