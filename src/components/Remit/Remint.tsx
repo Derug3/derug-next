@@ -102,11 +102,11 @@ export const Remint: FC<{
 
   const renderCollectionNfts = useMemo(() => {
     return collectionNfts?.length > 0 ? (
-      collectionNfts?.map((cnft) => {
-        return <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 px-10" key={cnft.mint.toString()}>
-          <RemintNft nft={cnft} key={cnft.mint.toString()} />;
-        </div>
-      })
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 px-10">
+        {collectionNfts?.map((cnft) => {
+          return <RemintNft nft={cnft} key={cnft.mint.toString()} />;
+        })}
+      </div>
     ) : (
       <div className="w-full text-center">
         <p className="text-xl font-mono font-bold">
