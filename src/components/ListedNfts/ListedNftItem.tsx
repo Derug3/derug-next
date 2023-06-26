@@ -1,4 +1,4 @@
-import { FC, useContext, useMemo, useState } from "react";
+import { FC, use, useContext, useEffect, useMemo, useState } from "react";
 import magicEdenLogo from "../../assets/magicEdenLogo.png";
 import tensorLogo from "../../assets/tensorLogo.png";
 import { ListingSource } from "../../enums/collections.enums";
@@ -6,17 +6,38 @@ import { INftListing } from "../../interface/collections.interface";
 import solanaArtLogo from "../../assets/solanart_logo.png";
 import { CollectionContext } from "../../stores/collectionContext";
 import Skeleton from "react-loading-skeleton";
-import Image from "next/image";
+import { metaplex } from "@/solana/utilities";
+import { PublicKey } from "@solana/web3.js";
 
-const ListedNftItem: FC<{ listedNft: INftListing; imageUrl: string }> = ({
+const ListedNftItem: FC<{ listedNft: INftListing }> = ({
   listedNft,
-  imageUrl,
 }) => {
   const { collection } = useContext(CollectionContext);
   const [hover, setHover] = useState(false);
 
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isValidSrc, setIsValidSrc] = useState(!!imageUrl);
+  const [fallbackImage, setFallbackImage] = useState('');
+
+  const handleImageLoaded = async (mint: string) => {
+    const metadata = await metaplex.nfts().findByMint({
+      mintAddress: new PublicKey(mint),
+      loadJsonMetadata: true,
+    })
+
+    return metadata.json.image;
+  };
+
+  useEffect(() => {
+    if (!listedNft.imageUrl) {
+      const fallbackSrc = async () => {
+        const data = await handleImageLoaded(listedNft.mint);
+        setFallbackImage(data);
+      }
+
+      fallbackSrc();
+    }
+  }, [listedNft]);
+
 
   const getImgLogo = useMemo(() => {
     switch (listedNft.soruce) {
@@ -46,24 +67,15 @@ const ListedNftItem: FC<{ listedNft: INftListing; imageUrl: string }> = ({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      {isValidSrc ? (
-        <img
-          src={listedNft.imageUrl}
-          alt="nftImg"
-          className="rounded-lg p-3"
-          style={{ opacity: hover ? 0.2 : 1, borderRadius: "2em" }}
-          onLoad={() => setImageLoaded(true)}
-          onError={() => setIsValidSrc(false)}
-        />
-      ) : (
-        <Skeleton
-          height={128}
-          width={156}
-          baseColor="rgb(22,27,34)"
-          highlightColor="rgb(29,35,44)"
-        />
-      )}
-      {isValidSrc && !imageLoaded && (
+      <img
+        src={listedNft.imageUrl || fallbackImage}
+        alt="nftImg"
+        className="rounded-lg p-3"
+        style={{ opacity: hover ? 0.2 : 1, borderRadius: "2em" }}
+        onLoad={() => setImageLoaded(true)}
+      />
+
+      {!imageLoaded && (
         <div className="smooth-preloader">
           <Skeleton
             height={128}

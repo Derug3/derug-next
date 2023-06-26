@@ -40,11 +40,12 @@ export const DerugRequest: FC = () => {
   };
 
   const getWinningRequest = useMemo(() => {
+    const currUnix = dayjs().unix() * 1000;
     if (
       wallet &&
       wallet.publicKey &&
       collectionDerug &&
-      dayjs(collectionDerug.periodEnd).isBefore(dayjs())
+      dayjs(collectionDerug.periodEnd).unix() * 1000 > currUnix
     ) {
       const percentage = getPercentage();
       const majorWinner = collectionDerug?.addedRequests
