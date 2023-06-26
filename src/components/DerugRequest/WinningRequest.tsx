@@ -191,7 +191,7 @@ const WinningRequest: FC<{ request: IRequest }> = ({ request }) => {
                 </span>
               </div>
               {remintConfig &&
-                (dayjs(remintConfig.privateMintEnd).unix() * 1000 < dayjs().unix() * 1000 ||
+                (Number(remintConfig.privateMintEnd) * 1000 < dayjs().unix() * 1000 ||
                   (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
                 wallet.publicKey?.toString() === request.derugger.toString() &&
                 collectionDerug?.status !== DerugStatus.UploadingMetadata && (

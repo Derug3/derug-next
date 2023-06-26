@@ -285,7 +285,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           ) : (
             <>
               {remintConfig &&
-                (dayjs(remintConfig.privateMintEnd).unix() * 1000 < dayjs().unix() * 1000 ||
+                (Number(remintConfig.privateMintEnd) * 1000 < dayjs().unix() * 1000 ||
                   (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
                 candyMachine &&
                 Number(candyMachine.candyMachine.itemsLoaded) > 0 &&

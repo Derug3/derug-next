@@ -19,7 +19,7 @@ export const CollectionStats: FC<{
   const currUnix = dayjs().unix() * 1000;
   const remintConfigTime =
     remintConfig &&
-      dayjs(remintConfig.privateMintEnd).unix() * 1000 > currUnix &&
+      Number(remintConfig.privateMintEnd) * 1000 > currUnix &&
       collectionDerug?.status === DerugStatus.Reminting
       ? remintConfig.privateMintEnd
       : undefined;
