@@ -127,19 +127,19 @@ export const initCandyMachine = async (
 
     const wlConfig = await getWlConfig(collectionDerug.address.toString());
 
-    let allowListConfig: OptionOrNullable<AllowList> = none();
+    // let allowListConfig: OptionOrNullable<AllowList> = none();
     let solPaymentConfig: OptionOrNullable<SolPayment> = none();
     let tokenPaymentConfig: OptionOrNullable<TokenPayment> = none();
 
-    if (wlConfig && wlConfig.wlType === WlType.AllowList) {
-      const merkleRoot = getMerkleRoot(
-        JSON.parse(wlConfig.wallets!).map((walletWl) => walletWl.wallet)
-      );
+    // if (wlConfig && wlConfig.wlType === WlType.AllowList) {
+    //   const merkleRoot = getMerkleRoot(
+    //     JSON.parse(wlConfig.wallets!).map((walletWl) => walletWl.wallet)
+    //   );
 
-      allowListConfig = some({
-        merkleRoot,
-      });
-    }
+    //   // allowListConfig = some({
+    //   //   merkleRoot,
+    //   // });
+    // }
 
     if (!remintConfigAccount.mintCurrency) {
       solPaymentConfig = {
@@ -182,7 +182,7 @@ export const initCandyMachine = async (
       groups.unshift({
         label: "wl",
         guards: {
-          allowList: allowListConfig,
+          // allowList: allowListConfig,
           endDate: some({
             //TODO:remove ekser before nm
             date: dateTime(new Date().setHours(new Date().getHours() + 1)),
@@ -203,11 +203,6 @@ export const initCandyMachine = async (
       secretKey: candyMachine.secretKey,
     });
 
-    metaplex.use(walletAdapterIdentity(wallet));
-
-    const collectionNft = await metaplex
-      .nfts()
-      .findByMint({ mintAddress: remintConfigAccount.collection });
     umi.use(umiAdapterIdentity(wallet));
 
     await toast.promise(
@@ -227,8 +222,9 @@ export const initCandyMachine = async (
           configLineSettings: some({
             isSequential: false,
             nameLength: 5 + remintConfigAccount.newName.length,
-            prefixUri: "https://arweave.net/",
-            uriLength: collectionNft.uri.split("/")[3].length,
+            prefixUri:
+              "https://shdw-drive.genesysgo.net/AdCwAc5Hcubbog6wAxcsMVUZKfwNqAmfmgiP8GsFYvkw/",
+            uriLength: 10,
             prefixName: remintConfigAccount.newName,
           }),
           groups: groups,
@@ -301,8 +297,8 @@ export const storeCandyMachineItems = async (
         const addLines = addConfigLines(umi, {
           candyMachine: publicKey(candyMachineKeys.publicKey),
           configLines: nonMintedChunk.map((nmc) => ({
-            name: " " + nmc.newName.split(" ")[1],
-            uri: nmc.newUri.split("/")[3],
+            name: " #" + nmc.newName.split("#")[1],
+            uri: nmc.newUri.split("/")[4],
           })),
           index: sumInserted,
         }).getInstructions();
@@ -370,41 +366,42 @@ export const mintNftFromCandyMachine = async (
       base: publicKey(remintConfig.candyMachine),
     });
     //TODO:remove ekser
-    const wlConfig = await getWlConfig("nice-mice");
+    // const wlConfig = await getWlConfig("nice-mice");
 
-    const wallets = JSON.parse(wlConfig.wallets).map((w) => w.wallet);
-    const merkleRoot = getMerkleRoot(wallets);
+    // const wallets = JSON.parse(wlConfig.wallets).map((w) => w.wallet);
+    // const merkleRoot = getMerkleRoot(wallets);
+
+    // await route(umi, {
+    //   guard: "allowList",
+    //   candyMachine: publicKey("FdXesCWBfB9KoruJVgLmMC9hNq3GoFg3BMNEfBxFJTkb"),
+    //   routeArgs: {
+    //     merkleRoot,
+    //     path: "proof",
+    //     merkleProof: getMerkleProof(wallets, publicKey(umi.identity)),
+    //   },
+    //   group: some("wl"),
+    // })
+    //   .add(setComputeUnitLimit(umi, { units: 1400000 }))
+    //   .sendAndConfirm(umi);
 
     await toast.promise(
-      route(umi, {
-        guard: "allowList",
-        candyMachine: publicKey(remintConfig.candyMachine),
-        routeArgs: {
-          merkleRoot,
-          path: "proof",
-          merkleProof: getMerkleProof(wallets, publicKey(umi.identity)),
-        },
+      mintV2(umi, {
+        candyMachine: publicKey("DtGxFY6Y1EZyhCvrZ3E49qUYy2m3zqFzUo7EjwGXbNQn"),
+        nftMint: nftMint,
+        collectionMint: publicKey(remintConfig.collection),
+        collectionUpdateAuthority: publicKey(remintConfig.authority),
         group: some("wl"),
+        tokenStandard: TokenStandard.NonFungible,
+        candyGuard: guardPda,
+        mintArgs: {
+          // allowList: some({ merkleRoot }),
+          solPayment: some({
+            destination: publicKey(remintConfig.authority),
+          }),
+          mintLimit: some({ id: 1 }),
+        },
       })
         .add(setComputeUnitLimit(umi, { units: 800_000 }))
-        .add(
-          mintV2(umi, {
-            candyMachine: publicKey(remintConfig.candyMachine),
-            nftMint: nftMint,
-            collectionMint: publicKey(remintConfig.collection),
-            collectionUpdateAuthority: publicKey(remintConfig.authority),
-            group: some("wl"),
-            tokenStandard: TokenStandard.NonFungible,
-            candyGuard: guardPda,
-            mintArgs: {
-              allowList: some({ merkleRoot }),
-              solPayment: some({
-                destination: publicKey(remintConfig.authority),
-              }),
-              mintLimit: some({ id: 1 }),
-            },
-          })
-        )
         .sendAndConfirm(umi),
       {
         error: "Failed to mint!",
@@ -418,6 +415,8 @@ export const mintNftFromCandyMachine = async (
       .nfts()
       .findByMint({ mintAddress: new PublicKey(nftMint.publicKey) });
   } catch (error: any) {
+    console.log(error);
+
     console.log(JSON.parse(JSON.stringify(error)));
 
     const parsedError = JSON.parse(JSON.stringify(error)).cause;
@@ -538,14 +537,14 @@ export const getWhitelistingConfig = async (
 
   let isWhitelisted = false;
 
-  if (wlGroup.guards.allowList !== none()) {
-    //TODO:remove ekser
-    const wlConfig = await getWlConfig("nice-mice");
-    const wallets = JSON.parse(wlConfig.wallets);
-    isWhitelisted = !!wallets.find(
-      (w) => w.wallet === wallet?.publicKey?.toString()
-    );
-  }
+  // if (wlGroup.guards.allowList !== none()) {
+  //TODO:remove ekser
+  const wlConfig = await getWlConfig("nice-mice");
+  const wallets = JSON.parse(wlConfig.wallets);
+  isWhitelisted = !!wallets.find(
+    (w) => w.wallet === wallet?.publicKey?.toString()
+  );
+  // }
 
   let endDate: Date | string = new Date();
   let walletLimit: number | undefined = undefined;
