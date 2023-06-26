@@ -78,6 +78,7 @@ export const getAllNftsFromCollection = async (
   }
 
   const chunkedMetadataAddresses = chunk(allMetadataAddresses, 100);
+
   for (const metadataAddressesBatch of chunkedMetadataAddresses) {
     const multipleAccInfo = (
       await RPC_CONNECTION.getMultipleAccountsInfo(metadataAddressesBatch)
@@ -85,12 +86,15 @@ export const getAllNftsFromCollection = async (
 
     multipleAccInfo.forEach((mai, index) => {
       const [metadata] = Metadata.fromAccountInfo(mai!);
+      console.log(metadata);
+
       if (
         (metadata.collection &&
           metadata.collection.key.toString() ===
             chainCollectionData.collectionMint) ||
-        metadata.data.creators?.at(0)?.address.toString() ===
-          chainCollectionData.collectionMint
+        metadata.data.creators?.find(
+          (c) => c.address.toString() === chainCollectionData.collectionMint
+        )
       ) {
         derugNfts.push({
           metadata,
