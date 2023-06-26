@@ -12,7 +12,6 @@ const ListedNfts: FC = () => {
           <ListedNftItem
             listedNft={ln}
             key={ln.mint}
-            imageUrl={ln.imageUrl}
           />
         );
       })
