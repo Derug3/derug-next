@@ -279,17 +279,17 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         <>
           {(collectionDerug.status === DerugStatus.Initialized ||
             collectionDerug.status === DerugStatus.Voting) &&
-          showDerugRequests &&
-          !hasWinning ? (
+            showDerugRequests &&
+            !hasWinning ? (
             <DerugRequest />
           ) : (
             <>
               {remintConfig &&
-              (dayjs(remintConfig.privateMintEnd).isBefore(dayjs()) ||
-                (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
-              candyMachine &&
-              Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
-              Number(candyMachine.candyMachine.itemsLoaded) ===
+                (dayjs(remintConfig.privateMintEnd).unix() * 1000 < dayjs().unix() * 1000 ||
+                  (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
+                candyMachine &&
+                Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
+                Number(candyMachine.candyMachine.itemsLoaded) ===
                 Number(candyMachine.candyMachine.data.itemsAvailable) ? (
                 <PublicMint />
               ) : (
