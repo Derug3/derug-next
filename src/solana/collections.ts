@@ -1,3 +1,4 @@
+import { getListings } from "@/api/tensor";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import { PublicKey } from "@solana/web3.js";
 import { getMagicEdenListingsBySlug } from "../api/collections.api";
@@ -20,8 +21,9 @@ export async function getCollectionChainData(
 ): Promise<IChainCollectionData> {
   let mint = listedNft?.mint;
   if (!mint) {
-    const listings = await getMagicEdenListingsBySlug(collection.symbol);
-    mint = listings[0].tokenMint;
+    const listingsData = await getListings(collection.symbol);
+
+    mint = listingsData[0].mint;
   }
 
   const derugProgram = derugProgramFactory();

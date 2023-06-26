@@ -35,8 +35,6 @@ import {
   dateTime,
 } from "@metaplex-foundation/umi";
 
-import { endDateGuardManifest } from "@metaplex-foundation/mpl-candy-machine";
-
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import {
   Keypair,
