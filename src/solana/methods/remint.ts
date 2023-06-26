@@ -351,10 +351,11 @@ export const remintNft = async (
       });
     }
 
-    const nftData = await getPrivateMintNft(oldMetadata.toString());
+    const nftData = await getPrivateMintNft(nft.mint.toString());
 
     if (!nftData.newName || !nftData.newUri) {
-      throw new Error("Failed to fetch rugged nft data.");
+      toast.error("Failed to fetch rugged nft data.");
+      return;
     }
 
     const remintNftIx = await derugProgram.methods
