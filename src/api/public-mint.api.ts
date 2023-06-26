@@ -16,6 +16,7 @@ import {
   METADATA,
   NON_MINTED,
   PUBLIC_REMINT,
+  SAVE_MINTED,
   STORE_WALLETS,
   WALLET_WL,
 } from "./url.api";
@@ -57,4 +58,8 @@ export const getWlConfig = async (
 
 export const storeWlConfig = async (wlDto: SaveWlSettingsDto) => {
   return await post(`${WALLET_WL}${STORE_WALLETS}`, wlDto);
+};
+
+export const saveMinted = async (mint: string, reminter: string) => {
+  return post(`${PUBLIC_REMINT}${SAVE_MINTED}`, { mint, reminter });
 };

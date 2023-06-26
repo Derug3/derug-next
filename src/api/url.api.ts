@@ -16,6 +16,7 @@ export const O_AUTH = "/oauth";
 export const REQUEST_TOKEN = "/request_token";
 export const DERUG = "derug";
 export const METADATA = "/metadata";
+export const SAVE_MINTED = "/save-minted";
 export const TWITTER_AUTH = "/twitter-auth";
 export const PUBKEY = "/pubkey";
 export const COLLECTION_VOLUME = "/collection-volume";

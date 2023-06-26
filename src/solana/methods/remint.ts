@@ -53,6 +53,7 @@ import {
 import {
   getPrivateMintNft,
   saveCandyMachineData,
+  saveMinted,
   storeAllNfts,
 } from "../../api/public-mint.api";
 import toast from "react-hot-toast";
@@ -65,6 +66,8 @@ import {
 import { getFungibleTokenMetadata, stringifyData } from "../../common/helpers";
 import { UPLOAD_METADATA_FEE } from "../../common/constants";
 import { publicKey } from "@metaplex-foundation/umi";
+import nftStore from "@/stores/nftStore";
+import { RemintingStatus } from "@/enums/collections.enums";
 
 dayjs.extend(utc);
 
@@ -450,6 +453,14 @@ export const remintNft = async (
     });
   }
   await sendTransaction(RPC_CONNECTION, instructions, wallet);
+
+  const { nfts: storeNfts } = nftStore.getState();
+
+  for (const stNft of storeNfts) {
+    if (stNft.status === RemintingStatus.Succeded) {
+      await saveMinted(stNft.mint.toString(), wallet.publicKey.toString());
+    }
+  }
 };
 
 export async function getRemintConfig(
