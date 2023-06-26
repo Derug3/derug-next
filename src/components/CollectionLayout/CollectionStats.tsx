@@ -16,11 +16,11 @@ export const CollectionStats: FC<{
   collectionDerug?: ICollectionDerugData;
 }> = ({ collection, collectionDerug }) => {
   const { remintConfig } = useContext(CollectionContext);
-
+  const currUnix = dayjs().unix() * 1000;
   const remintConfigTime =
     remintConfig &&
-    dayjs(remintConfig.privateMintEnd).isAfter(dayjs()) &&
-    collectionDerug?.status === DerugStatus.Reminting
+      Number(remintConfig.privateMintEnd) * 1000 > currUnix &&
+      collectionDerug?.status === DerugStatus.Reminting
       ? remintConfig.privateMintEnd
       : undefined;
 
