@@ -22,6 +22,8 @@ export const feeWallet = new PublicKey(
   "DRG3YRmurqpWQ1jEjK8DiWMuqPX9yL32LXLbuRdoiQwt"
 );
 
+export const PLATFORM_FEE = 0.09;
+
 export const metadataUploaderWallet = new PublicKey(
   "KQ1jcFYvnH9DNUzBfVbquRohP9uZ6C7DVJJDyqiGB4P"
 );

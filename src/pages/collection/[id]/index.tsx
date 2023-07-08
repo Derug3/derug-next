@@ -119,11 +119,12 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   }, [basicCollectionData, wallet.publicKey]);
   const getChainCollectionDetails = async () => {
     try {
-      const chainDetails = await getCollectionChainData(
-        basicCollectionData!,
-        listings?.at(0)
-      );
+      // const chainDetails = await getCollectionChainData(
+      //   basicCollectionData!,
+      //   listings?.at(0)
+      // );
 
+      const chainDetails = await getDummyCollectionData();
       const derugProgram = derugProgramFactory();
 
       derugProgram.addEventListener("PrivateMintStarted", async (data) => {

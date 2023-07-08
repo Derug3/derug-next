@@ -39,3 +39,8 @@ export enum WlType {
   Token,
   AllowList,
 }
+
+export enum MintType {
+  Sol,
+  Token,
+}

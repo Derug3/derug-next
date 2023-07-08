@@ -16,7 +16,6 @@ import {
 import { METAPLEX_PROGRAM, RPC_CONNECTION } from "../../utilities/utilities";
 import {
   authoritySeed,
-  candyMachineSeed,
   collectionAuthoritySeed,
   derugDataSeed,
   editionSeed,
@@ -25,49 +24,55 @@ import {
 } from "../seeds";
 import { sendTransaction } from "../sendTransaction";
 import {
-  candyMachineProgramId,
   derugProgramFactory,
   feeWallet,
-  metadataUploaderWallet,
   metaplex,
+  PLATFORM_FEE,
   umi,
 } from "../utilities";
 import {
   AccountLayout,
   createAssociatedTokenAccountInstruction,
-  getAssociatedTokenAddress,
   getAssociatedTokenAddressSync,
   getMinimumBalanceForRentExemptAccount,
   getMinimumBalanceForRentExemptMint,
   MintLayout,
-  NATIVE_MINT,
-  TOKEN_2022_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {
   IDerugCollectionNft,
   IDerugInstruction,
   IRemintConfig,
-  ISplTokenData,
 } from "../../interface/derug.interface";
 import {
   getPrivateMintNft,
   saveCandyMachineData,
   saveMinted,
-  storeAllNfts,
 } from "../../api/public-mint.api";
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import {
-  fetchCandyMachine,
-  findCandyMachineAuthorityPda,
-} from "@metaplex-foundation/mpl-candy-machine";
-import { getFungibleTokenMetadata, stringifyData } from "../../common/helpers";
-import { UPLOAD_METADATA_FEE } from "../../common/constants";
-import { publicKey } from "@metaplex-foundation/umi";
+import { getFungibleTokenMetadata } from "../../common/helpers";
 import nftStore from "@/stores/nftStore";
-import { RemintingStatus } from "@/enums/collections.enums";
+import { MintType, RemintingStatus } from "@/enums/collections.enums";
+import { bs58 } from "@project-serum/anchor/dist/cjs/utils/bytes";
+import {
+  createNoopSigner,
+  generateSigner,
+  lamports,
+  none,
+  percentAmount,
+  publicKey,
+  some,
+} from "@metaplex-foundation/umi";
+import {
+  create,
+  DefaultGuardSetArgs,
+  getMerkleRoot,
+  GuardGroupArgs,
+} from "@metaplex-foundation/mpl-candy-machine";
+import { TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
+import { token } from "@metaplex-foundation/js";
 
 dayjs.extend(utc);
 
@@ -86,192 +91,111 @@ export const claimVictory = async (
     throw new Error("Invalid derug authority");
   }
 
-  if (request.publicMint) {
-    try {
-      const candyMachine = Keypair.generate();
+  try {
+    const candyMachine = generateSigner(umi);
 
-      const candyMachineCreator = findCandyMachineAuthorityPda(umi, {
-        candyMachine: publicKey(candyMachine.publicKey),
-      });
+    await saveCandyMachineData({
+      candyMachineKey: candyMachine.publicKey.toString(),
+      candyMachineSecretKey: bs58.encode(candyMachine.secretKey),
+      derugData: derug.address.toString(),
+    });
 
-      await saveCandyMachineData({
-        candyMachineKey: candyMachine.publicKey.toString(),
-        candyMachineSecretKey: stringifyData(candyMachine.secretKey),
-        derugData: derug.address.toString(),
-      });
-
-      remainingAccounts.push({
-        isSigner: false,
-        isWritable: true,
-        pubkey: candyMachine.publicKey,
-      });
-      remainingAccounts.push({
-        isSigner: false,
-        isWritable: false,
-        pubkey: new PublicKey(candyMachineCreator[0]),
-      });
-
-      if (request.mintCurrency) {
-        const tokenAcc = getAssociatedTokenAddressSync(
-          request.mintCurrency,
-          wallet.publicKey!
-        );
-        const accInfo = await RPC_CONNECTION.getAccountInfo(tokenAcc);
-
-        if (accInfo) {
-          remainingAccounts.push({
-            isSigner: false,
-            isWritable: true,
-            pubkey: tokenAcc,
-          });
-        } else {
-          const ix = createAssociatedTokenAccountInstruction(
-            wallet.publicKey!,
-            tokenAcc,
-            TOKEN_PROGRAM_ID,
-            request.mintCurrency
-          );
-
-          instructions.push({
-            instructions: [ix],
-            pendingDescription:
-              "Creating token account for accepting public mint royalites",
-            successDescription: "Successfully created token account",
-          });
-        }
-      }
-    } catch (error: any) {
-      console.log(error);
-
-      toast.error(
-        "Failed to get all necessary data for Candy Machine:",
-        error.message
+    if (request.mintCurrency) {
+      const tokenAcc = getAssociatedTokenAddressSync(
+        request.mintCurrency,
+        wallet.publicKey!
       );
-      return;
+      const accInfo = await RPC_CONNECTION.getAccountInfo(tokenAcc);
+
+      if (accInfo) {
+        remainingAccounts.push({
+          isSigner: false,
+          isWritable: true,
+          pubkey: tokenAcc,
+        });
+      } else {
+        const ix = createAssociatedTokenAccountInstruction(
+          wallet.publicKey!,
+          tokenAcc,
+          TOKEN_PROGRAM_ID,
+          request.mintCurrency
+        );
+
+        instructions.push({
+          instructions: [ix],
+          pendingDescription:
+            "Creating token account for accepting public mint royalites",
+          successDescription: "Successfully created token account",
+        });
+      }
     }
+
+    const [remintConfigAddress] = PublicKey.findProgramAddressSync(
+      [remintConfigSeed, derug.address.toBuffer()],
+      derugProgram.programId
+    );
+
+    const claimVictoryIx = await derugProgram.methods
+      .claimVictory()
+      .accounts({
+        derugData: derug.address,
+        derugRequest: request.address,
+        payer: wallet.publicKey!,
+        remintConfig: remintConfigAddress,
+        feeWallet: feeWallet,
+        systemProgram: SystemProgram.programId,
+      })
+      .remainingAccounts(remainingAccounts)
+      .instruction();
+
+    const collectionNft = await metaplex.nfts().findByMint({
+      mintAddress: new PublicKey(chainCollectionData.collectionMint),
+    });
+
+    const collectionMint = generateSigner(umi);
+
+    const createNft = (
+      await metaplex.nfts().builders().create({
+        name: collectionNft.name,
+        sellerFeeBasisPoints: request.sellerFeeBps,
+        uri: collectionNft.uri,
+        isMutable: true,
+      })
+    ).toTransaction(await RPC_CONNECTION.getLatestBlockhash());
+
+    const createTx = await create(umi, {
+      candyMachine,
+      collectionUpdateAuthority: createNoopSigner(publicKey(wallet.publicKey)),
+      creators: request.creators.map((c) => ({
+        address: publicKey(c.address),
+        percentageShare: c.share,
+        verified: false,
+      })),
+      itemsAvailable: chainCollectionData.totalSupply,
+      sellerFeeBasisPoints: percentAmount(request.sellerFeeBps, 2),
+      tokenStandard: TokenStandard.ProgrammableNonFungible,
+      collectionMint: publicKey(""),
+      groups: [
+        {
+          label: "remint",
+          guards: {
+            solPayment: {
+              destination: publicKey(feeWallet),
+              lamports: lamports(0.09),
+            },
+          },
+        },
+      ],
+    });
+  } catch (error: any) {
+    console.log(error);
+
+    toast.error(
+      "Failed to get all necessary data for Candy Machine:",
+      error.message
+    );
+    return;
   }
-
-  const [remintConfigAddress] = PublicKey.findProgramAddressSync(
-    [remintConfigSeed, derug.address.toBuffer()],
-    derugProgram.programId
-  );
-
-  const claimVictoryIx = await derugProgram.methods
-    .claimVictory()
-    .accounts({
-      derugData: derug.address,
-      derugRequest: request.address,
-      payer: wallet.publicKey!,
-      remintConfig: remintConfigAddress,
-      feeWallet: feeWallet,
-      systemProgram: SystemProgram.programId,
-    })
-    .remainingAccounts(remainingAccounts)
-    .instruction();
-
-  const tokenAccount = Keypair.generate();
-  const collection = Keypair.generate();
-
-  const createTokenAcc = SystemProgram.createAccount({
-    fromPubkey: wallet.publicKey!,
-    lamports: await getMinimumBalanceForRentExemptAccount(RPC_CONNECTION),
-    newAccountPubkey: tokenAccount.publicKey,
-    programId: TOKEN_PROGRAM_ID,
-    space: AccountLayout.span,
-  });
-
-  const createMint = SystemProgram.createAccount({
-    fromPubkey: wallet.publicKey!,
-    lamports: await getMinimumBalanceForRentExemptMint(RPC_CONNECTION),
-    newAccountPubkey: collection.publicKey,
-    programId: TOKEN_PROGRAM_ID,
-    space: MintLayout.span,
-  });
-
-  const [pdaAuthority] = PublicKey.findProgramAddressSync(
-    [derugDataSeed, request.address.toBuffer(), authoritySeed],
-    derugProgram.programId
-  );
-
-  const [collectionAuthority] = PublicKey.findProgramAddressSync(
-    [
-      metadataSeed,
-      METAPLEX_PROGRAM.toBuffer(),
-      collection.publicKey.toBuffer(),
-      collectionAuthoritySeed,
-      pdaAuthority.toBuffer(),
-    ],
-    METAPLEX_PROGRAM
-  );
-
-  const [collectionMetadata] = PublicKey.findProgramAddressSync(
-    [
-      metadataSeed,
-      METAPLEX_PROGRAM.toBuffer(),
-      collection.publicKey.toBuffer(),
-    ],
-    METAPLEX_PROGRAM
-  );
-
-  const [collectionMasterEdition] = PublicKey.findProgramAddressSync(
-    [
-      metadataSeed,
-      METAPLEX_PROGRAM.toBuffer(),
-      collection.publicKey.toBuffer(),
-      editionSeed,
-    ],
-    METAPLEX_PROGRAM
-  );
-
-  const initRemintingIx = await derugProgram.methods
-    .initializeReminting()
-    .accounts({
-      derugData: derug.address,
-      derugRequest: request.address,
-      payer: wallet.publicKey!,
-      pdaAuthority,
-      remintConfig: remintConfigAddress,
-      feeWallet: feeWallet,
-      collectionAuthorityRecord: collectionAuthority,
-      newCollection: collection.publicKey,
-      tokenAccount: tokenAccount.publicKey,
-      metadataAccount: collectionMetadata,
-      masterEdition: collectionMasterEdition,
-      metadataProgram: METAPLEX_PROGRAM,
-      rent: SYSVAR_RENT_PUBKEY,
-      systemProgram: SystemProgram.programId,
-      tokenProgram: TOKEN_PROGRAM_ID,
-    })
-    .instruction();
-
-  instructions.push({
-    instructions: [claimVictoryIx, createTokenAcc, createMint, initRemintingIx],
-    pendingDescription: "Initializing reminting and claiming victory",
-    successDescription: "Successfully initialized reminting",
-    partialSigner: [tokenAccount, collection],
-  });
-
-  const transferIx = SystemProgram.transfer({
-    fromPubkey: wallet.publicKey!,
-    lamports: UPLOAD_METADATA_FEE * LAMPORTS_PER_SOL * derug.totalSupply,
-    programId: SystemProgram.programId,
-    toPubkey: metadataUploaderWallet,
-  });
-
-  instructions.push({
-    instructions: [transferIx],
-    pendingDescription: "Transfering funds for metadata uploads",
-    successDescription:
-      "Funds successfully transfered.All metadata files for new collection will be uploaded shortly",
-  });
-
-  await sendTransaction(RPC_CONNECTION, instructions, wallet);
-
-  storeAllNfts({
-    derugData: derug.address.toString(),
-    derugRequest: request.address.toString(),
-    updateAuthority: chainCollectionData.firstCreator,
-  });
 };
 
 export const remintNft = async (
@@ -501,3 +425,101 @@ export async function getRemintConfig(
     return undefined;
   }
 }
+
+export const getRemintGurads = (
+  privateMintHoursDuration: number
+): GuardGroupArgs<DefaultGuardSetArgs> => {
+  return {
+    guards: {
+      solPayment: {
+        destination: publicKey(feeWallet),
+        lamports: lamports(PLATFORM_FEE),
+      },
+      startDate: {
+        date: dayjs().toDate(),
+      },
+      endDate: {
+        date: dayjs().add(privateMintHoursDuration, "hours").toDate(),
+      },
+    },
+    label: "remint",
+  };
+};
+
+export const getWlGuards = async (
+  wlPrice: number,
+  mintType: MintType,
+  destination: PublicKey,
+  startsAt: number,
+  hoursDuration: number,
+  whitelistedWallets?: string[],
+  mintCurrency?: PublicKey
+): Promise<GuardGroupArgs<DefaultGuardSetArgs>> => {
+  const merkleRoot = getMerkleRoot(whitelistedWallets);
+
+  return {
+    guards: {
+      botTax: {
+        lastInstruction: true,
+        lamports: lamports(wlPrice),
+      },
+      allowList: {
+        merkleRoot,
+      },
+      startDate: {
+        date: dayjs().add(startsAt, "hours").toDate(),
+      },
+      endDate: {
+        date: dayjs().add(hoursDuration, "hours").toDate(),
+      },
+      solPayment:
+        mintType === MintType.Sol
+          ? some({
+              destination: publicKey(destination),
+              lamports: lamports(wlPrice),
+            })
+          : none(),
+      tokenPayment:
+        mintType === MintType.Sol
+          ? some({
+              amount: wlPrice,
+              destinationAta: publicKey(destination),
+              mint: publicKey(mintCurrency),
+            })
+          : none(),
+    },
+    label: "whitelist",
+  };
+};
+
+export const getPublicGuards = (
+  publicPrice: number,
+  mintType: MintType,
+  destination: PublicKey,
+  mintCurrency?: PublicKey
+): GuardGroupArgs<DefaultGuardSetArgs> => {
+  return {
+    guards: {
+      botTax: {
+        lamports: lamports(publicPrice),
+        lastInstruction: true,
+      },
+      solPayment:
+        mintType === MintType.Sol
+          ? some({
+              destination: publicKey(destination),
+              lamports: lamports(publicPrice),
+            })
+          : none(),
+      tokenPayment:
+        mintType === MintType.Token
+          ? some({
+              amount: publicPrice,
+              destinationAta: publicKey(destination),
+              mint: publicKey(mintCurrency),
+            })
+          : none(),
+    },
+    label: "public",
+  };
+};

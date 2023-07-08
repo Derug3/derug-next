@@ -4,10 +4,6 @@ import { derugDataSeed } from "./seeds";
 import { derugProgramFactory } from "./utilities";
 import { RPC_CONNECTION } from "../utilities/utilities";
 
-// voting F7ehLXDAQqgWTQmxND3yEW6CxYMXh66PrM5g1DnMWjJ9
-// winning 7mVFUBoaq5oSbBDbcSxYTu2HP6PYEhnzWFU6rL5tybqx
-// no requests 9AiMvUTMiec1QfXb8ZJ1xUreNEuHu7nXpHb6g4YoFvtG
-
 export const getDummyCollectionData =
   async (): Promise<IChainCollectionData> => {
     const derugProgram = derugProgramFactory();
