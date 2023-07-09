@@ -3,7 +3,6 @@ import {
   AccountMeta,
   ComputeBudgetProgram,
   Keypair,
-  LAMPORTS_PER_SOL,
   PublicKey,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
@@ -13,6 +12,7 @@ import {
   ICollectionDerugData,
   IRequest,
 } from "../../interface/collections.interface";
+import { mintV2 } from "derug-tech-mpl-candy-machine";
 import { METAPLEX_PROGRAM, RPC_CONNECTION } from "../../utilities/utilities";
 import {
   authoritySeed,
@@ -37,6 +37,7 @@ import {
   getMinimumBalanceForRentExemptAccount,
   getMinimumBalanceForRentExemptMint,
   MintLayout,
+  NATIVE_MINT,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {
@@ -64,6 +65,7 @@ import {
   percentAmount,
   publicKey,
   some,
+  TransactionBuilder,
 } from "@metaplex-foundation/umi";
 import {
   create,
@@ -155,13 +157,48 @@ export const claimVictory = async (
     const collectionMint = generateSigner(umi);
 
     const createNft = (
-      await metaplex.nfts().builders().create({
-        name: collectionNft.name,
-        sellerFeeBasisPoints: request.sellerFeeBps,
-        uri: collectionNft.uri,
-        isMutable: true,
-      })
+      await metaplex
+        .nfts()
+        .builders()
+        .create({
+          name: collectionNft.name,
+          sellerFeeBasisPoints: request.sellerFeeBps,
+          uri: collectionNft.uri,
+          isMutable: true,
+          useNewMint: {
+            publicKey: new PublicKey(collectionMint.publicKey),
+            secretKey: collectionMint.secretKey,
+          },
+        })
     ).toTransaction(await RPC_CONNECTION.getLatestBlockhash());
+
+    let destination = wallet.publicKey;
+    let mintType = MintType.Sol;
+
+    if (request.mintCurrency.toString() !== NATIVE_MINT.toString()) {
+      mintType = MintType.Token;
+    }
+
+    const groups: GuardGroupArgs<DefaultGuardSetArgs>[] = [
+      getPublicGuards(
+        request.mintPrice,
+        mintType,
+        wallet.publicKey,
+        request.mintCurrency
+      ),
+    ];
+
+    groups.push(
+      await getWlGuards(
+        request.mintPrice,
+        mintType,
+        destination,
+        new Date().getHours() + request.privateMintDuration,
+        request.privateMintDuration,
+        [],
+        request.mintCurrency
+      )
+    );
 
     const createTx = await create(umi, {
       candyMachine,
@@ -174,18 +211,7 @@ export const claimVictory = async (
       itemsAvailable: chainCollectionData.totalSupply,
       sellerFeeBasisPoints: percentAmount(request.sellerFeeBps, 2),
       tokenStandard: TokenStandard.ProgrammableNonFungible,
-      collectionMint: publicKey(""),
-      groups: [
-        {
-          label: "remint",
-          guards: {
-            solPayment: {
-              destination: publicKey(feeWallet),
-              lamports: lamports(0.09),
-            },
-          },
-        },
-      ],
+      collectionMint: collectionMint.publicKey,
     });
   } catch (error: any) {
     console.log(error);
@@ -425,26 +451,6 @@ export async function getRemintConfig(
     return undefined;
   }
 }
-
-export const getRemintGurads = (
-  privateMintHoursDuration: number
-): GuardGroupArgs<DefaultGuardSetArgs> => {
-  return {
-    guards: {
-      solPayment: {
-        destination: publicKey(feeWallet),
-        lamports: lamports(PLATFORM_FEE),
-      },
-      startDate: {
-        date: dayjs().toDate(),
-      },
-      endDate: {
-        date: dayjs().add(privateMintHoursDuration, "hours").toDate(),
-      },
-    },
-    label: "remint",
-  };
-};
 
 export const getWlGuards = async (
   wlPrice: number,
