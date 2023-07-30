@@ -11,6 +11,9 @@ module.exports = {
         "green-color": "#2DD4BF",
         "main-dark": "#0d1117;",
         "text-color": "#dcdcdc",
+        'from-steel-500': 'rgb(71, 84, 103)',
+        'via-blue-800': 'rgb(29, 41, 57)',
+        'to-coolGray-900': '#fff'
       },
       dropShadow: {
         "2xl": "white 0px 0px 10px",

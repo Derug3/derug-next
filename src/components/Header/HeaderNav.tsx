@@ -1,4 +1,4 @@
-import derugPfp from "../../assets/derugPfp.png";
+import derugPfp from "../../assets/derugPfp2.svg";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { FC, useCallback, useEffect, useState } from "react";
 
@@ -67,8 +67,8 @@ const HeaderNav: FC = () => {
       <header
         className="flex items-center w-full justify-between px-10  rounded-lg shadow-xl"
         style={{
-          padding: "0.5em 1.5em",
-          background: "transparent",
+          padding: "0.5em 6.5em",
+          background: "#1D2939",
           // borderBottom: "1px solid  rgb(9, 194, 246)",
         }}
       >
@@ -81,9 +81,10 @@ const HeaderNav: FC = () => {
             src={derugPfp.src}
             style={{
               width: "12em",
-              paddingLeft: "1em",
               cursor: "pointer",
-              filter: "drop-shadow(rgb(9, 194, 246) 0px 0px 1px)",
+              // filter: "drop-shadow(#1D2939 0px 0px 13px)",
+              boxShadow: "0px 0px 13px #1D2939",
+              // border: '1px solid #101828'
             }}
           />
         </Link>
@@ -95,14 +96,14 @@ const HeaderNav: FC = () => {
       </motion.button>
     </Header.Item> */}
           <div className="flex">
-            <WalletMultiButton
+            {/* <WalletMultiButton
               className="w-full hover:bg-main-blue hover:text-white"
               style={{
                 fontSize: "1em",
                 fontFamily: "monospace",
                 fontWeight: "bold",
               }}
-            />
+            /> */}
             {wallet && wallet.publicKey && (
               <div
                 className="flex flex-row gap-3 cursor-pointer"
@@ -128,70 +129,6 @@ const HeaderNav: FC = () => {
                   </p>
                 </div>
               </div>
-
-              // <ActionMenu>
-              //   <ActionMenu.Button
-              //     sx={{
-              //       background: "transparent",
-              //       border: "none",
-              //       "&:hover": {
-              //         background: "transparen",
-              //       },
-              //     }}
-              //   >
-              //     {/* <FaUserCircle
-              //       style={{
-              //         fontSize: "2em",
-              //         cursor: "pointer",
-              //         color: "rgb(9, 194, 246) ",
-              //       }}
-              //     /> */}
-              //   </ActionMenu.Button>
-              //   <ActionMenu.Overlay
-              //     className="z-20"
-              //     onClick={(e) => e.preventDefault()}
-              //     sx={{
-              //       background: "black",
-              //       padding: 0,
-              //       borderRadius: 0,
-              //     }}
-              //   >
-              //     <ActionList className="z-10">
-              //       <ActionList.Item className="bg-red-200">
-              //         <div
-              //           onClick={userData ? unlinkTwitter : linkTwitter}
-              //           className="w-full border-b-[1px] border-main-blue p-0
-              //           flex justify-between items-center pb-2 z-20"
-              //         >
-              //           {userData && (
-              //             <img
-              //               src={userData.image}
-              //               className="rounded-[50px] w-10"
-              //             />
-              //           )}
-              //           <p className="text-main-blue font-bold text-md">
-              //             {userData ? userData.twitterHandle : "Link twitter"}
-              //           </p>
-              //           {userData ? (
-              //             <BsLink45Deg
-              //               style={{
-              //                 fontSize: "1.25em",
-              //                 color: "red",
-              //               }}
-              //             />
-              //           ) : (
-              //             <FaTwitter
-              //               style={{
-              //                 fontSize: "1.25em",
-              //                 color: "rgb(9, 194, 246) ",
-              //               }}
-              //             />
-              //           )}
-              //         </div>
-              //       </ActionList.Item>
-              //     </ActionList>
-              //   </ActionMenu.Overlay>
-              // </ActionMenu>
             )}
           </div>
         </div>

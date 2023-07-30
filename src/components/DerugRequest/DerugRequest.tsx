@@ -5,7 +5,7 @@ import { IRequest } from "../../interface/collections.interface";
 import { CollectionContext } from "../../stores/collectionContext";
 import { FADE_DOWN_ANIMATION_VARIANTS } from "../../utilities/constants";
 import DerugRequestItem from "./DerugRequestItem";
-import WinningRequest from "./WinningRequest";
+// import WinningRequest from "./WinningRequest";
 
 export const DerugRequest: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -85,11 +85,7 @@ export const DerugRequest: FC = () => {
         <div className="flex w-full flex-col gap-1 items-center justify-around p-3">
           {derugRequests && (
             <>
-              {getWinningRequest ? (
-                <WinningRequest request={getWinningRequest} />
-              ) : (
-                <>{renderDerugRequests}</>
-              )}
+              {renderDerugRequests}
             </>
           )}
         </div>

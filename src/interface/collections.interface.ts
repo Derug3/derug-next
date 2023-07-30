@@ -17,6 +17,19 @@ export interface ICollectionData {
   numMints?: number;
   categories?: any[];
 }
+export interface ICollectionVolume {
+  collection: ICollectionData;
+  marketCap: number;
+  symbol: string;
+  numMints: number;
+  floorPrice: number;
+  volume1h: number | null;
+  volume24h: number | null;
+  volume7d: number | null;
+  floor1h: number | null;
+  floor24h: number | null;
+  floor7d: number | null;
+}
 
 export interface IRequest {
   address: PublicKey;
@@ -131,20 +144,6 @@ export interface IActiveRequest {
   request: PublicKey;
   voteCount: number;
   winning: boolean;
-}
-
-export interface ICollectionVolume {
-  collection: ICollectionData;
-  marketCap: number;
-  symbol: string;
-  numMints: number;
-  floorPrice: number;
-  volume1h: number | null;
-  volume24h: number | null;
-  volume7d: number | null;
-  floor1h: number | null;
-  floor24h: number | null;
-  floor7d: number | null;
 }
 
 export interface WlSettingsDto {

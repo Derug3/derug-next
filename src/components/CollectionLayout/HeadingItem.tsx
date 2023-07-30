@@ -26,7 +26,6 @@ const HeadingItem: FC<{
       <span
         className="text-sm border-1 p-2 w-1/2 rounded-lg text-gray-400"
         style={{
-          fontFamily: "monospace",
           fontWeight: 200,
           border: "1px solid rgba(9,194,246,.15)",
         }}
@@ -37,7 +36,7 @@ const HeadingItem: FC<{
         <span
           className="text-sm p-2 w-1/2 rounded-lg text-white"
           style={{
-            fontFamily: "monospace",
+            // fontFamily: "monospace",
             border: "1px solid rgba(9,194,246,.75)",
           }}
         >
@@ -52,7 +51,7 @@ const HeadingItem: FC<{
         >
           <Countdown
             onComplete={refetchData}
-            className="font-mono text-sm
+            className="text-sm
    text-orange-800 p-2"
             date={date}
           />

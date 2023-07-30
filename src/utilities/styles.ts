@@ -49,7 +49,7 @@ export const selectStylesPrimary = {
   control(base: any, props: any) {
     return {
       background: "#0d1117",
-      fontFamily: "monospace",
+      fontFamily: "Bungee",
       display: "flex",
       alignItems: "center",
     };

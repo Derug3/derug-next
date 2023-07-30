@@ -53,7 +53,7 @@ export const getWlConfig = async (
   derugAddress: string
 ): Promise<WlSettingsDto> => {
   //TODO:remove ekser
-  return get(`${WALLET_WL}${ALL}/${"nice-mice"}`);
+  return get(`${WALLET_WL}${ALL}/${derugAddress}`);
 };
 
 export const storeWlConfig = async (wlDto: SaveWlSettingsDto) => {

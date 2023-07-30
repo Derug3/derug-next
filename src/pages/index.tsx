@@ -40,6 +40,9 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const { name } = useDebounce(searchValue);
 
+  console.log(activeCollections, 'activeCollections');
+
+
   const router = useRouter()
   useEffect(() => {
     void getCollectionsData();
@@ -81,6 +84,8 @@ const Home = () => {
     try {
       setLoading(true);
       const randomCollections = await getRandomCollections();
+      console.log(randomCollections, "randomCollections");
+
       setFilteredCollections(randomCollections);
       setCollections(randomCollections);
       setLoading(false);
@@ -151,17 +156,17 @@ const Home = () => {
     );
   }, [filteredCollections, searchLoading]);
 
-  const renderTopCollections = useMemo(() => {
-    return topVolumeCollections?.map((c) => {
-      return <CollectionItem collection={c} key={c.symbol} bigImage={true} />;
+  const renderRandomCollections = useMemo(() => {
+    return collections?.map((c) => {
+      return c.image && <CollectionItem collection={c} key={c.symbol} bigImage={true} />;
     });
-  }, [topVolumeCollections]);
+  }, [collections]);
 
-  const renderHotCollections = useMemo(() => {
-    return hotCollections?.map((c) => {
-      return <CollectionItem collection={c} key={c.symbol} bigImage={false} />;
-    });
-  }, [hotCollections]);
+  // const renderHotCollections = useMemo(() => {
+  //   return hotCollections?.map((c) => {
+  //     return <CollectionItem collection={c} key={c.symbol} bigImage={false} />;
+  //   });
+  // }, [hotCollections]);
 
   const getFilterOptions = useMemo(() => {
     return Object.values(CollectionVolumeFilter).map((c: any) => {
@@ -180,18 +185,11 @@ const Home = () => {
         display: "flex",
         flexDirection: "column",
         zoom: "80%",
-        padding: "3em",
+        padding: "3em 8em",
+        fontFamily: "Bungee",
         overflowX: "hidden",
       }}
     >
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      ></div>
-
       <div
         style={{
           width: "50%",
@@ -204,7 +202,7 @@ const Home = () => {
           className="py-5 text-center"
         >
           <div
-            className="w-full animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 text-5xl font-black bg-clip-text text-center font-display  tracking-[-0.02em] text-transparent drop-shadow-sm md:text-2xl align-center font-mono animate-[wiggle_1s_ease-in-out_infinite]"
+            className="w-full animate-text bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% text-5xl  bg-clip-text text-center font-display text-transparent drop-shadow-sm md:text-2xl align-center animate-[wiggle_1s_ease-in-out_infinite]"
           >
             Getting rugged collections back to life
           </div>
@@ -239,16 +237,12 @@ const Home = () => {
         <></>
       )}
 
-      {/* todo refactor this into component */}
-      {topVolumeCollections && topVolumeCollections.length > 0 && (
-        <div className="w-full">
-          <HotCollections
-            collections={topVolumeCollections}
-            filter={filter}
-            setFilter={setFilter}
-          />
+      {/* create me a grid with 3 cols */}
+      <div className="flex flex-col w-full">
+        <div className="grid grid-cols-3 gap-12">
+          {renderRandomCollections}
         </div>
-      )}
+      </div>
     </div>
   );
 };

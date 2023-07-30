@@ -10,7 +10,7 @@ import {
   generateSkeletonArrays,
   getAllNftsFromCollection,
 } from "../../utilities/nft-fetching";
-import WinningRequest from "../DerugRequest/WinningRequest";
+// import WinningRequest from "../DerugRequest/WinningRequest";
 import { toast } from "react-hot-toast";
 import RemintNft from "./RemintNft";
 import Skeleton from "react-loading-skeleton";
@@ -179,7 +179,7 @@ export const Remint: FC<{
 
   return (
     <div className="w-full flex-col gap-10">
-      <WinningRequest request={getWinningRequest!} />
+      {/* <WinningRequest request={getWinningRequest!} /> */}
       <>
         {collectionDerug?.status === DerugStatus.UploadingMetadata ? (
           <div className="text-center text-lg m-10">

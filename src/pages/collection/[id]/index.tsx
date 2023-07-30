@@ -215,9 +215,10 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         className="overflow-y-auto pt-5"
         style={{
           zoom: "85%",
+          padding: "0.5em 6.5em",
         }}
       >
-        <div className="overflow-y-clip flex flex-col">
+        <div className="overflow-y-clip flex flex-col ">
           {wallet && derugRequestVisible && (
             <AddDerugRequst
               isOpen={derugRequestVisible}
@@ -279,17 +280,17 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         <>
           {(collectionDerug.status === DerugStatus.Initialized ||
             collectionDerug.status === DerugStatus.Voting) &&
-          showDerugRequests &&
-          !hasWinning ? (
+            showDerugRequests &&
+            !hasWinning ? (
             <DerugRequest />
           ) : (
             <>
               {remintConfig &&
-              (Number(remintConfig.privateMintEnd) < dayjs().unix() * 1000 ||
-                (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
-              candyMachine &&
-              Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
-              Number(candyMachine.candyMachine.itemsLoaded) ===
+                (Number(remintConfig.privateMintEnd) < dayjs().unix() * 1000 ||
+                  (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
+                candyMachine &&
+                Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
+                Number(candyMachine.candyMachine.itemsLoaded) ===
                 Number(candyMachine.candyMachine.data.itemsAvailable) ? (
                 <PublicMint />
               ) : (
