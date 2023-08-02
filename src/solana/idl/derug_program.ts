@@ -76,30 +76,6 @@ export type DerugProgram = {
       ];
       args: [
         {
-          name: "utilityDtos";
-          type: {
-            vec: {
-              defined: "UpdateUtilityDataDto";
-            };
-          };
-        },
-        {
-          name: "sellerFeeBps";
-          type: "u32";
-        },
-        {
-          name: "publicMintPrice";
-          type: {
-            option: "u64";
-          };
-        },
-        {
-          name: "privateMintDuration";
-          type: {
-            option: "i64";
-          };
-        },
-        {
           name: "newName";
           type: "string";
         },
@@ -108,17 +84,17 @@ export type DerugProgram = {
           type: "string";
         },
         {
-          name: "walletLimit";
-          type: {
-            option: "u8";
-          };
-        },
-        {
           name: "creators";
           type: {
             vec: {
               defined: "DeruggerCreator";
             };
+          };
+        },
+        {
+          name: "mintConfig";
+          type: {
+            defined: "MintConfig";
           };
         }
       ];
@@ -200,11 +176,6 @@ export type DerugProgram = {
           isSigner: true;
         },
         {
-          name: "remintConfig";
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: "feeWallet";
           isMut: true;
           isSigner: false;
@@ -234,13 +205,13 @@ export type DerugProgram = {
         {
           name: "newCollection";
           isMut: true;
-          isSigner: false;
+          isSigner: true;
           docs: ["CHECK"];
         },
         {
           name: "tokenAccount";
           isMut: true;
-          isSigner: false;
+          isSigner: true;
           docs: ["CHECK"];
         },
         {
@@ -251,23 +222,6 @@ export type DerugProgram = {
         },
         {
           name: "metadataAccount";
-          isMut: true;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "pdaAuthority";
-          isMut: false;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "remintConfig";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "collectionAuthorityRecord";
           isMut: true;
           isSigner: false;
           docs: ["CHECK"];
@@ -321,8 +275,23 @@ export type DerugProgram = {
           isSigner: false;
         },
         {
+          name: "authority";
+          isMut: true;
+          isSigner: true;
+        },
+        {
           name: "newCollection";
           isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "derugger";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "remintProof";
+          isMut: true;
           isSigner: false;
         },
         {
@@ -335,13 +304,11 @@ export type DerugProgram = {
           name: "oldMint";
           isMut: true;
           isSigner: false;
-          docs: ["CHECK"];
         },
         {
           name: "newMint";
-          isMut: true;
+          isMut: false;
           isSigner: false;
-          docs: ["CHECK"];
         },
         {
           name: "oldToken";
@@ -350,15 +317,13 @@ export type DerugProgram = {
         },
         {
           name: "newToken";
-          isMut: true;
+          isMut: false;
           isSigner: false;
-          docs: ["CHECK"];
         },
         {
           name: "oldMetadata";
           isMut: true;
           isSigner: false;
-          docs: ["CHECK"];
         },
         {
           name: "newMetadata";
@@ -367,9 +332,10 @@ export type DerugProgram = {
           docs: ["CHECK"];
         },
         {
-          name: "remintConfig";
+          name: "firstCreator";
           isMut: false;
           isSigner: false;
+          docs: ["CHECK"];
         },
         {
           name: "oldEdition";
@@ -390,6 +356,23 @@ export type DerugProgram = {
           docs: ["CHECK"];
         },
         {
+          name: "collectionMint";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "collectionMetadata";
+          isMut: false;
+          isSigner: false;
+          docs: ["CHECK"];
+        },
+        {
+          name: "collectionMasterEdition";
+          isMut: false;
+          isSigner: false;
+          docs: ["CHECK"];
+        },
+        {
           name: "payer";
           isMut: true;
           isSigner: true;
@@ -402,6 +385,18 @@ export type DerugProgram = {
         {
           name: "feeWallet";
           isMut: true;
+          isSigner: false;
+          docs: ["CHECK"];
+        },
+        {
+          name: "metaplexFoundationRuleset";
+          isMut: false;
+          isSigner: false;
+          docs: ["CHECK"];
+        },
+        {
+          name: "metaplexAuthorizationRules";
+          isMut: false;
           isSigner: false;
           docs: ["CHECK"];
         },
@@ -420,6 +415,16 @@ export type DerugProgram = {
           name: "tokenProgram";
           isMut: false;
           isSigner: false;
+        },
+        {
+          name: "sysvarInstructions";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "splAtaProgram";
+          isMut: false;
+          isSigner: false;
         }
       ];
       args: [
@@ -432,89 +437,6 @@ export type DerugProgram = {
           type: "string";
         }
       ];
-    },
-    {
-      name: "updateVerifyCollection";
-      accounts: [
-        {
-          name: "payer";
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: "nftMint";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "nftMetadata";
-          isMut: true;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "derugRequest";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "derugData";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "pdaAuthority";
-          isMut: false;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "collectionMint";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "collectionMetadata";
-          isMut: true;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "collectionMasterEdition";
-          isMut: true;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "derugger";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "collectionAuthority";
-          isMut: false;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "metadataProgram";
-          isMut: false;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "feeWallet";
-          isMut: true;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "systemProgram";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [];
     },
     {
       name: "closeProgramAccount";
@@ -636,11 +558,6 @@ export type DerugProgram = {
         },
         {
           name: "derugRequest";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "remintConfig";
           isMut: true;
           isSigner: false;
         },
@@ -793,33 +710,9 @@ export type DerugProgram = {
             type: "u32";
           },
           {
-            name: "walletLimit";
-            type: {
-              option: "u8";
-            };
-          },
-          {
             name: "requestStatus";
             type: {
               defined: "RequestStatus";
-            };
-          },
-          {
-            name: "mintPrice";
-            type: {
-              option: "u64";
-            };
-          },
-          {
-            name: "mintCurrency";
-            type: {
-              option: "publicKey";
-            };
-          },
-          {
-            name: "privateMintDuration";
-            type: {
-              option: "i64";
             };
           },
           {
@@ -831,16 +724,34 @@ export type DerugProgram = {
             };
           },
           {
-            name: "sellerFeeBps";
-            type: "u32";
+            name: "mintConfig";
+            type: {
+              defined: "MintConfig";
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "remintProof";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "derugData";
+            type: "publicKey";
           },
           {
-            name: "utilityData";
-            type: {
-              vec: {
-                defined: "UtilityData";
-              };
-            };
+            name: "reminter";
+            type: "publicKey";
+          },
+          {
+            name: "oldMint";
+            type: "publicKey";
+          },
+          {
+            name: "newMint";
+            type: "publicKey";
           }
         ];
       };
@@ -953,6 +864,62 @@ export type DerugProgram = {
           {
             name: "winning";
             type: "bool";
+          }
+        ];
+      };
+    },
+    {
+      name: "MintConfig";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "candyMachineKey";
+            type: "publicKey";
+          },
+          {
+            name: "publicMintPrice";
+            type: "u64";
+          },
+          {
+            name: "mintCurrency";
+            type: "publicKey";
+          },
+          {
+            name: "remintDuration";
+            type: "i64";
+          },
+          {
+            name: "sellerFeeBps";
+            type: "u16";
+          },
+          {
+            name: "whitelistConfig";
+            type: {
+              option: {
+                defined: "WhitelistConfig";
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "WhitelistConfig";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "price";
+            type: "u64";
+          },
+          {
+            name: "currency";
+            type: "publicKey";
+          },
+          {
+            name: "duration";
+            type: "u32";
           }
         ];
       };
@@ -1124,11 +1091,6 @@ export type DerugProgram = {
       fields: [
         {
           name: "derugData";
-          type: "publicKey";
-          index: false;
-        },
-        {
-          name: "remintConfig";
           type: "publicKey";
           index: false;
         }
@@ -1312,30 +1274,6 @@ export const IDL: DerugProgram = {
       ],
       args: [
         {
-          name: "utilityDtos",
-          type: {
-            vec: {
-              defined: "UpdateUtilityDataDto",
-            },
-          },
-        },
-        {
-          name: "sellerFeeBps",
-          type: "u32",
-        },
-        {
-          name: "publicMintPrice",
-          type: {
-            option: "u64",
-          },
-        },
-        {
-          name: "privateMintDuration",
-          type: {
-            option: "i64",
-          },
-        },
-        {
           name: "newName",
           type: "string",
         },
@@ -1344,17 +1282,17 @@ export const IDL: DerugProgram = {
           type: "string",
         },
         {
-          name: "walletLimit",
-          type: {
-            option: "u8",
-          },
-        },
-        {
           name: "creators",
           type: {
             vec: {
               defined: "DeruggerCreator",
             },
+          },
+        },
+        {
+          name: "mintConfig",
+          type: {
+            defined: "MintConfig",
           },
         },
       ],
@@ -1436,11 +1374,6 @@ export const IDL: DerugProgram = {
           isSigner: true,
         },
         {
-          name: "remintConfig",
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: "feeWallet",
           isMut: true,
           isSigner: false,
@@ -1470,13 +1403,13 @@ export const IDL: DerugProgram = {
         {
           name: "newCollection",
           isMut: true,
-          isSigner: false,
+          isSigner: true,
           docs: ["CHECK"],
         },
         {
           name: "tokenAccount",
           isMut: true,
-          isSigner: false,
+          isSigner: true,
           docs: ["CHECK"],
         },
         {
@@ -1487,23 +1420,6 @@ export const IDL: DerugProgram = {
         },
         {
           name: "metadataAccount",
-          isMut: true,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "pdaAuthority",
-          isMut: false,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "remintConfig",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "collectionAuthorityRecord",
           isMut: true,
           isSigner: false,
           docs: ["CHECK"],
@@ -1557,8 +1473,23 @@ export const IDL: DerugProgram = {
           isSigner: false,
         },
         {
+          name: "authority",
+          isMut: true,
+          isSigner: true,
+        },
+        {
           name: "newCollection",
           isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "derugger",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "remintProof",
+          isMut: true,
           isSigner: false,
         },
         {
@@ -1571,13 +1502,11 @@ export const IDL: DerugProgram = {
           name: "oldMint",
           isMut: true,
           isSigner: false,
-          docs: ["CHECK"],
         },
         {
           name: "newMint",
-          isMut: true,
+          isMut: false,
           isSigner: false,
-          docs: ["CHECK"],
         },
         {
           name: "oldToken",
@@ -1586,15 +1515,13 @@ export const IDL: DerugProgram = {
         },
         {
           name: "newToken",
-          isMut: true,
+          isMut: false,
           isSigner: false,
-          docs: ["CHECK"],
         },
         {
           name: "oldMetadata",
           isMut: true,
           isSigner: false,
-          docs: ["CHECK"],
         },
         {
           name: "newMetadata",
@@ -1603,9 +1530,10 @@ export const IDL: DerugProgram = {
           docs: ["CHECK"],
         },
         {
-          name: "remintConfig",
+          name: "firstCreator",
           isMut: false,
           isSigner: false,
+          docs: ["CHECK"],
         },
         {
           name: "oldEdition",
@@ -1626,6 +1554,23 @@ export const IDL: DerugProgram = {
           docs: ["CHECK"],
         },
         {
+          name: "collectionMint",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "collectionMetadata",
+          isMut: false,
+          isSigner: false,
+          docs: ["CHECK"],
+        },
+        {
+          name: "collectionMasterEdition",
+          isMut: false,
+          isSigner: false,
+          docs: ["CHECK"],
+        },
+        {
           name: "payer",
           isMut: true,
           isSigner: true,
@@ -1638,6 +1583,18 @@ export const IDL: DerugProgram = {
         {
           name: "feeWallet",
           isMut: true,
+          isSigner: false,
+          docs: ["CHECK"],
+        },
+        {
+          name: "metaplexFoundationRuleset",
+          isMut: false,
+          isSigner: false,
+          docs: ["CHECK"],
+        },
+        {
+          name: "metaplexAuthorizationRules",
+          isMut: false,
           isSigner: false,
           docs: ["CHECK"],
         },
@@ -1657,6 +1614,16 @@ export const IDL: DerugProgram = {
           isMut: false,
           isSigner: false,
         },
+        {
+          name: "sysvarInstructions",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "splAtaProgram",
+          isMut: false,
+          isSigner: false,
+        },
       ],
       args: [
         {
@@ -1668,89 +1635,6 @@ export const IDL: DerugProgram = {
           type: "string",
         },
       ],
-    },
-    {
-      name: "updateVerifyCollection",
-      accounts: [
-        {
-          name: "payer",
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: "nftMint",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "nftMetadata",
-          isMut: true,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "derugRequest",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "derugData",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "pdaAuthority",
-          isMut: false,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "collectionMint",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "collectionMetadata",
-          isMut: true,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "collectionMasterEdition",
-          isMut: true,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "derugger",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "collectionAuthority",
-          isMut: false,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "metadataProgram",
-          isMut: false,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "feeWallet",
-          isMut: true,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "systemProgram",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [],
     },
     {
       name: "closeProgramAccount",
@@ -1872,11 +1756,6 @@ export const IDL: DerugProgram = {
         },
         {
           name: "derugRequest",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "remintConfig",
           isMut: true,
           isSigner: false,
         },
@@ -2029,33 +1908,9 @@ export const IDL: DerugProgram = {
             type: "u32",
           },
           {
-            name: "walletLimit",
-            type: {
-              option: "u8",
-            },
-          },
-          {
             name: "requestStatus",
             type: {
               defined: "RequestStatus",
-            },
-          },
-          {
-            name: "mintPrice",
-            type: {
-              option: "u64",
-            },
-          },
-          {
-            name: "mintCurrency",
-            type: {
-              option: "publicKey",
-            },
-          },
-          {
-            name: "privateMintDuration",
-            type: {
-              option: "i64",
             },
           },
           {
@@ -2067,16 +1922,34 @@ export const IDL: DerugProgram = {
             },
           },
           {
-            name: "sellerFeeBps",
-            type: "u32",
+            name: "mintConfig",
+            type: {
+              defined: "MintConfig",
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: "remintProof",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "derugData",
+            type: "publicKey",
           },
           {
-            name: "utilityData",
-            type: {
-              vec: {
-                defined: "UtilityData",
-              },
-            },
+            name: "reminter",
+            type: "publicKey",
+          },
+          {
+            name: "oldMint",
+            type: "publicKey",
+          },
+          {
+            name: "newMint",
+            type: "publicKey",
           },
         ],
       },
@@ -2189,6 +2062,62 @@ export const IDL: DerugProgram = {
           {
             name: "winning",
             type: "bool",
+          },
+        ],
+      },
+    },
+    {
+      name: "MintConfig",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "candyMachineKey",
+            type: "publicKey",
+          },
+          {
+            name: "publicMintPrice",
+            type: "u64",
+          },
+          {
+            name: "mintCurrency",
+            type: "publicKey",
+          },
+          {
+            name: "remintDuration",
+            type: "i64",
+          },
+          {
+            name: "sellerFeeBps",
+            type: "u16",
+          },
+          {
+            name: "whitelistConfig",
+            type: {
+              option: {
+                defined: "WhitelistConfig",
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: "WhitelistConfig",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "price",
+            type: "u64",
+          },
+          {
+            name: "currency",
+            type: "publicKey",
+          },
+          {
+            name: "duration",
+            type: "u32",
           },
         ],
       },
@@ -2360,11 +2289,6 @@ export const IDL: DerugProgram = {
       fields: [
         {
           name: "derugData",
-          type: "publicKey",
-          index: false,
-        },
-        {
-          name: "remintConfig",
           type: "publicKey",
           index: false,
         },
