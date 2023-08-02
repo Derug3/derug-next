@@ -102,22 +102,24 @@ export const ActiveListings: FC<{
   <>
     {activeListings && (
       <div className="flex flex-col w-full gap-5">
-        <div className="flex flex-col justify-between items-start">
-          <span className="text-2xl font-mono text-gray-500	font-bold flex w-full text-centerw-full px-4">ACTIVE DERUGS 🛠</span>
+        <div className="flex flex-col w-full justify-center items-center">
+          <span className="text-2xl font-mono text-gray-500	font-bold flex px-4">ACTIVE DERUGS 🛠</span>
         </div>
         <div
-          className="grid grid-cols-3 gap-5 cursor-pointer overflow-hidden w-full"
+          className="flex w-full gap-5 cursor-pointer overflow-hidden w-full"
           style={{
             overflowY: "scroll",
           }}
         >
           {activeListings.map((cd, index) => {
             return (
-              <ActiveListingItem
-                key={index}
-                derugData={cd.derug}
-                collectionData={cd.collection}
-              />
+              <>
+                <ActiveListingItem
+                  key={index}
+                  derugData={cd.derug}
+                  collectionData={cd.collection}
+                />
+              </>
             );
           })}
         </div>

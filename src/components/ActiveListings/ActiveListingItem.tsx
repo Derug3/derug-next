@@ -39,7 +39,7 @@ export const ActiveListingItem: FC<{
         request.derugger.toString()
       );
       setTwtiterUserData(userTwitterData);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getStatus = useMemo(() => {
@@ -77,23 +77,27 @@ export const ActiveListingItem: FC<{
   return (
     <div
       onClick={() => navigate(`${COLLECTION}/${collectionData.symbol}`)}
-      className={`p-6 border border-gray-500 rounded-lg dark:border-gray dark:hover:bg-gray-900`}
-      style={{ background: "#0d1117" }}
+      className="rounded-lg	flex p-2 cursor-pointer overflow-hidden items-center justify-between rounded-lg shadow-xl bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500	opacity-[0.85] animate-text"
+    // style={{ background: '#1e521f' }}
     >
-      <div className="flex items-start gap-5 w-full">
-        <img className="w-56 rounded-sm" src={collectionData.image} alt="" />
-        <div className="flex flex-col gap-2 py-2 w-full bg-200">
-          <div className="w-full flex justify-between border-b-[1px] border-gray-200">
-            <span className="text-xl text-gray-400 uppercase font-mono">
+      <div className="flex justify-start w-full gap-5 items-center relative">
+        <img
+          src={collectionData.image}
+          alt="collectionImage"
+          className={`"w-[30em] h-[30em]`}
+        />
+        <div className="w-full flex flex-col items-center justify-between	absolute bottom-0 opacity-[0.85]">
+          <div className="w-full flex justify-between px-10" style={{ background: '#475467' }}>
+            <p className="text-xl font-white" style={{ fontWeight: 400, lineHeight: '44px' }}>
               {collectionData.name}
-            </span>
+            </p>
             <div className="flex items-center gap-2">
               {collectionData.discord && (
                 <FaDiscord
                   style={{
                     color: "rgb(88 101 242)",
                     cursor: "pointer",
-                    fontSize: "1em",
+                    fontSize: "2em",
                   }}
                 />
               )}
@@ -102,81 +106,35 @@ export const ActiveListingItem: FC<{
                   style={{
                     color: "rgb(29 161 242)",
                     cursor: "pointer",
-                    fontSize: "1em",
+                    fontSize: "2em",
                   }}
                 />
               )}
             </div>
           </div>
-          <div className="w-full flex justify-between">
-            <span className="text-gray-200 font-bold font-mono">Status:</span>
-            <span className={`text-${getStatusColor} font-mono`}>
-              {getStatus(derugData.status)}
-            </span>
-          </div>
-          <div className="w-full flex justify-between">
-            <span className="text-gray-200 font-bold font-mono">
-              Time left:
-            </span>
-            <Countdown
-              className="text-gray-200 font-mono text-red-400"
-              date={derugData.periodEnd}
-            />
-          </div>
-          <div className="w-full flex justify-between font-mono">
-            <span className="text-gray-200 font-bold font-mono">
-              Total supply:
-            </span>
-            <span className="text-gray-200 font-mono">
-              {derugData.totalSupply}
-            </span>
+          <div className="flex flex-col w-full justify-start items-start gap-2 px-1.5 py-1 px-10" style={{ background: 'rgb(14 26 43)' }}>
+            <p className="text-lg font-extralight flex w-full justify-between relateve">
+              Status{" "}
+              <span className={`text-${getStatusColor}`}>{getStatus(derugData.status)}</span>
+            </p>
+            <p className="text-lg font-extralight flex w-full justify-between">
+              Time left:{" "}
+              <Countdown
+                className="text-gray-200  text-red-400"
+                date={derugData.periodEnd}
+              />
+            </p>
+            <p className="text-lg font-extralight flex w-full justify-between">
+              Total supply{" "}
+              <span className="text-white">{derugData.totalSupply}</span>
+            </p>
           </div>
           {winningRequest && (
-            <div className="flex justify-between w-full">
-              <span className="text-gray-200 font-bold font-mono">
-                New Name:
-              </span>
-              <span className="text-gray-200 font-mono">
-                {winningRequest.newName}
-              </span>
-            </div>
-          )}
-          {(twitterUserData || winningRequest) && (
-            <div className="flex justify-between">
-              <span className="text-gray-200 font-bold font-mono">Won by:</span>
-              {twitterUserData &&
-              twitterUserData.image &&
-              twitterUserData.twitterName ? (
-                <div className="flex gap-2">
-                  <img
-                    className="w-16 rounded-[50px]"
-                    src={twitterUserData.image}
-                    alt=""
-                  />
-                  <span className="text-gray-200 font-mono">
-                    {twitterUserData.twitterHandle}
-                  </span>
-                </div>
-              ) : (
-                <span className="text-main-blue">
-                  {getTrimmedPublicKey(winningRequest.derugger.toString())}
-                </span>
-              )}
-              {!twitterUserData && winningRequest && (
-                <span className="text-gray-200 font-mono">
-                  {getTrimmedPublicKey(winningRequest.derugger)}
-                </span>
-              )}
-            </div>
-          )}
-          {!twitterUserData && !winningRequest && (
-            <div className="w-full flex justify-between">
-              <span className="text-gray-200 font-bold font-mono">
-                Requests count:
-              </span>
-              <span className="text-gray-200 font-mono">
-                {derugData.addedRequests.length}
-              </span>
+            <div className="flex justify-between w-full px-10" style={{ background: '#475467' }}>
+              <p className="text-lg font-extralight flex w-full justify-between">
+                New Name:{" "}
+                <span className="text-white">{winningRequest.newName}</span>
+              </p>
             </div>
           )}
         </div>

@@ -84,8 +84,6 @@ const Home = () => {
     try {
       setLoading(true);
       const randomCollections = await getRandomCollections();
-      console.log(randomCollections, "randomCollections");
-
       setFilteredCollections(randomCollections);
       setCollections(randomCollections);
       setLoading(false);
@@ -157,8 +155,9 @@ const Home = () => {
   }, [filteredCollections, searchLoading]);
 
   const renderRandomCollections = useMemo(() => {
+
     return collections?.map((c) => {
-      return c.image && <CollectionItem collection={c} key={c.symbol} bigImage={true} />;
+      return <CollectionItem collection={c} key={c.symbol} bigImage={true} />
     });
   }, [collections]);
 
@@ -184,7 +183,7 @@ const Home = () => {
         margin: "auto",
         display: "flex",
         flexDirection: "column",
-        zoom: "80%",
+        zoom: "70%",
         padding: "3em 8em",
         fontFamily: "Bungee",
         overflowX: "hidden",
@@ -228,7 +227,7 @@ const Home = () => {
       </div>
 
       {activeCollections && activeCollections.length ? (
-        <div className="flex w-full">
+        <div className="flex w-full mb-10">
           <ActiveListings activeListings={activeCollections} />
           {/* here as well */}
         </div>
@@ -239,7 +238,10 @@ const Home = () => {
 
       {/* create me a grid with 3 cols */}
       <div className="flex flex-col w-full">
-        <div className="grid grid-cols-3 gap-12">
+        <div className="flex flex-wrap gap-12">
+          <div className="flex flex-col w-full justify-center items-center">
+            <span className="text-2xl font-mono text-gray-500	font-bold flex px-4">BROWSE COLLECTIONS 🐭</span>
+          </div>
           {renderRandomCollections}
         </div>
       </div>

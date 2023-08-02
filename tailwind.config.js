@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       animation: {
         text: "text 5s ease infinite",
+        scale: "scale 0.5s ease-in-out",
       },
       colors: {
         "main-blue": "rgb(9, 194, 246)",
@@ -24,6 +25,10 @@ module.exports = {
         ],
       },
       keyframes: {
+        scale: {
+          '0%': { transform: 'scale(0)', opacity: 0 },
+          '100%': {  transform: 'scale(1)', opacity: 1},
+        },
         text: {
           "0%, 100%": {
             "background-size": "200% 200%",
