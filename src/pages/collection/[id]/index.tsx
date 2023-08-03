@@ -212,13 +212,9 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       }}
     >
       <div
-        className="overflow-y-auto pt-5"
-        style={{
-          zoom: "85%",
-          padding: "0.5em 6.5em",
-        }}
+        className="flex flex-col pt-12 lg:px-24  px-0"
       >
-        <div className="overflow-y-clip flex flex-col ">
+        <div className="flex flex-col">
           {wallet && derugRequestVisible && (
             <AddDerugRequst
               isOpen={derugRequestVisible}
@@ -227,31 +223,24 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               setDerugRequest={setDerugRequests}
             />
           )}
-          <div className="sticky top-0 grid">
-            <HeaderTabs
-              setSelectedInfo={setSelectedInfo}
-              selectedData={selectedData}
-              setSelectedData={setSelectedData}
-              openDerugModal={(val) => {
-                setDerugRequestVisible(val);
-              }}
-            />
-          </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "50% 50%",
-            }}
-          >
+
+          <div className="flex flex-col lg:flex-row w-full justify-center">
             <div
-              className="flex flex-col justify-between items-start"
-              style={{
-                transform: "translateY(-42px)",
-              }}
+              className="flex flex-col w-full justify-center items-center gap-5"
             >
-              <div className="flex flex-col w-full justify-between h-full">
-                <LeftPane selectedInfo={selectedInfo} />
+              <LeftPane selectedInfo={selectedInfo} />
+              <div className="flex flex-col gap-12 w-[56em]">
+                <div className="flex items-center justify-center">
+                  <HeaderTabs
+                    setSelectedInfo={setSelectedInfo}
+                    selectedData={selectedData}
+                    setSelectedData={setSelectedData}
+                    openDerugModal={(val) => {
+                      setDerugRequestVisible(val);
+                    }}
+                  />
+                </div>
                 <CollectionStats
                   collection={collectionStats}
                   collectionDerug={collectionDerug}
@@ -260,19 +249,14 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
                 />
               </div>
             </div>
-            <div
-              style={{
-                maxHeight: "30em",
-                overflowY: "scroll",
-              }}
-            >
-              <RightPane
-                selectedData={selectedData}
-                chainCollectionData={chainCollectionData}
-                traits={traits}
-                iframeRef={iframeRef}
-              />
-            </div>
+          </div>
+          <div className="flex w-full items-center justify-center">
+            <RightPane
+              selectedData={selectedData}
+              chainCollectionData={chainCollectionData}
+              traits={traits}
+              iframeRef={iframeRef}
+            />
           </div>
         </div>
       </div>

@@ -22,9 +22,9 @@ const HeadingItem: FC<{
   }, [collectionDerug]);
 
   return (
-    <div className="flex flex-row items-center justify-between text-center w-full gap-3">
+    <div className="flex flex-row items-center justify-between text-center w-full whitespace-nowrap gap-3">
       <span
-        className="text-sm border-1 p-2 w-1/2 rounded-lg text-gray-400"
+        className="flex w-full text-sm border-1 p-2 rounded-lg text-gray-400"
         style={{
           fontWeight: 200,
           border: "1px solid rgba(9,194,246,.15)",
@@ -34,17 +34,17 @@ const HeadingItem: FC<{
       </span>
       {!isCounter ? (
         <span
-          className="text-sm p-2 w-1/2 rounded-lg text-white"
+          className="flex w-full text-sm p-2 rounded-lg text-white"
           style={{
             // fontFamily: "monospace",
             border: "1px solid rgba(9,194,246,.75)",
           }}
         >
-          {amount} <span>{desc}</span>
+          {amount} <span className="flex w-full">{desc}</span>
         </span>
       ) : (
         <div
-          className="flex w-1/2 items-center justify-center"
+          className="flex w-full items-center justify-center"
           style={{
             border: "1px solid rgb(154 52 18)",
           }}

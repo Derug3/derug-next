@@ -44,31 +44,25 @@ export const HeaderTabs: FC<{
   }, [derugRequests, collectionDerug]);
 
   return (
-    <div
-      className="flex w-full self-start bg-gradient-to-r
-  font-mono text-gray-700 leading-6 px-10 pb-2 border-none justify-end"
-    >
-      <div className="w-full gap-5 flex justify-end">
-        <div className="w-1/2 flex pl-8">
-          <div className="w-full flex justify-between">
-            {wallet &&
-              wallet.publicKey &&
-              (!collectionDerug ||
-                (collectionDerug &&
-                  dayjs(collectionDerug?.periodEnd).isAfter(dayjs()))) &&
-              !derugRequests?.find(
-                (dr) => dr.derugger.toString() === wallet.publicKey?.toString()
-              ) && (
-                <button
-                  className="rounded-lg text-red px-3 text-white border border-main-blue hover:bg-main-blue"
-                  onClick={() => openDerugModal(true)}
-                >
-                  <span className="text-sm uppercase rounded-lg">
-                    Add derug request
-                  </span>
-                </button>
-              )}
-            <div
+    <>
+      {wallet &&
+        wallet.publicKey &&
+        (!collectionDerug ||
+          (collectionDerug &&
+            dayjs(collectionDerug?.periodEnd).isAfter(dayjs()))) &&
+        !derugRequests?.find(
+          (dr) => dr.derugger.toString() === wallet.publicKey?.toString()
+        ) || (
+          <button
+            className="rounded-lg py-2 px-3 text-white border border-white hover:bg-white hover:text-main-dark transition-all"
+            onClick={() => openDerugModal(true)}
+          >
+            <span className="text-sm uppercase rounded-lg">
+              Add derug request
+            </span>
+          </button>
+        )}
+      {/* <div
               aria-label="Main"
               className="sticky flex justify-end w-fit items-center"
             >
@@ -86,23 +80,7 @@ export const HeaderTabs: FC<{
                   TRAITS
                 </div>
               )}
-
-              <div
-                onClick={() => setSelectedData("statistics")}
-                style={getNavStyling(selectedData, "statistics")}
-              >
-                STATISTICS
-              </div>
-              <div
-                onClick={() => setSelectedData("solanafm")}
-                style={getNavStyling(selectedData, "solanafm")}
-              >
-                SOLANAFM
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </div> */}
+    </>
   );
 };
