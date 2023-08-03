@@ -6,12 +6,6 @@ import {
 } from "../../interface/collections.interface";
 import { FADE_DOWN_ANIMATION_VARIANTS } from "../../utilities/constants";
 import { ActiveListingItem } from "./ActiveListingItem";
-import { Swiper, SwiperSlide, SwiperProps } from 'swiper/react';
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/effect-cards';
-import 'swiper/css/pagination';
-import { EffectCoverflow, Pagination } from 'swiper/modules';
 
 const dummy: ICollectionData[] = [
   {
@@ -99,23 +93,6 @@ const dummy: ICollectionData[] = [
     isFlagged: true,
   },
 ];
-const swiperOptions = {
-  effect: 'coverflow',
-  coverflowEffect: {
-    rotate: 0,
-    stretch: 40,
-    depth: 100,
-    modifier: 1,
-    slideShadows: false,
-  },
-  grabCursor: true,
-  centeredSlides: true,
-  loop: true,
-  pagination: { clickable: true },
-  modules: [EffectCoverflow, Pagination],
-};
-
-
 export const ActiveListings: FC<{
   activeListings?: {
     derug: ICollectionDerugData;
@@ -134,18 +111,17 @@ export const ActiveListings: FC<{
             overflowY: "scroll",
           }}
         >
-          <Swiper {...swiperOptions}>
-            {activeListings.map((cd, index) => (
-              <SwiperSlide key={index}>
+          {activeListings.map((cd, index) => {
+            return (
+              <>
                 <ActiveListingItem
                   key={index}
                   derugData={cd.derug}
                   collectionData={cd.collection}
                 />
-              </SwiperSlide>
-            )
-            )}
-          </Swiper>
+              </>
+            );
+          })}
         </div>
       </div>
     )}

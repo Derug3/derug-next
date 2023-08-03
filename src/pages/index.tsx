@@ -117,6 +117,7 @@ const Home = () => {
       const validCollections: ICollectionData[] = [];
       setLoading(true);
       const randomCollections = await getRandomCollections();
+      setCollections(randomCollections);
 
       for (const collection of randomCollections) {
         const isValid = await checkImageStatus(collection.image); // Check image status
@@ -270,13 +271,13 @@ const Home = () => {
         </Text> */}
       </div>
 
-      {/* {activeCollections && activeCollections.length ? (
+      {activeCollections && activeCollections.length ? (
         <div className="flex w-full mb-10">
           <ActiveListings activeListings={activeCollections} />
         </div>
       ) : (
         <></>
-      )} */}
+      )}
 
       {/* create me a grid with 3 cols */}
       <div className="flex flex-col w-full">
