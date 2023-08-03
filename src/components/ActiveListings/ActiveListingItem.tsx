@@ -77,14 +77,14 @@ export const ActiveListingItem: FC<{
   return (
     <div
       onClick={() => navigate(`${COLLECTION}/${collectionData.symbol}`)}
-      className="rounded-lg	flex p-2 cursor-pointer overflow-hidden items-center justify-between rounded-lg shadow-xl bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500	opacity-[0.85] animate-text"
+      className="rounded-lg	flex p-2 cursor-pointer overflow-hidden items-center justify-between rounded-lg shadow-xl bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 animate-text"
     // style={{ background: '#1e521f' }}
     >
       <div className="flex justify-start w-full gap-5 items-center relative">
         <img
           src={collectionData.image}
           alt="collectionImage"
-          className={`"w-[30em] h-[30em]`}
+          className={`w-[30em] h-[30em]`}
         />
         <div className="w-full flex flex-col items-center justify-between	absolute bottom-0 opacity-[0.85]">
           <div className="w-full flex justify-between px-10" style={{ background: '#475467' }}>
