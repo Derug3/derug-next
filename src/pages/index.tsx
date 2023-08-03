@@ -23,6 +23,15 @@ import { useState, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import useDebounce from "@/hooks/useDebounce";
 import { useRouter } from "next/router";
+import { Swiper, SwiperSlide, SwiperProps } from 'swiper/react';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/effect-cards';
+import { EffectCoverflow } from 'swiper/modules';
+import { makeRequest } from "@/api/request.api";
+import { useIsMobile } from "@/hooks/useIsMobile";
+
+
 
 const Home = () => {
   const { setCollections, collections } = collectionsStore.getState();
@@ -39,11 +48,26 @@ const Home = () => {
   const [filter, setFilter] = useState(CollectionVolumeFilter.MarketCap);
   const [loading, setLoading] = useState(true);
   const { name } = useDebounce(searchValue);
-
-  console.log(activeCollections, 'activeCollections');
-
-
   const router = useRouter()
+  const isMobile = useIsMobile();
+
+  const swiperOptions = {
+    effect: 'coverflow',
+    coverflowEffect: {
+      rotate: 0,
+      stretch: 40,
+      depth: 100,
+      modifier: 1,
+      slideShadows: false,
+    },
+    grabCursor: true,
+    spaceBetween: 0,
+    slidesPerView: isMobile ? 1 : 4,
+    centeredSlides: true,
+    loop: true,
+    modules: [EffectCoverflow],
+  };
+
   useEffect(() => {
     void getCollectionsData();
     void getActiveCollections();
@@ -80,12 +104,36 @@ const Home = () => {
     }
   };
 
+  async function checkImageStatus(url) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        return true;
+      } else if (response.status === 404) {
+        return false;
+      }
+    } catch (error) {
+      console.error('Error occurred while fetching the image:', error);
+      return false;
+    }
+  }
+
   const getCollectionsData = async () => {
     try {
+      const validCollections: ICollectionData[] = [];
       setLoading(true);
       const randomCollections = await getRandomCollections();
-      setFilteredCollections(randomCollections);
       setCollections(randomCollections);
+
+      for (const collection of randomCollections) {
+        const isValid = await checkImageStatus(collection.image); // Check image status
+        if (isValid) {
+          validCollections.push(collection);
+        }
+      }
+
+      setFilteredCollections(validCollections);
+      setCollections(validCollections);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -154,12 +202,15 @@ const Home = () => {
     );
   }, [filteredCollections, searchLoading]);
 
-  const renderRandomCollections = useMemo(() => {
-
-    return collections?.map((c) => {
-      return <CollectionItem collection={c} key={c.symbol} bigImage={true} />
-    });
-  }, [collections]);
+  const renderRandomCollections = useMemo(() => (
+    <Swiper {...swiperOptions}>
+      {collections && collections.map((c, index) => (
+        <SwiperSlide key={index}>
+          <CollectionItem collection={c} key={c.symbol} bigImage={true} />
+        </SwiperSlide>)
+      )}
+    </Swiper>
+  ), [collections]);
 
   // const renderHotCollections = useMemo(() => {
   //   return hotCollections?.map((c) => {
@@ -178,20 +229,21 @@ const Home = () => {
 
   return (
     <div
+      className="w-full h-full lg:py-12 py-5 lg:px-32 px-5"
       style={{
         width: "100%",
         margin: "auto",
         display: "flex",
         flexDirection: "column",
         zoom: "70%",
-        padding: "3em 8em",
+        // padding: "3em 8em",
         fontFamily: "Bungee",
         overflowX: "hidden",
       }}
     >
       <div
         style={{
-          width: "50%",
+          // width: "50%",
           margin: "auto",
           position: "relative",
           marginBottom: "80px",
@@ -201,7 +253,7 @@ const Home = () => {
           className="py-5 text-center"
         >
           <div
-            className="w-full animate-text bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% text-5xl  bg-clip-text text-center font-display text-transparent drop-shadow-sm md:text-2xl align-center animate-[wiggle_1s_ease-in-out_infinite]"
+            className="w-full animate-text bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% text-2xl  bg-clip-text text-center font-display text-transparent drop-shadow-sm lg:text-3xl align-center animate-[wiggle_1s_ease-in-out_infinite]"
           >
             Getting rugged collections back to life
           </div>
@@ -229,10 +281,8 @@ const Home = () => {
       {activeCollections && activeCollections.length ? (
         <div className="flex w-full mb-10">
           <ActiveListings activeListings={activeCollections} />
-          {/* here as well */}
         </div>
       ) : (
-        // loading ? (
         <></>
       )}
 
@@ -240,7 +290,7 @@ const Home = () => {
       <div className="flex flex-col w-full">
         <div className="flex flex-wrap gap-12">
           <div className="flex flex-col w-full justify-center items-center">
-            <span className="text-2xl font-mono text-gray-500	font-bold flex px-4">BROWSE COLLECTIONS 🐭</span>
+            <span className="text-2xl font-mono text-gray-500	font-bold flex px-4">HOT COLLECTIONS 🔥</span>
           </div>
           {renderRandomCollections}
         </div>
@@ -250,3 +300,5 @@ const Home = () => {
 };
 
 export default Home;
+
+
