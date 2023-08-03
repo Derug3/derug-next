@@ -1,4 +1,4 @@
-import { RemintDto } from "@/interface/collections.interface";
+import { RemintDto, RemintResponse } from "@/interface/collections.interface";
 import {
   metadataSeed,
   editionSeed,
@@ -31,6 +31,7 @@ import {
 } from "@solana/web3.js";
 import { PUBLIC_REMINT } from "./url.api";
 import { post } from "./request.api";
+import toast from "react-hot-toast";
 
 export async function remintNft(
   wallet: AnchorWallet,
@@ -194,11 +195,19 @@ export async function remintMultipleNfts(
 
   const serializedTxs = signedTxs.map((tx) => tx.serialize());
 
-  const dto: RemintDto = {
-    signedTx: serializedTxs,
-  };
-
-  const resp = await post(PUBLIC_REMINT + "/" + "remint", dto);
+  serializedTxs.forEach(async (tx) => {
+    toast.promise(await post(PUBLIC_REMINT + "/" + "remint", tx), {
+      loading: "Reminting NFT",
+      success: (data: RemintResponse) => {
+        if (!data.succeded) {
+          throw new Error(data.message);
+        } else return "Successfully reminted";
+      },
+      error: (data: string) => {
+        return data;
+      },
+    });
+  });
 }
 
 export async function sendTransaction(

@@ -159,5 +159,11 @@ export interface SaveWlSettingsDto extends WlSettingsDto {
 }
 
 export interface RemintDto {
-  signedTx: any[];
+  signedTx: Buffer[];
+}
+
+export interface RemintResponse {
+  mint: string;
+  succeded: boolean;
+  message?: string;
 }
