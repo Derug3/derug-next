@@ -23,9 +23,32 @@ import { useState, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import useDebounce from "@/hooks/useDebounce";
 import { useRouter } from "next/router";
+import { Swiper, SwiperSlide, SwiperProps } from 'swiper/react';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/effect-cards';
+import { EffectCoverflow } from 'swiper/modules';
+import { makeRequest } from "@/api/request.api";
+
+const swiperOptions = {
+  effect: 'coverflow',
+  coverflowEffect: {
+    rotate: 0,
+    stretch: 40,
+    depth: 100,
+    modifier: 1,
+    slideShadows: false,
+  },
+  grabCursor: true,
+  slidesPerView: 4,
+  centeredSlides: true,
+  loop: true,
+  modules: [EffectCoverflow],
+};
 
 const Home = () => {
   const { setCollections, collections } = collectionsStore.getState();
+  const [validCollections, setValidCollections] = useState<ICollectionData[]>();
   const [searchValue, setSearchValue] = useState<string>();
   const [activeCollections, setActiveCollections] =
     useState<{ derug: ICollectionDerugData; collection: ICollectionData }[]>();
@@ -39,10 +62,6 @@ const Home = () => {
   const [filter, setFilter] = useState(CollectionVolumeFilter.MarketCap);
   const [loading, setLoading] = useState(true);
   const { name } = useDebounce(searchValue);
-
-  console.log(activeCollections, 'activeCollections');
-
-
   const router = useRouter()
   useEffect(() => {
     void getCollectionsData();
@@ -80,12 +99,34 @@ const Home = () => {
     }
   };
 
+  async function checkImageStatus(url) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        return true;
+      } else if (response.status === 404) {
+        return false;
+      }
+    } catch (error) {
+      console.error('Error occurred while fetching the image:', error);
+      return false;
+    }
+  }
+
   const getCollectionsData = async () => {
     try {
       setLoading(true);
       const randomCollections = await getRandomCollections();
-      setFilteredCollections(randomCollections);
-      setCollections(randomCollections);
+
+      for (const collection of randomCollections) {
+        const isValid = await checkImageStatus(collection.image); // Check image status
+        if (isValid) {
+          setValidCollections((prev) => prev ? [...prev, collection] : [collection]);
+        }
+      }
+
+      setFilteredCollections(validCollections);
+      setCollections(validCollections);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -154,12 +195,17 @@ const Home = () => {
     );
   }, [filteredCollections, searchLoading]);
 
-  const renderRandomCollections = useMemo(() => {
+  console.log(validCollections, "validCollections");
 
-    return collections?.map((c) => {
-      return <CollectionItem collection={c} key={c.symbol} bigImage={true} />
-    });
-  }, [collections]);
+  const renderRandomCollections = useMemo(() => (
+    <Swiper {...swiperOptions}>
+      {validCollections && validCollections.map((c, index) => (
+        <SwiperSlide key={index}>
+          <CollectionItem collection={c} key={c.symbol} bigImage={true} />
+        </SwiperSlide>)
+      )}
+    </Swiper>
+  ), [validCollections]);
 
   // const renderHotCollections = useMemo(() => {
   //   return hotCollections?.map((c) => {
@@ -226,15 +272,13 @@ const Home = () => {
         </Text> */}
       </div>
 
-      {activeCollections && activeCollections.length ? (
+      {/* {activeCollections && activeCollections.length ? (
         <div className="flex w-full mb-10">
           <ActiveListings activeListings={activeCollections} />
-          {/* here as well */}
         </div>
       ) : (
-        // loading ? (
         <></>
-      )}
+      )} */}
 
       {/* create me a grid with 3 cols */}
       <div className="flex flex-col w-full">
@@ -250,3 +294,5 @@ const Home = () => {
 };
 
 export default Home;
+
+

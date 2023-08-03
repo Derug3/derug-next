@@ -19,9 +19,9 @@ const CollectionItem: FC<{
   };
 
   return (
-    isValid ? <div
+    <div
       onClick={() => navigate(`/collection/${collection.symbol}`)}
-      className="rounded-lg	flex p-2 cursor-pointer overflow-hidden items-center justify-between rounded-lg shadow-xl bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%	opacity-[0.85] animate-text"
+      className="rounded-lg w-fit flex p-2 cursor-pointer overflow-hidden items-center justify-between rounded-lg shadow-xl bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%	opacity-[0.85] animate-text"
     >
       <div className="flex justify-start w-full gap-5 items-center relative" onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}>
@@ -73,7 +73,7 @@ const CollectionItem: FC<{
             </div>
           </div> : <></>}
       </div>
-    </div> : null
+    </div>
   );
 };
 
