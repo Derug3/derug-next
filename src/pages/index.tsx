@@ -48,7 +48,6 @@ const swiperOptions = {
 
 const Home = () => {
   const { setCollections, collections } = collectionsStore.getState();
-  const [validCollections, setValidCollections] = useState<ICollectionData[]>();
   const [searchValue, setSearchValue] = useState<string>();
   const [activeCollections, setActiveCollections] =
     useState<{ derug: ICollectionDerugData; collection: ICollectionData }[]>();
@@ -115,13 +114,14 @@ const Home = () => {
 
   const getCollectionsData = async () => {
     try {
+      const validCollections: ICollectionData[] = [];
       setLoading(true);
       const randomCollections = await getRandomCollections();
 
       for (const collection of randomCollections) {
         const isValid = await checkImageStatus(collection.image); // Check image status
         if (isValid) {
-          setValidCollections((prev) => prev ? [...prev, collection] : [collection]);
+          validCollections.push(collection);
         }
       }
 
@@ -195,17 +195,15 @@ const Home = () => {
     );
   }, [filteredCollections, searchLoading]);
 
-  console.log(validCollections, "validCollections");
-
   const renderRandomCollections = useMemo(() => (
     <Swiper {...swiperOptions}>
-      {validCollections && validCollections.map((c, index) => (
+      {collections && collections.map((c, index) => (
         <SwiperSlide key={index}>
           <CollectionItem collection={c} key={c.symbol} bigImage={true} />
         </SwiperSlide>)
       )}
     </Swiper>
-  ), [validCollections]);
+  ), [collections]);
 
   // const renderHotCollections = useMemo(() => {
   //   return hotCollections?.map((c) => {
