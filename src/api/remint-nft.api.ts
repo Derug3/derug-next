@@ -30,7 +30,7 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js";
 import { PUBLIC_REMINT } from "./url.api";
-import { post } from "./request.api";
+import { get, post } from "./request.api";
 import toast from "react-hot-toast";
 
 export async function remintNft(
@@ -210,27 +210,6 @@ export async function remintMultipleNfts(
   });
 }
 
-export async function sendTransaction(
-  connection: Connection,
-  instructions: TransactionInstruction[],
-  signers: Keypair[],
-  feePayer: Keypair,
-  partialSigner?: Keypair
-) {
-  const recentBlockhash = await connection.getLatestBlockhash();
-  const transaction = new Transaction({
-    recentBlockhash: recentBlockhash.blockhash,
-    feePayer: feePayer.publicKey,
-  });
-  transaction.add(...instructions);
-  if (partialSigner) {
-    transaction.partialSign(partialSigner);
-  }
-  signers.push(feePayer);
-
-  const tx = await connection.sendTransaction(transaction, signers);
-
-  await connection.confirmTransaction(tx);
-
-  return tx;
+export async function saveDerugData(derugData: PublicKey) {
+  await get(`${PUBLIC_REMINT}/save/${derugData}`);
 }

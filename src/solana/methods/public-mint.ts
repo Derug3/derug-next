@@ -353,6 +353,7 @@ export const storeCandyMachineItems = async (
     throw error;
   }
 };
+
 export const mintNftFromCandyMachine = async (
   remintConfig: IRemintConfig,
   wallet: AnchorWallet
