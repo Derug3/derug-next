@@ -1,3 +1,4 @@
+import { RemintDto } from "@/interface/collections.interface";
 import {
   metadataSeed,
   editionSeed,
@@ -19,12 +20,17 @@ import {
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import {
   ComputeBudgetProgram,
+  Connection,
   Keypair,
   PublicKey,
   SYSVAR_INSTRUCTIONS_PUBKEY,
   SYSVAR_RENT_PUBKEY,
   SystemProgram,
+  Transaction,
+  TransactionInstruction,
 } from "@solana/web3.js";
+import { PUBLIC_REMINT } from "./url.api";
+import { post } from "./request.api";
 
 export async function remintNft(
   wallet: AnchorWallet,
@@ -151,4 +157,71 @@ export async function remintNft(
     .instruction();
 
   return ix;
+}
+
+export async function remintMultipleNfts(
+  mints: string[],
+  wallet: AnchorWallet,
+  derugData: PublicKey,
+  requestAddress: PublicKey,
+  candyMachineKey: PublicKey,
+  oldCollectionMint: PublicKey,
+  newCollectionMint: PublicKey
+) {
+  let transactions: Transaction[] = [];
+
+  mints.forEach(async (mint) => {
+    const transaction = new Transaction({
+      recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
+      feePayer: wallet.publicKey,
+    });
+
+    const ix = await remintNft(
+      wallet,
+      mint,
+      derugData,
+      requestAddress,
+      candyMachineKey,
+      oldCollectionMint,
+      newCollectionMint
+    );
+
+    transaction.add(ix);
+    transactions.push(transaction);
+  });
+
+  const signedTxs = await wallet.signAllTransactions(transactions);
+
+  const serializedTxs = signedTxs.map((tx) => tx.serialize());
+
+  const dto: RemintDto = {
+    signedTx: serializedTxs,
+  };
+
+  const resp = await post(PUBLIC_REMINT + "/" + "remint", dto);
+}
+
+export async function sendTransaction(
+  connection: Connection,
+  instructions: TransactionInstruction[],
+  signers: Keypair[],
+  feePayer: Keypair,
+  partialSigner?: Keypair
+) {
+  const recentBlockhash = await connection.getLatestBlockhash();
+  const transaction = new Transaction({
+    recentBlockhash: recentBlockhash.blockhash,
+    feePayer: feePayer.publicKey,
+  });
+  transaction.add(...instructions);
+  if (partialSigner) {
+    transaction.partialSign(partialSigner);
+  }
+  signers.push(feePayer);
+
+  const tx = await connection.sendTransaction(transaction, signers);
+
+  await connection.confirmTransaction(tx);
+
+  return tx;
 }
