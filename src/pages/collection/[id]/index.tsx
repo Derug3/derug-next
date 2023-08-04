@@ -230,7 +230,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               className="flex flex-col w-full justify-center items-center gap-5"
             >
               <LeftPane selectedInfo={selectedInfo} />
-              <div className="flex flex-col gap-8 w-full">
+              <div className="flex flex-col gap-5 w-full">
                 <div className="flex items-center justify-end">
                   <HeaderTabs
                     setSelectedInfo={setSelectedInfo}
