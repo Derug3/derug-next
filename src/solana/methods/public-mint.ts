@@ -2,8 +2,6 @@ import { walletAdapterIdentity } from "@metaplex-foundation/js";
 import {
   addConfigLines,
   mintV2,
-  getMerkleRoot,
-  AllowList,
   create,
   DefaultGuardSetArgs,
   GuardGroupArgs,
@@ -11,16 +9,14 @@ import {
   findCandyGuardPda,
   SolPayment,
   TokenPayment,
-  route,
   fetchCandyMachine,
-  getMerkleProof,
   findMintCounterPda,
   fetchCandyGuard,
   CandyGuard,
   DefaultGuardSet,
   GuardGroup,
   fetchMintCounter,
-} from "@metaplex-foundation/mpl-candy-machine";
+} from "derug-tech-mpl-candy-machine";
 import { walletAdapterIdentity as umiAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 
 import {
@@ -57,13 +53,17 @@ import {
   CandyMachineDto,
   IDerugCandyMachine,
   IDerugInstruction,
-  IRemintConfig,
   MintingCurrency,
   PublicConfig,
   WhitelistConfig,
 } from "../../interface/derug.interface";
 import { remintConfigSeed } from "../seeds";
-import { derugProgramFactory, metaplex, umi } from "../utilities";
+import {
+  derugProgramFactory,
+  metaplex,
+  metaplexAuthorizationRuleSet,
+  umi,
+} from "../utilities";
 import { chunk } from "lodash";
 import { parseKeyArray, parseTransactionError } from "../../common/helpers";
 import { RPC_CONNECTION } from "../../utilities/utilities";
@@ -150,7 +150,7 @@ export const initCandyMachine = async (
       };
     } else {
       tokenPaymentConfig = {
-        amount: createBigInt(Number(remintConfigAccount.mintPrice)),
+        amount: createBigInt(Number(remintConfigAccount.publicMintPrice)),
         mint: publicKey(remintConfigAccount.mintCurrency),
         destinationAta: publicKey(remintConfigAccount.mintFeeTreasury!),
       };
@@ -260,14 +260,11 @@ export const initCandyMachine = async (
 
 export const storeCandyMachineItems = async (
   request: IRequest,
-  remintConfig: IRemintConfig,
   wallet: WalletContextState,
   derug: ICollectionDerugData
 ) => {
   try {
-    if (
-      derug.winningRequest?.toString() !== remintConfig.derugRequest.toString()
-    ) {
+    if (derug.winningRequest?.toString() !== request.address.toString()) {
       throw new Error("Derug request missmatch");
     }
     const nonMintedNfts = await getNonMinted(derug.address.toString());
@@ -354,8 +351,9 @@ export const storeCandyMachineItems = async (
   }
 };
 export const mintNftFromCandyMachine = async (
-  remintConfig: IRemintConfig,
-  wallet: AnchorWallet
+  request: IRequest,
+  wallet: AnchorWallet,
+  collectionDerug: ICollectionDerugData
 ) => {
   metaplex.use(walletAdapterIdentity(wallet));
   try {
@@ -363,7 +361,7 @@ export const mintNftFromCandyMachine = async (
     const nftMint = generateSigner(umi);
 
     const guardPda = findCandyGuardPda(umi, {
-      base: publicKey(remintConfig.candyMachine),
+      base: publicKey(request.candyMachineKey),
     });
 
     //TODO:remove ekser
@@ -387,17 +385,18 @@ export const mintNftFromCandyMachine = async (
 
     await toast.promise(
       mintV2(umi, {
-        candyMachine: publicKey(remintConfig.candyMachine),
+        candyMachine: publicKey(request.candyMachineKey),
         nftMint: nftMint,
-        collectionMint: publicKey(remintConfig.collection),
-        collectionUpdateAuthority: publicKey(remintConfig.authority),
+        collectionMint: publicKey(collectionDerug.newCollection),
+        collectionUpdateAuthority: publicKey(request.derugger),
         group: some("wl"),
-        tokenStandard: TokenStandard.NonFungible,
+        tokenStandard: TokenStandard.ProgrammableNonFungible,
+        authorizationRules: publicKey(metaplexAuthorizationRuleSet),
         candyGuard: guardPda,
         mintArgs: {
           // allowList: some({ merkleRoot }),
           solPayment: some({
-            destination: publicKey(remintConfig.authority),
+            destination: publicKey(request.derugger),
           }),
           mintLimit: some({ id: 1 }),
         },
@@ -429,8 +428,9 @@ export const mintNftFromCandyMachine = async (
 };
 
 export const mintPublic = async (
-  remintConfig: IRemintConfig,
-  wallet: AnchorWallet
+  request: IRequest,
+  wallet: AnchorWallet,
+  collectionDerug: ICollectionDerugData
 ) => {
   metaplex.use(walletAdapterIdentity(wallet));
   try {
@@ -438,21 +438,22 @@ export const mintPublic = async (
     const nftMint = generateSigner(umi);
 
     const guardPda = findCandyGuardPda(umi, {
-      base: publicKey(remintConfig.candyMachine),
+      base: publicKey(request.candyMachineKey),
     });
 
     await toast.promise(
       mintV2(umi, {
-        candyMachine: publicKey(remintConfig.candyMachine),
+        candyMachine: publicKey(request.candyMachineKey),
         nftMint: nftMint,
-        collectionMint: publicKey(remintConfig.collection),
-        collectionUpdateAuthority: publicKey(remintConfig.authority),
+        collectionMint: publicKey(collectionDerug.newCollection),
+        collectionUpdateAuthority: publicKey(request.derugger),
         group: some("all"),
-        tokenStandard: TokenStandard.NonFungible,
+        tokenStandard: TokenStandard.ProgrammableNonFungible,
+        authorizationRules: publicKey(metaplexAuthorizationRuleSet),
         candyGuard: guardPda,
         mintArgs: {
           solPayment: some({
-            destination: publicKey(remintConfig.authority),
+            destination: publicKey(request.derugger),
           }),
         },
       })
@@ -479,36 +480,18 @@ export const mintPublic = async (
   }
 };
 
-export const closeCandyMachine = async (
-  remintConfig: IRemintConfig,
-  wallet: AnchorWallet
-) => {
-  try {
-    const cm = await metaplex
-      .candyMachinesV2()
-      .findByAddress({ address: remintConfig.candyMachine });
-    metaplex.use(walletAdapterIdentity(wallet));
-    await metaplex.candyMachinesV2().delete({
-      candyMachine: cm,
-    });
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
-
 export async function getDerugCandyMachine(
-  remintConfig: IRemintConfig,
-  wallet?: AnchorWallet
+  wallet: AnchorWallet,
+  request: IRequest
 ): Promise<IDerugCandyMachine> {
   try {
     const candyMachine = await fetchCandyMachine(
       umi,
-      publicKey(remintConfig.candyMachine)
+      publicKey(request.candyMachineKey)
     );
 
     const guardPda = findCandyGuardPda(umi, {
-      base: publicKey(remintConfig.candyMachine),
+      base: publicKey(request.candyMachineKey),
     });
 
     const guards = await fetchCandyGuard(umi, guardPda);
@@ -516,12 +499,7 @@ export async function getDerugCandyMachine(
     return {
       candyMachine,
       publicConfig: await getPublicConfiguration(guards),
-      whitelistingConfig: await getWhitelistingConfig(
-        guards,
-        wallet,
-        remintConfig.candyMachine,
-        guardPda
-      ),
+      whitelistingConfig: null,
     };
   } catch (error) {
     console.log(error);

@@ -19,10 +19,11 @@ import Countdown from "react-countdown";
 const PublicMint = () => {
   const {
     collection,
-    remintConfig,
     collectionDerug,
     candyMachine,
     setCandyMachine,
+
+    derugRequests,
   } = useContext(CollectionContext);
   const [loading, toggleLoading] = useState(false);
   const [isMinting, toggleIsMinting] = useState(false);
@@ -54,10 +55,10 @@ const PublicMint = () => {
   const getNfts = async () => {
     toggleLoading(true);
     try {
-      if (wallet && remintConfig) {
+      if (wallet && derugRequests.length > 0) {
         const nfts = await getNftsFromDeruggedCollection(
           wallet.publicKey,
-          remintConfig
+          derugRequests[0]
         );
 
         setNfts(nfts);
@@ -68,27 +69,25 @@ const PublicMint = () => {
     }
   };
 
-  const getMintCurrencyData = useMemo(() => {
-    if (!remintConfig || !remintConfig.mintCurrency) {
-      return { logo: solanaLogo, currency: "SOL" };
-    }
-  }, [remintConfig]);
-
   const mintNfts = async () => {
     setHasMinted(true);
     toggleIsMinting(true);
     setMintedNft(undefined);
     setNftImage(undefined);
     try {
-      if (wallet && remintConfig) {
-        const minted = candyMachine.whitelistingConfig.isActive
-          ? await mintNftFromCandyMachine(remintConfig, wallet)
-          : await mintPublic(remintConfig, wallet);
+      if (wallet && derugRequests[0]) {
+        const minted = candyMachine.whitelistingConfig?.isActive
+          ? await mintNftFromCandyMachine(
+              derugRequests[0],
+              wallet,
+              collectionDerug
+            )
+          : await mintPublic(derugRequests[0], wallet, collectionDerug);
 
         if (!minted) throw new Error();
 
         setNftImage(minted.json.image);
-        setCandyMachine(await getDerugCandyMachine(remintConfig, wallet));
+        setCandyMachine(await getDerugCandyMachine(wallet, derugRequests[0]));
         toast.success(`Successfully minted ${minted.name}`);
         setNfts((prevValue) => [
           { name: minted.name, image: minted.json.image },
@@ -146,7 +145,7 @@ const PublicMint = () => {
     <div className="m-auto grid grid-cols-3  m-10 mb-32">
       <div className="flex flex-col items-start ml-10">
         <p className="text-main-blue text-lg uppercase mb-2 flex font-mono">
-          Your {remintConfig?.newName ?? collection?.name} NFTs
+          Your {derugRequests[0].newName ?? collection?.name} NFTs
         </p>
         <div className="overflow-y-scroll grid  w-full grid-cols-3 gap-5 max-h-[17.5em]">
           {loading
@@ -305,26 +304,11 @@ const PublicMint = () => {
                     : candyMachine.publicConfig.currency.name}
                 </p>
 
-                <img
-                  className="rounded-[50px] w-6"
-                  src={
-                    remintConfig?.splTokenData?.image ??
-                    getMintCurrencyData?.logo.src
-                  }
-                  alt=""
-                />
+                <img className="rounded-[50px] w-6" src={""} alt="" />
               </>
             )}
           </Box>
         </Box>
-        {/* {showCloseMinitngButton && (
-          <Button
-            // onClick={stopMint}
-            className="boder-[2px] border-main-blue px-3 py-1 rounded-sm bg-transparent hover:shadow-lg hover:shadow-main-blue"
-          >
-            Stop minting
-          </Button>
-        )} */}
       </Box>
     </div>
   );

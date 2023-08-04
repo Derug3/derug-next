@@ -1,33 +1,19 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { IRequest, IUtility } from "../../interface/collections.interface";
-import {
-  Creator,
-  DerugForm,
-  UtilityAction,
-} from "../../interface/derug.interface";
+import { IRequest } from "../../interface/collections.interface";
+import { Creator, DerugForm } from "../../interface/derug.interface";
 import { getCollectionDerugData } from "../../solana/methods/derug";
 import {
   createOrUpdateDerugRequest,
   getSingleDerugRequest,
 } from "../../solana/methods/derug-request";
 import { CollectionContext } from "../../stores/collectionContext";
-import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import UtilityArray from "../CollectionLayout/UtilityArray";
-import { FaTwitter } from "react-icons/fa";
-import CreatorsArray from "../CollectionLayout/CreatorsArray";
-import { Box, Dialog, TextInput, Button, Label } from "@primer/react";
-import MintDetails, {
-  ITreasuryTokenAccInfo,
-} from "../CollectionLayout/MintDetails";
-import { getTrimmedPublicKey } from "../../solana/helpers";
+import { Box, Dialog, Button } from "@primer/react";
 import { PublicKey } from "@solana/web3.js";
 import { FormProvider, useForm } from "react-hook-form";
-import { WRAPPED_SOL_MINT } from "@metaplex-foundation/js";
 import { validateCreators } from "../../validators/derug-request.validators";
-import toast from "react-hot-toast";
-import { authorizeTwitter, getUserTwitterData } from "../../api/twitter.api";
+import { getUserTwitterData } from "../../api/twitter.api";
 import { userStore } from "../../stores/userStore";
 import { ProgressBar } from "@primer/react";
 import DerugBasicInfo from "./DerugBasicInfo";
@@ -48,20 +34,10 @@ export const AddDerugRequst: FC<{
 }> = ({ isOpen, setIsOpen }) => {
   const wallet = useWallet();
   const returnFocusRef = useRef(null);
-  const [utility, setUtility] = useState<IUtility[]>([
-    {
-      title: "",
-      description: "",
-      isActive: true,
-    },
-  ]);
 
   const { userData, setUserData } = userStore();
 
   const [creators, setCreator] = useState<Creator[]>([]);
-
-  const [sellerFee, setSellerFee] = useState<number>(0);
-  const [selectedMint, setSelectedMint] = useState<ITreasuryTokenAccInfo>();
 
   const {
     chainCollectionData,
@@ -71,10 +47,6 @@ export const AddDerugRequst: FC<{
     collectionStats,
     derugRequests,
   } = useContext(CollectionContext);
-
-  const handleSellerFeeChange = (points: number) => {
-    setSellerFee(points);
-  };
 
   const [activeStep, setActiveStep] = useState(
     CreateDerugRequestStep.BasicInfo
@@ -88,20 +60,11 @@ export const AddDerugRequst: FC<{
 
   const submitRequest = async (data?: any) => {
     try {
-      if (wallet && chainCollectionData && utility && collectionStats && data) {
+      if (wallet && chainCollectionData && collectionStats && data) {
         const requestAddress = await createOrUpdateDerugRequest(
           wallet,
-          utility
-            .filter((u) => u.title !== "")
-            .map((ut) => {
-              return {
-                action: UtilityAction.Add,
-                description: ut.description,
-                title: ut.title,
-              };
-            }),
           chainCollectionData,
-          +sellerFee * 10,
+          +data.sellerFee * 10,
           data.symbol,
           data.name,
           creators.map((c) => {
@@ -110,14 +73,9 @@ export const AddDerugRequst: FC<{
               share: c.share,
             };
           }),
-          data.price
-            ? +data.price * Math.pow(10, selectedMint!.decimals)
-            : undefined,
-          data.privateMintEnd ? Number(data.privateMintEnd) * 3600 : undefined,
-          selectedMint?.address &&
-            selectedMint.address.toString() !== WRAPPED_SOL_MINT.toString()
-            ? selectedMint.address
-            : undefined,
+          +data.price * Math.pow(10, data.selectedMint!.decimals),
+          Number(data.privateMintEnd) * 3600,
+          data.selectedMint.address,
           activeListings ? activeListings[0] : undefined
         );
         const addedRequests = [...(derugRequests ?? [])];
@@ -222,213 +180,8 @@ export const AddDerugRequst: FC<{
                 Derug request details {activeStep + 1} / 3
               </p>
               {renderCreateDerugRequestContent}
-              {/* <Box
-                className="flex justify-between flex-row text-gray-400 font-mono rounded-lg"
-                style={{
-                  border: "1px solid rgb(9, 194, 246)",
-                }}
-              >
-                <div className="flex flex-col justify-start items-start w-full gap-5">
-                  <span
-                    className="flex text-white font-mono w-full text-lg px-3"
-                    style={{
-                      borderBottom: "1px solid #6e7681",
-                      backgroundColor: "rgba(9, 194, 246, 0.2)",
-                    }}
-                  >
-                    Derug request details
-                  </span>
-                  <div className="flex justify-between w-full px-3">
-                    <span className="pr-2 text-white font-mono text-start">
-                      Wallet:
-                    </span>
-                    <div className="flex gap-5 items-center  justify-beween">
-                      <span className="font-mono ">
-                        {wallet.publicKey &&
-                          getTrimmedPublicKey(
-                            new PublicKey(wallet.publicKey.toString())
-                          )}
-                      </span>
-                      {!userData ? (
-                        <button
-                          onClick={linkTwitter}
-                          type="button"
-                          className="flex border-[1px] border-main-blue p-1 px-5 items-center gap-4 rounded-lg"
-                        >
-                          Link twitter
-                          <FaTwitter style={{ color: "rgb(29 161 242)" }} />
-                        </button>
-                      ) : (
-                        <div className="flex flex-row gap-5 items-center">
-                          <p className="text-main-blue text-lg font-bold">
-                            {userData.twitterHandle}
-                          </p>
-                          <img
-                            className="rounded-[50px] w-10"
-                            src={userData.image}
-                            alt=""
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex justify-between w-full px-3">
-                    <span className="pr-2 text-white">New name:</span>
-                    <div className="flex flex-col w-1/2 items-end">
-                      <TextInput
-                        {...methods.register("name", {
-                          required: "Name cannot be empty",
-                          maxLength: {
-                            message: "Max name length is 32 characters",
-                            value: 32,
-                          },
-                        })}
-                        onChange={(e) => {
-                          e.target.value.length > 0 &&
-                            e.target.value.length < 32 &&
-                            methods.clearErrors("name");
-                        }}
-                        placeholder="new collection name"
-                        className="text-gray-400 "
-                        value={newName}
-                        sx={{
-                          width: "100%",
-                        }}
-                      />
-                      {methods.formState.errors.name && (
-                        <p className="text-red-500">
-                          {methods.formState.errors.name.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex justify-between w-full px-3">
-                    <span className="pr-2 text-white">New symbol:</span>
-                    <div className="flex flex-col w-1/2 items-start">
-                      <TextInput
-                        {...methods.register("symbol", {
-                          required: "Symbol cannot be empty",
-                          maxLength: {
-                            value: 10,
-                            message: "Max symbol length is 10 characters",
-                          },
-                        })}
-                        placeholder="new collection symbol"
-                        onChange={(e) =>
-                          e.target.value.length > 0 &&
-                          e.target.value.length < 10 &&
-                          methods.clearErrors("symbol")
-                        }
-                        value={symbol}
-                        sx={{
-                          width: "100%",
-                        }}
-                      />
-                      {methods.formState.errors.symbol && (
-                        <p className="text-red-500 ">
-                          {methods.formState.errors.symbol.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex justify-between w-full gap-3 items-center px-3 pb-3">
-                    <span className="pr-2 text-white"> Seller basic fee</span>
-
-                    <div className="flex w-1/2 items-center gap-5">
-                      <TextInput
-                        {...methods.register("fee")}
-                        placeholder="Fee"
-                        value={sellerFee}
-                        sx={{ width: "30%" }}
-                        onChange={(e) =>
-                          handleSellerFeeChange(Number(e.target.value))
-                        }
-                      />
-                      <div className="flex flex-col w-full items-start">
-                        <Slider
-                          value={Number(sellerFee)}
-                          onChange={(e) => {
-                            typeof e === "number" && handleSellerFeeChange(e);
-                            +e > 0 && +e <= 100 && methods.clearErrors("fee");
-                          }}
-                        />
-                        {methods.formState.errors.fee && (
-                          <p className="text-red-500">
-                            {methods.formState.errors.fee.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Box>
-              <Box
-                className="flex justify-start flex-col text-white font-mono rounded-lg"
-                style={{ border: "1px solid rgb(9, 194, 246)" }}
-              >
-                <span
-                  className="flex text-white font-mono w-full text-lg px-3"
-                  style={{
-                    borderBottom: "1px solid #6e7681",
-                    backgroundColor: "rgba(9, 194, 246, 0.2)",
-                  }}
-                >
-                  Creators
-                </span>
-                <div className="flex justify-between flex-col h-full p-3">
-                  <CreatorsArray creators={creators} setCreators={setCreator} />
-                  <Button
-                    size="large"
-                    variant="outline"
-                    sx={{ backgroundColor: "transparent" }}
-                    ref={returnFocusRef}
-                    disabled={creators.length >= 4}
-                    onClick={() => addCreator()}
-                  >
-                    Add creator
-                  </Button>
-                  <>
-                    {" "}
-                    {(methods.formState.errors.creatorsFees ||
-                      methods.formState.errors.creatorsKey) && (
-                      <p className="text-red-500 text-xs">
-                        {
-                          (
-                            methods.formState.errors.creatorsFees ??
-                            methods.formState.errors.creatorsKey
-                          )?.message
-                        }
-                      </p>
-                    )}
-                  </>
-                </div>
-              </Box> */}
             </Box>
             <Box className="grid grid-cols-2 gap-4 mx-5">
-              {/* <Box
-                className="flex justify-start flex-col font-mono rounded-lg"
-                style={{
-                  border: "1px solid rgb(9, 194, 246)",
-                }}
-              >
-                <span
-                  className="flex text-white font-mono w-full text-lg px-3"
-                  style={{
-                    borderBottom: "1px solid #6e7681",
-                    backgroundColor: "rgba(9, 194, 246, 0.2)",
-                  }}
-                >
-                  Mint details
-                </span>
-                <MintDetails
-                  price={price}
-                  setPrice={setPrice}
-                  handleMintChange={(e) => setSelectedMint(e)}
-                  duration={duration}
-                  setDuration={setDuration}
-                />
-              </Box> */}
-
               <Button
                 size="large"
                 type="button"

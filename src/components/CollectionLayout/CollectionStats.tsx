@@ -15,14 +15,8 @@ export const CollectionStats: FC<{
   openDerugModal: (value: boolean) => void;
   collectionDerug?: ICollectionDerugData;
 }> = ({ collection, collectionDerug }) => {
-  const { remintConfig } = useContext(CollectionContext);
+  const {} = useContext(CollectionContext);
   const currUnix = dayjs().unix() * 1000;
-  const remintConfigTime =
-    remintConfig &&
-    Number(remintConfig.privateMintEnd) * 1000 > currUnix &&
-    collectionDerug?.status === DerugStatus.Reminting
-      ? remintConfig.privateMintEnd
-      : undefined;
 
   return (
     <div className="flex flex-col items-center justify-center gap-8 w-full">
@@ -76,8 +70,8 @@ export const CollectionStats: FC<{
         {collectionDerug && (
           <HeadingItem
             descColor="#2dd4bf"
-            title={remintConfigTime ? "PRIVATE MINT END" : "REMAINING TIME"}
-            date={remintConfigTime ?? collectionDerug.periodEnd}
+            title={"PRIVATE MINT END"}
+            date={collectionDerug.periodEnd}
             isCounter
             desc=""
           />

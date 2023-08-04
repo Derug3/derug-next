@@ -10,11 +10,7 @@ import {
   IRequest,
   ITrait,
 } from "../interface/collections.interface";
-import {
-  IDerugCandyMachine,
-  IGraphData,
-  IRemintConfig,
-} from "../interface/derug.interface";
+import { IDerugCandyMachine, IGraphData } from "../interface/derug.interface";
 
 export interface CollectionContext {
   loading: boolean;
@@ -27,7 +23,6 @@ export interface CollectionContext {
   collectionDerug: ICollectionDerugData | undefined;
   derugRequests: IRequest[] | undefined;
   graphData: IGraphData | undefined;
-  remintConfig: IRemintConfig | undefined;
   candyMachine: IDerugCandyMachine | undefined;
   toggleLoading(loading: boolean): void;
   setGraphData: (data: IGraphData) => void;
@@ -39,7 +34,6 @@ export interface CollectionContext {
   setTraits: (traits: ITrait[]) => void;
   setActiveListings: (activeListings: INftListing[]) => void;
   setCollectionStats: (stats: ICollectionStats) => void;
-  setRemintConfig: (config: IRemintConfig) => void;
   setCandyMachine: (candyMachine: IDerugCandyMachine | undefined) => void;
 }
 

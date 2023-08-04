@@ -42,12 +42,14 @@ export interface IRequest {
   publicMint: boolean;
   creators: ICreator[];
   privateMintDuration?: number;
+  candyMachineKey: PublicKey;
   mintCurrency: PublicKey | null;
   newSymbol: string;
   newName: string;
   splToken?: ISplTokenData;
   userData?: IUserData;
 }
+
 export interface IUtility {
   title: string;
   description: string;

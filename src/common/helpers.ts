@@ -1,8 +1,11 @@
 import { PublicKey } from "@solana/web3.js";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
-import { ICollectionRecentActivities } from "../interface/collections.interface";
-import { IRemintConfig, ISplTokenData } from "../interface/derug.interface";
+import {
+  ICollectionRecentActivities,
+  IRequest,
+} from "../interface/collections.interface";
+import { ISplTokenData } from "../interface/derug.interface";
 import { derugProgramFactory, metaplex, umi } from "../solana/utilities";
 import { ANCHOR_ERROR, ERROR_NUMBER } from "./constants";
 import { Strategy, TokenListProvider } from "@solana/spl-token-registry";
@@ -44,7 +47,7 @@ export const getNftName = (totalReminted: number) => {
 
 export const getNftsFromDeruggedCollection = async (
   owner: PublicKey,
-  remintConfig: IRemintConfig
+  request: IRequest
 ) => {
   try {
     const collectionNfts: { image: string; name: string }[] = [];
@@ -54,7 +57,7 @@ export const getNftsFromDeruggedCollection = async (
     });
 
     const creator = findCandyMachineAuthorityPda(umi, {
-      candyMachine: publicKey(remintConfig.candyMachine),
+      candyMachine: publicKey(request.candyMachineKey),
     });
 
     for (const nft of nfts) {

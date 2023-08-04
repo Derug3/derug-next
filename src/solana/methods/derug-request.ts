@@ -46,7 +46,6 @@ import { initPublicMint } from "@/api/public-mint.api";
 dayjs.extend(utc);
 export const createOrUpdateDerugRequest = async (
   wallet: WalletContextState,
-  utilities: IUtilityData[],
   collection: IChainCollectionData,
   sellerFeeBps: number,
   newSymbol: string,
@@ -189,6 +188,7 @@ export const getAllDerugRequest = async (
         address: derug.publicKey,
         newName: derug.account.newName,
         newSymbol: derug.account.newSymbol,
+        candyMachineKey: derug.account.mintConfig.candyMachineKey,
         mintCurrency: derug.account.mintConfig.mintCurrency,
         mintPrice: derug.account.mintConfig.publicMintPrice.toNumber(),
         sellerFeeBps: derug.account.sellerFeeBps,
@@ -222,6 +222,7 @@ export const getSingleDerugRequest = async (
     derugger: derugAccount.derugger,
     voteCount: derugAccount.voteCount,
     newName: derugAccount.newName,
+    candyMachineKey: derugAccount.mintConfig.candyMachineKey,
     newSymbol: derugAccount.newSymbol,
     mintCurrency: derugAccount.mintCurrency,
     mintPrice: derugAccount.mintConfig.publicMintPrice.toNumber(),

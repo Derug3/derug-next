@@ -40,3 +40,6 @@ export const metaplex = new Metaplex(RPC_CONNECTION);
 export const candyMachineProgramId = new PublicKey(
   "cndy3Z4yapfJBmL3ShUp5exZKqR3z33thTzeNMm2gRZ"
 );
+
+export const metaplexAuthorizationRuleSet =
+  "eBJLFYPxJmMGKuFwpDWkzxZeUrad92kZRC5BJLpzyT9";

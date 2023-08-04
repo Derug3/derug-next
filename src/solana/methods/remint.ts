@@ -16,7 +16,6 @@ import {
 import { METAPLEX_PROGRAM, RPC_CONNECTION } from "../../utilities/utilities";
 import {
   authoritySeed,
-  candyMachineSeed,
   collectionAuthoritySeed,
   derugDataSeed,
   editionSeed,
@@ -47,8 +46,6 @@ import {
 import {
   IDerugCollectionNft,
   IDerugInstruction,
-  IRemintConfig,
-  ISplTokenData,
 } from "../../interface/derug.interface";
 import {
   getPrivateMintNft,
@@ -59,11 +56,8 @@ import {
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import {
-  fetchCandyMachine,
-  findCandyMachineAuthorityPda,
-} from "@metaplex-foundation/mpl-candy-machine";
-import { getFungibleTokenMetadata, stringifyData } from "../../common/helpers";
+import { findCandyMachineAuthorityPda } from "@metaplex-foundation/mpl-candy-machine";
+import { stringifyData } from "../../common/helpers";
 import { UPLOAD_METADATA_FEE } from "../../common/constants";
 import { publicKey } from "@metaplex-foundation/umi";
 import nftStore from "@/stores/nftStore";
@@ -151,18 +145,12 @@ export const claimVictory = async (
     }
   }
 
-  const [remintConfigAddress] = PublicKey.findProgramAddressSync(
-    [remintConfigSeed, derug.address.toBuffer()],
-    derugProgram.programId
-  );
-
   const claimVictoryIx = await derugProgram.methods
     .claimVictory()
     .accounts({
       derugData: derug.address,
       derugRequest: request.address,
       payer: wallet.publicKey!,
-      remintConfig: remintConfigAddress,
       feeWallet: feeWallet,
       systemProgram: SystemProgram.programId,
     })
@@ -193,17 +181,6 @@ export const claimVictory = async (
     derugProgram.programId
   );
 
-  const [collectionAuthority] = PublicKey.findProgramAddressSync(
-    [
-      metadataSeed,
-      METAPLEX_PROGRAM.toBuffer(),
-      collection.publicKey.toBuffer(),
-      collectionAuthoritySeed,
-      pdaAuthority.toBuffer(),
-    ],
-    METAPLEX_PROGRAM
-  );
-
   const [collectionMetadata] = PublicKey.findProgramAddressSync(
     [
       metadataSeed,
@@ -229,10 +206,7 @@ export const claimVictory = async (
       derugData: derug.address,
       derugRequest: request.address,
       payer: wallet.publicKey!,
-      pdaAuthority,
-      remintConfig: remintConfigAddress,
       feeWallet: feeWallet,
-      collectionAuthorityRecord: collectionAuthority,
       newCollection: collection.publicKey,
       tokenAccount: tokenAccount.publicKey,
       metadataAccount: collectionMetadata,
@@ -367,7 +341,6 @@ export const remintNft = async (
         oldMetadata: oldMetadata,
         newMint: mint.publicKey,
         oldToken: nft.tokenAccount,
-        remintConfig,
         newToken: tokenAccount.publicKey,
         payer: wallet.publicKey!,
         oldMint: nft.mint,
@@ -420,37 +393,12 @@ export const remintNft = async (
       METAPLEX_PROGRAM
     );
 
-    const updateVerifyCollection = await derugProgram.methods
-      .updateVerifyCollection()
-      .accounts({
-        collectionAuthority,
-        derugData: derugData.address,
-        derugger: request.derugger,
-        collectionMint: derugData.newCollection!,
-        nftMint: mint.publicKey,
-        nftMetadata: newMetadata,
-        feeWallet: feeWallet,
-        systemProgram: SystemProgram.programId,
-        pdaAuthority,
-        payer: wallet.publicKey!,
-        derugRequest: request.address,
-        collectionMetadata: collectionMetadata,
-        collectionMasterEdition,
-        metadataProgram: METAPLEX_PROGRAM,
-      })
-      .instruction();
-
     instructions.push({
       instructions: [createTokenAcc, createMint, remintNftIx],
       pendingDescription: `Reminting ${nft.metadata.data.name}}`,
       successDescription: `Successfully reminted ${nft.metadata.data.name}`,
       partialSigner: [tokenAccount, mint],
       remintingNft: nft,
-    });
-    instructions.push({
-      instructions: [updateVerifyCollection],
-      pendingDescription: "Verifying NFT collection",
-      successDescription: `Successfully verified collection for NFT:${nft.metadata.data.name}`,
     });
   }
   await sendTransaction(RPC_CONNECTION, instructions, wallet);
@@ -463,41 +411,3 @@ export const remintNft = async (
     }
   }
 };
-
-export async function getRemintConfig(
-  derug: PublicKey
-): Promise<IRemintConfig | undefined> {
-  const derugProgram = derugProgramFactory();
-  const [remintConfigAddress] = PublicKey.findProgramAddressSync(
-    [remintConfigSeed, derug.toBuffer()],
-    derugProgram.programId
-  );
-
-  try {
-    const remintConfigAccount = await derugProgram.account.remintConfig.fetch(
-      remintConfigAddress
-    );
-
-    return {
-      address: remintConfigAddress,
-      authority: remintConfigAccount.authority,
-      candyMachine: remintConfigAccount.candyMachineKey,
-      candyMachineCreator: remintConfigAccount.candyMachineCreator,
-      collection: remintConfigAccount.collection,
-      mintCurrency: remintConfigAccount.mintCurrency ?? undefined,
-      mintPrice: remintConfigAccount.publicMintPrice?.toNumber(),
-      derugRequest: remintConfigAccount.derugRequest,
-      newName: remintConfigAccount.newName,
-      newSymbol: remintConfigAccount.newSymbol,
-      sellerFeeBps: remintConfigAccount.sellerFeeBps,
-      privateMintEnd: remintConfigAccount.privateMintEnd
-        ? dayjs.unix(remintConfigAccount.privateMintEnd?.toNumber()).toDate()
-        : undefined,
-      splTokenData: await getFungibleTokenMetadata(
-        remintConfigAccount.mintCurrency
-      ),
-    };
-  } catch (error) {
-    return undefined;
-  }
-}
