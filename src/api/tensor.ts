@@ -5,12 +5,19 @@ import {
   ITrait,
 } from "../interface/collections.interface";
 import { get } from "./request.api";
-import { ACTIVITIES, FLOOR_PRICE, LISTINGS, TENSOR, TRAITS } from "./url.api";
+import {
+  ACTIVITIES,
+  FLOOR_PRICE,
+  LISTINGS,
+  STATS,
+  TENSOR,
+  TRAITS,
+} from "./url.api";
 
 export const getFloorPrice = async (
   slug: String
 ): Promise<ICollectionStats> => {
-  return get(`${TENSOR}${FLOOR_PRICE}/${slug}`);
+  return get(`${TENSOR}${STATS}/${slug}`);
 };
 
 export const getTraits = async (slug: String): Promise<ITrait[]> => {

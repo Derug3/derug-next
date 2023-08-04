@@ -1,5 +1,5 @@
 import { useWallet } from "@solana/wallet-adapter-react";
-import { FC, useContext, useEffect, useRef, useState } from "react";
+import { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IRequest, IUtility } from "../../interface/collections.interface";
 import {
   Creator,
@@ -14,11 +14,13 @@ import {
 import { CollectionContext } from "../../stores/collectionContext";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import UtilityArray from "./UtilityArray";
+import UtilityArray from "../CollectionLayout/UtilityArray";
 import { FaTwitter } from "react-icons/fa";
-import CreatorsArray from "./CreatorsArray";
+import CreatorsArray from "../CollectionLayout/CreatorsArray";
 import { Box, Dialog, TextInput, Button, Label } from "@primer/react";
-import MintDetails, { ITreasuryTokenAccInfo } from "./MintDetails";
+import MintDetails, {
+  ITreasuryTokenAccInfo,
+} from "../CollectionLayout/MintDetails";
 import { getTrimmedPublicKey } from "../../solana/helpers";
 import { PublicKey } from "@solana/web3.js";
 import { FormProvider, useForm } from "react-hook-form";
@@ -27,6 +29,14 @@ import { validateCreators } from "../../validators/derug-request.validators";
 import toast from "react-hot-toast";
 import { authorizeTwitter, getUserTwitterData } from "../../api/twitter.api";
 import { userStore } from "../../stores/userStore";
+import { ProgressBar } from "@primer/react";
+import DerugBasicInfo from "./DerugBasicInfo";
+
+enum CreateDerugRequestStep {
+  BasicInfo,
+  Creators,
+  MintConfig,
+}
 
 export const AddDerugRequst: FC<{
   isOpen: boolean;
@@ -66,17 +76,6 @@ export const AddDerugRequst: FC<{
     derugRequests,
   } = useContext(CollectionContext);
 
-  const addUtility = () => {
-    const newElement = {
-      title: "",
-      description: "",
-      isActive: true,
-    };
-    const oldValue = utility || [];
-    setSelectedUtility(oldValue.length);
-    setUtility([...oldValue, newElement]);
-  };
-
   const addCreator = () => {
     const newElement = {
       address: "",
@@ -89,6 +88,10 @@ export const AddDerugRequst: FC<{
   const handleSellerFeeChange = (points: number) => {
     setSellerFee(points);
   };
+
+  const [activeStep, setActiveStep] = useState(
+    CreateDerugRequestStep.BasicInfo
+  );
 
   const methods = useForm<DerugForm>();
 
@@ -144,17 +147,6 @@ export const AddDerugRequst: FC<{
     }
   };
 
-  const linkTwitter = async () => {
-    try {
-      if (collection && wallet)
-        await authorizeTwitter(collection.symbol, wallet.publicKey!.toString());
-    } catch (error) {
-      console.log(error);
-
-      toast.error("Failed to link twitter account");
-    }
-  };
-
   useEffect(() => {
     if (creators[creators.length - 1]?.address)
       validateCreators(creators, methods.setError, methods.clearErrors);
@@ -176,31 +168,58 @@ export const AddDerugRequst: FC<{
       setUserData(await getUserTwitterData(wallet.publicKey?.toString()!));
     } catch (error) {}
   };
+  const renderCreateDerugRequestContent = useMemo(() => {
+    switch (activeStep) {
+      case CreateDerugRequestStep.BasicInfo: {
+        return <DerugBasicInfo />;
+      }
+    }
+  }, [activeStep]);
 
   return (
     <div className="flex w-full flex-col">
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(submitRequest)}>
           <Dialog
+            className="bg-gray-800"
             returnFocusRef={returnFocusRef}
             isOpen={isOpen}
             onDismiss={() => setIsOpen(false)}
             sx={{
-              width: "90%",
+              width: "50%",
               maxHeight: "100%",
-              background: "black",
             }}
             aria-labelledby="header-id"
           >
             <Dialog.Header
               id="header-id"
-              className="flex justify-between items-center bg-gray-800"
+              className="flex justify-between items-center bg-gray-800 rounded-none"
             >
-              <span className="text-white font-mono">Derug Request</span>
+              <span className="flex w-full justify-between font-bold text-white-500 text-xl text-white">
+                Derug Request
+              </span>
             </Dialog.Header>
 
-            <Box className="grid grid-cols-2 gap-4 m-5">
-              <Box
+            <Box className="flex flex-col p-5 gap-5">
+              <ProgressBar
+                width={"100%"}
+                progress={((activeStep + 1) / 3) * 100}
+                bg="rgb(9, 194, 246)"
+                sx={{
+                  width: "full",
+                  height: "8px",
+                  background: "#F9FAFB",
+                  color: "rgb(45, 212, 191)",
+                  "@media (max-width: 768px)": {
+                    width: "200px",
+                  },
+                }}
+              />
+              <p className="font-normal">
+                Derug request details {activeStep + 1} / 3
+              </p>
+              {renderCreateDerugRequestContent}
+              {/* <Box
                 className="flex justify-between flex-row text-gray-400 font-mono rounded-lg"
                 style={{
                   border: "1px solid rgb(9, 194, 246)",
@@ -380,10 +399,10 @@ export const AddDerugRequst: FC<{
                     )}
                   </>
                 </div>
-              </Box>
+              </Box> */}
             </Box>
             <Box className="grid grid-cols-2 gap-4 mx-5">
-              <Box
+              {/* <Box
                 className="flex justify-start flex-col font-mono rounded-lg"
                 style={{
                   border: "1px solid rgb(9, 194, 246)",
@@ -405,56 +424,8 @@ export const AddDerugRequst: FC<{
                   duration={duration}
                   setDuration={setDuration}
                 />
-              </Box>
-              <Box
-                className="flex justify-between flex-col text-white gap-5 font-mono w-full rounded-lg"
-                style={{ border: "1px solid rgb(9, 194, 246)" }}
-              >
-                <span
-                  className="flex text-white font-mono w-full text-lg px-3"
-                  style={{
-                    borderBottom: "1px solid #6e7681",
-                    backgroundColor: "rgba(9, 194, 246, 0.2)",
-                  }}
-                >
-                  Utilities
-                </span>
-                <Box className="flex flex-wrap px-3">
-                  {/* {utility.map(
-                    (item, index) =>
-                      item.title && (
-                        <Label
-                          onClick={() => {
-                            setSelectedUtility(index);
-                          }}
-                          variant="accent"
-                          className="cursor-pointer"
-                        >
-                          {item.title}
-                        </Label>
-                      )
-                  )} */}
-                </Box>
-                {/* <Box className="flex flex-col w-full justify-start items-start">
-                  {utility && (
-                    <UtilityArray
-                      selectedUtility={selectedUtility}
-                      placeholder="Utility"
-                      items={utility}
-                      setItems={setUtility}
-                    ></UtilityArray>
-                  )}
-                </Box> */}
-                <Button
-                  size="large"
-                  variant="outline"
-                  sx={{ backgroundColor: "transparent" }}
-                  ref={returnFocusRef}
-                  onClick={() => addUtility()}
-                >
-                  Add utility
-                </Button>
-              </Box>
+              </Box> */}
+
               <Button
                 size="large"
                 type="button"
@@ -470,7 +441,9 @@ export const AddDerugRequst: FC<{
                 type="submit"
                 className="bg-gray-800 text-lg text-white font-bold my-10 font-mono rounded-md hover:bg-main-blue hover:text-black"
               >
-                Submit requests
+                {activeStep === CreateDerugRequestStep.MintConfig
+                  ? "Submit requests"
+                  : "Next Step"}
               </Button>
             </Box>
           </Dialog>

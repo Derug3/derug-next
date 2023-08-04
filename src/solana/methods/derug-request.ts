@@ -9,7 +9,6 @@ import {
 } from "@solana/web3.js";
 import { BN } from "bn.js";
 import { getSingleCollection } from "../../api/collections.api";
-import { getUserTwitterData } from "../../api/twitter.api";
 import {
   getFungibleTokenMetadata,
   getUserDataForDerug,

@@ -16,6 +16,7 @@ export interface ICollectionData {
   type?: string[];
   numMints?: number;
   categories?: any[];
+  traits: ITrait[];
 }
 export interface ICollectionVolume {
   collection: ICollectionData;
@@ -73,7 +74,7 @@ interface IExtra {
 
 export interface ITrait {
   name: string;
-  values: ITraitInfo[];
+  traits: ITraitInfo[];
 }
 
 export interface ITraitInfo {

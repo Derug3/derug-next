@@ -7,7 +7,7 @@ import { LeftPane } from "@/components/CollectionLayout/LeftPane";
 import { RightPane } from "@/components/CollectionLayout/RightPane";
 import { getSingleCollection } from "@/api/collections.api";
 import { getFloorPrice, getListings, getTraits } from "@/api/tensor";
-import { AddDerugRequst } from "@/components/CollectionLayout/AddDerugRequest";
+import { AddDerugRequst } from "@/components/AddDerugRequest/AddDerugRequest";
 import { CollectionStats } from "@/components/CollectionLayout/CollectionStats";
 import { HeaderTabs } from "@/components/CollectionLayout/HeaderTabs";
 import DerugRequest from "@/components/DerugRequest/DerugRequest";
@@ -75,7 +75,6 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
 
   const [derugRequests, setDerugRequests] = useState<IRequest[]>();
   const iframeRef = useRef(null);
-  const router = useRouter();
 
   const [remintConfig, setRemintConfig] = useState<IRemintConfig | undefined>();
 
@@ -86,7 +85,8 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   }, []);
   const getBasicCollectionData = async () => {
     try {
-      setBasicCollectionData(await getSingleCollection(slug ?? ""));
+      const collection = await getSingleCollection(slug ?? "");
+      setBasicCollectionData(collection);
       if (slug) {
         const collectionStats = await getFloorPrice(slug);
 
@@ -102,11 +102,8 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           listingsData = await getListings(collectionStats.slug);
         }
         setListings(listingsData);
-        let traitsData = await getTraits(slug);
-        if (traitsData.length === 0) {
-          traitsData = await getTraits(collectionStats.slug);
-        }
-        setTraits(traitsData);
+
+        setTraits(collection.traits);
       }
     } catch (error) {
       console.log(error);
@@ -211,9 +208,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         setCandyMachine,
       }}
     >
-      <div
-        className="flex flex-col pt-12 xs:px-0 sm:px-8 md:px-32 lg:px-64"
-      >
+      <div className="flex flex-col pt-12 xs:px-0 sm:px-8 md:px-32 lg:px-64">
         <div className="flex flex-col">
           {wallet && derugRequestVisible && (
             <AddDerugRequst
@@ -224,11 +219,8 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
             />
           )}
 
-
           <div className="flex flex-col lg:flex-row w-full justify-center">
-            <div
-              className="flex flex-col w-full justify-center items-center gap-5"
-            >
+            <div className="flex flex-col w-full justify-center items-center gap-5">
               <LeftPane selectedInfo={selectedInfo} />
               <div className="flex flex-col gap-5 w-full">
                 <div className="flex items-center justify-end">
@@ -264,17 +256,17 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         <>
           {(collectionDerug.status === DerugStatus.Initialized ||
             collectionDerug.status === DerugStatus.Voting) &&
-            showDerugRequests &&
-            !hasWinning ? (
+          showDerugRequests &&
+          !hasWinning ? (
             <DerugRequest />
           ) : (
             <>
               {remintConfig &&
-                (Number(remintConfig.privateMintEnd) < dayjs().unix() * 1000 ||
-                  (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
-                candyMachine &&
-                Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
-                Number(candyMachine.candyMachine.itemsLoaded) ===
+              (Number(remintConfig.privateMintEnd) < dayjs().unix() * 1000 ||
+                (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
+              candyMachine &&
+              Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
+              Number(candyMachine.candyMachine.itemsLoaded) ===
                 Number(candyMachine.candyMachine.data.itemsAvailable) ? (
                 <PublicMint />
               ) : (

@@ -19,8 +19,8 @@ export const CollectionStats: FC<{
   const currUnix = dayjs().unix() * 1000;
   const remintConfigTime =
     remintConfig &&
-      Number(remintConfig.privateMintEnd) * 1000 > currUnix &&
-      collectionDerug?.status === DerugStatus.Reminting
+    Number(remintConfig.privateMintEnd) * 1000 > currUnix &&
+    collectionDerug?.status === DerugStatus.Reminting
       ? remintConfig.privateMintEnd
       : undefined;
 
@@ -42,7 +42,7 @@ export const CollectionStats: FC<{
         <HeadingItem
           descColor="#2dd4bf"
           title="TOTAL SUPPLY"
-          desc="NFTs"
+          desc=" NFTs"
           amount={collection?.numMints}
         />
         <HeadingItem

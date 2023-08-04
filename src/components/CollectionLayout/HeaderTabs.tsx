@@ -45,42 +45,42 @@ export const HeaderTabs: FC<{
 
   return (
     <>
-      {wallet &&
+      {(wallet &&
         wallet.publicKey &&
         (!collectionDerug ||
           (collectionDerug &&
             dayjs(collectionDerug?.periodEnd).isAfter(dayjs()))) &&
         !derugRequests?.find(
           (dr) => dr.derugger.toString() === wallet.publicKey?.toString()
-        ) || (
-          <button
-            className="rounded-lg py-2 px-3 text-white border border-white hover:bg-white hover:text-main-dark transition-all"
-            onClick={() => openDerugModal(true)}
+        )) || (
+        <button
+          className="rounded-lg py-2 px-3 text-white border border-white hover:bg-white hover:text-main-dark transition-all"
+          onClick={() => openDerugModal(true)}
+        >
+          <span className="text-sm uppercase rounded-lg">
+            Add derug request
+          </span>
+        </button>
+      )}
+      <div
+        aria-label="Main"
+        className="sticky flex justify-end w-fit items-center"
+      >
+        <div
+          onClick={() => setSelectedData("listed")}
+          style={getNavStyling(selectedData, "listed")}
+        >
+          NFTS
+        </div>
+        {traits && traits.length > 0 && (
+          <div
+            onClick={() => setSelectedData("traits")}
+            style={getNavStyling(selectedData, "traits")}
           >
-            <span className="text-sm uppercase rounded-lg">
-              Add derug request
-            </span>
-          </button>
+            TRAITS
+          </div>
         )}
-      {/* <div
-              aria-label="Main"
-              className="sticky flex justify-end w-fit items-center"
-            >
-              <div
-                onClick={() => setSelectedData("listed")}
-                style={getNavStyling(selectedData, "listed")}
-              >
-                NFTS
-              </div>
-              {traits && traits.length > 0 && (
-                <div
-                  onClick={() => setSelectedData("traits")}
-                  style={getNavStyling(selectedData, "traits")}
-                >
-                  TRAITS
-                </div>
-              )}
-            </div> */}
+      </div>
     </>
   );
 };
