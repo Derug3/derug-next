@@ -65,7 +65,7 @@ const HeaderNav: FC = () => {
   return (
     <>
       <header
-        className="flex items-center w-full justify-between px-2 lg:px-10 rounded-lg shadow-xl"
+        className="flex items-center w-full justify-between px-2 lg:px-20 rounded-lg shadow-xl"
         style={{
           // padding: "0.5em 6.5em",
           background: "#1D2939",
