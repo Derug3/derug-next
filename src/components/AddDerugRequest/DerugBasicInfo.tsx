@@ -49,7 +49,7 @@ const DerugBasicInfo = () => {
         <div className="flex w-full flex-col font-mono gap-2 text-white justify-center">
           <label htmlFor="wallet">Wallet</label>
           <div className="flex gap-5">
-            <input id="wallet" className="flex w-full px-[14px] py-[10px] w-full items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal" type="text" value={wallet?.publicKey && wallet.publicKey.toString()} />
+            <input id="wallet" className="flex w-full  px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal" type="text" value={wallet?.publicKey && wallet.publicKey.toString()} />
             {!userData?.twitterHandle ? (
               <div className="flex w-fit whitespace-nowrap gap-2 lex font-mono text-white items-center justify-end">
                 <FaTwitter style={{ color: "rgb(29 161 242)" }} />
@@ -77,7 +77,7 @@ const DerugBasicInfo = () => {
           <label htmlFor="name">New collection name</label>
           <input
             id="name"
-            className="flex w-full px-[14px] py-[10px] w-full items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+            className="flex w-full  px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
             type="text"
             onChange={(e) => {
               e.target.value.length > 0 &&
@@ -118,7 +118,7 @@ const DerugBasicInfo = () => {
                 message: "Max symbol length is 10 characters",
               },
             })}
-            className="flex w-full px-[14px] py-[10px] w-full items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+            className="flex w-full px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
             onChange={(e) =>
               e.target.value.length > 0 &&
               e.target.value.length < 10 &&
@@ -136,7 +136,7 @@ const DerugBasicInfo = () => {
           <div className="flex items-center gap-8">
             <input
               id="fee"
-              className="flex px-[14px] py-[10px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+              className="flex px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
               {...register("fee")}
               placeholder="Fee"
               value={sellerFee}

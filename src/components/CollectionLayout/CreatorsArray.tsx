@@ -43,7 +43,7 @@ const CreatorsArray: FC<{
             <div className="flex w-full flex-row gap-4">
               <input
                 placeholder="Address"
-                className="flex w-4/5 px-[14px] py-[10px] w-full items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+                className="flex w-4/5 px-[12px] py-[8px] w-full items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
                 value={creator.address}
                 onChange={(e) =>
                   handleItemsAddressChange(e.target.value, index)
@@ -51,7 +51,7 @@ const CreatorsArray: FC<{
               />
               <input
                 placeholder="Percentage"
-                className="flex w-1/5 px-[14px] py-[10px] w-full items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+                className="flex w-1/5 px-[12px] py-[8px] w-full items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
                 value={creator.share}
                 onChange={(e) =>
                   handleItemsPercentageChange(e.target.value, index)

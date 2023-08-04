@@ -1,7 +1,7 @@
 export const selectStyles = {
   control(base: any, props: any) {
     return {
-      background: "#0d1117",
+      background: "#1D2939",
       fontFamily: "monospace",
       height: "32px",
       display: "flex",
@@ -24,7 +24,6 @@ export const selectStyles = {
   menu(base: any, props: any) {
     return {
       ...base,
-      border: "1px solid rgba(9, 194, 246, 0.5)",
       zIndex: 999,
     };
   },
@@ -70,7 +69,6 @@ export const selectStylesPrimary = {
   menu(base: any, props: any) {
     return {
       ...base,
-      border: "1px solid rgba(9, 194, 246, 0.5)",
       zIndex: 999,
     };
   },
@@ -95,7 +93,6 @@ export const selectStylesSecondary = {
   control(base: any, props: any) {
     return {
       background: "#0d1117",
-      border: "1px solid rgb(163 230 53)",
       fontFamily: "monospace",
       // height: "32px",
       display: "flex",

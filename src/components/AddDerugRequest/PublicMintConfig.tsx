@@ -13,9 +13,15 @@ import { PublicKey } from "@solana/web3.js";
 import { NATIVE_MINT } from "@solana/spl-token";
 import { TokenListProvider } from "@solana/spl-token-registry";
 import useDebounce from "@/hooks/useDebounce";
+import Toggle from "../Toggle";
 
 const PublicMintConfig = () => {
   const methods = useForm<DerugForm>();
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleToggle = () => {
+    setIsChecked(!isChecked);
+  };
 
   const {
     register,
@@ -135,10 +141,9 @@ const PublicMintConfig = () => {
   const renderSelect = useMemo(() => {
     return (
       availableTokensList?.length && (
-        <div className="flex flex-col w-full gap-4">
+        <div className="flex flex-col w-full">
           <Select
-            className="border border-gray-700 rounded-lg shadow-lg px-2"
-            placeholder="select token"
+            className="flex w-full px-[4px] py-[2px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
             isLoading={searchLoading}
             onInputChange={(e) => setSearchValue(e)}
             onChange={(e) => {
@@ -179,27 +184,48 @@ const PublicMintConfig = () => {
   }, [availableTokensList, searchLoading]);
 
   return (
-    <div className="flex flex-col">
-      <div className="grid grid-cols-2 gap-[5%]">
-        <input
-          className="bg-gray-800"
-          {...methods.register("price", {
-            min: {
-              value: 0,
-              message: "Minimum price is 0",
-            },
-            required: {
-              value: true,
-              message: "Price can't be empty in public mint",
-            },
-          })}
-          type={"number"}
-          placeholder="price"
-          min="0"
-          step={"0.00001"}
-          accept="number"
-        />
-        {renderSelect}
+    <div className="flex flex-col gap-8">
+      <div className="mt-5 flex flex-col gap-5teps">
+        <Toggle isChecked={isChecked} handleToggle={handleToggle} />
+        {isChecked && <div className="flex flex-col gap-1">
+          <label className="text-gray-400 text-sm font-mono text-normal">
+            Price
+          </label>
+          <div className="flex w-full gap-5">
+            <input
+              className="flex w-full px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+              {...methods.register("price", {
+                min: {
+                  value: 0,
+                  message: "Minimum price is 0",
+                },
+                required: {
+                  value: true,
+                  message: "Price can't be empty in public mint",
+                },
+              })}
+              type={"number"}
+              min="0"
+              step={"0.00001"}
+              accept="number"
+            />
+            {renderSelect}
+          </div>
+        </div>}
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-gray-400 text-sm font-mono text-normal">
+          Private mint duration
+        </label>
+        <div className="flex w-full gap-5 relative">
+          <input
+            className="flex w-full px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+            type={"number"}
+            min="1"
+            step={"1"}
+          />
+          <span className="absolute right-10 top-2 font-mono text-white">hours</span>
+        </div>
       </div>
     </div>
   );
