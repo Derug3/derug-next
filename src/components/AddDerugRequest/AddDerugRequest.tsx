@@ -31,6 +31,8 @@ import { authorizeTwitter, getUserTwitterData } from "../../api/twitter.api";
 import { userStore } from "../../stores/userStore";
 import { ProgressBar } from "@primer/react";
 import DerugBasicInfo from "./DerugBasicInfo";
+import Creators from "./Creators";
+import PublicMintConfig from "./PublicMintConfig";
 
 enum CreateDerugRequestStep {
   BasicInfo,
@@ -58,12 +60,7 @@ export const AddDerugRequst: FC<{
 
   const [creators, setCreator] = useState<Creator[]>([]);
 
-  const [selectedUtility, setSelectedUtility] = useState<number>(0);
   const [sellerFee, setSellerFee] = useState<number>(0);
-  const [symbol, setSymbol] = useState<string>();
-  const [newName, setNewName] = useState<string>();
-  const [price, setPrice] = useState<number>();
-  const [duration, setDuration] = useState<number>();
   const [selectedMint, setSelectedMint] = useState<ITreasuryTokenAccInfo>();
 
   const {
@@ -72,18 +69,8 @@ export const AddDerugRequst: FC<{
     setCollectionDerug,
     setRequests,
     collectionStats,
-    collection,
     derugRequests,
   } = useContext(CollectionContext);
-
-  const addCreator = () => {
-    const newElement = {
-      address: "",
-      share: 0,
-    };
-    const oldValue = creators || [];
-    setCreator([...oldValue, newElement]);
-  };
 
   const handleSellerFeeChange = (points: number) => {
     setSellerFee(points);
@@ -95,7 +82,11 @@ export const AddDerugRequst: FC<{
 
   const methods = useForm<DerugForm>();
 
-  const submitRequest = async (data: any) => {
+  const handleSubmit = (data?: any) => {
+    setActiveStep(activeStep + 1);
+  };
+
+  const submitRequest = async (data?: any) => {
     try {
       if (wallet && chainCollectionData && utility && collectionStats && data) {
         const requestAddress = await createOrUpdateDerugRequest(
@@ -173,13 +164,26 @@ export const AddDerugRequst: FC<{
       case CreateDerugRequestStep.BasicInfo: {
         return <DerugBasicInfo />;
       }
+      case CreateDerugRequestStep.Creators: {
+        return <Creators />;
+      }
+      case CreateDerugRequestStep.MintConfig: {
+        return <PublicMintConfig />;
+      }
     }
   }, [activeStep]);
 
   return (
     <div className="flex w-full flex-col">
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(submitRequest)}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            activeStep < CreateDerugRequestStep.MintConfig
+              ? handleSubmit()
+              : methods.handleSubmit(submitRequest);
+          }}
+        >
           <Dialog
             className="bg-gray-800"
             returnFocusRef={returnFocusRef}
@@ -195,7 +199,7 @@ export const AddDerugRequst: FC<{
               id="header-id"
               className="flex justify-between items-center bg-gray-800 rounded-none"
             >
-              <span className="flex w-full justify-between font-bold text-white-500 text-xl text-white">
+              <span className="flex w-full justify-between  font-mono text-white-500 text-xl text-white">
                 Derug Request
               </span>
             </Dialog.Header>
@@ -431,14 +435,18 @@ export const AddDerugRequst: FC<{
                 type="button"
                 className="bg-gray-800 my-10 border-[1px] text-white hover:bg-red-300 hover:text-black rounded-md"
                 disabled={false}
-                onClick={() => setIsOpen(false)}
+                onClick={
+                  activeStep === 0
+                    ? () => setIsOpen(false)
+                    : () => setActiveStep(activeStep - 1)
+                }
               >
-                Cancel request
+                {activeStep === 0 ? "Cancel request" : "Go Back"}
               </Button>
               <Button
                 size="large"
                 disabled={false}
-                type="submit"
+                type={"submit"}
                 className="bg-gray-800 text-lg text-white font-bold my-10 font-mono rounded-md hover:bg-main-blue hover:text-black"
               >
                 {activeStep === CreateDerugRequestStep.MintConfig
