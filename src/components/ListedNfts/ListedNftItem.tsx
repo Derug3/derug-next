@@ -63,14 +63,14 @@ const ListedNftItem: FC<{ listedNft: INftListing }> = ({
 
   return (
     <div
-      className="flex relative flex-col gap-5 items-start flex p-2 flex-col items-start gap-4 bg-gray-800 border-gray-800"
+      className="flex relative flex-col gap-5 items-start flex p-2 flex-col items-start gap-4"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
       <img
         src={listedNft.imageUrl || fallbackImage}
         alt="nftImg"
-        className={`${hover ? "opacity-50" : "opacity-100"} transition-all duration-300 ease-in-out`}
+        className={`${hover ? "opacity-20" : "opacity-100"} transition-all duration-300 ease-in-out`}
         onLoad={() => setImageLoaded(true)}
       />
       {hover && (

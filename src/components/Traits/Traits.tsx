@@ -10,11 +10,11 @@ const Traits: FC<{ trait: ITrait }> = ({ trait }) => {
       return (
         <div
           key={index}
-          className="flex flex-col gap-2 items-start justify-start mb-2"
+          className="flex w-full flex-col gap-2 items-start justify-start mb-2"
         >
-          <img src={t.image} className="w-32 rounded-lg" />
+          <img src={t.image} className="w-64" />
           <div className="flex flex-col items-start justify-start w-full">
-            <span className="text-sm text-left" style={{ color: "white" }}>
+            <span className="text-sm text-left font-mono text-white">
               {t.name}
             </span>
             <span
@@ -33,20 +33,20 @@ const Traits: FC<{ trait: ITrait }> = ({ trait }) => {
   }, [trait]);
   return (
     <div className="flex flex-col pt-5 items-start">
-      <span className=" font-mono text-white">
+      <span className="text-white">
         {trait.name} [{trait.traits.length}]
       </span>
       <div className="grid grid-cols-6 mt-3 gap-2">
         {loading
           ? generateSkeletonArrays(32).map((_, i) => (
-              <Skeleton
-                key={i}
-                height={128}
-                width={128}
-                baseColor="rgb(22,27,34)"
-                highlightColor="rgb(29,35,44)"
-              />
-            ))
+            <Skeleton
+              key={i}
+              height={128}
+              width={128}
+              baseColor="rgb(22,27,34)"
+              highlightColor="rgb(29,35,44)"
+            />
+          ))
           : renderTraits}
       </div>
     </div>

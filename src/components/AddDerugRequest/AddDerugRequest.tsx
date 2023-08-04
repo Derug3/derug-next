@@ -9,7 +9,13 @@ import {
 } from "../../solana/methods/derug-request";
 import { CollectionContext } from "../../stores/collectionContext";
 import "rc-slider/assets/index.css";
-import { Box, Dialog, Button } from "@primer/react";
+import UtilityArray from "../CollectionLayout/UtilityArray";
+import { FaTwitter } from "react-icons/fa";
+import CreatorsArray from "../CollectionLayout/CreatorsArray";
+import MintDetails, {
+  ITreasuryTokenAccInfo,
+} from "../CollectionLayout/MintDetails";
+import { getTrimmedPublicKey } from "../../solana/helpers";
 import { PublicKey } from "@solana/web3.js";
 import { FormProvider, useForm } from "react-hook-form";
 import { validateCreators } from "../../validators/derug-request.validators";
@@ -114,7 +120,7 @@ export const AddDerugRequst: FC<{
   const storeUserData = async () => {
     try {
       setUserData(await getUserTwitterData(wallet.publicKey?.toString()!));
-    } catch (error) {}
+    } catch (error) { }
   };
   const renderCreateDerugRequestContent = useMemo(() => {
     switch (activeStep) {
@@ -122,13 +128,28 @@ export const AddDerugRequst: FC<{
         return <DerugBasicInfo />;
       }
       case CreateDerugRequestStep.Creators: {
-        return <Creators />;
+        return <Creators creators={creators} setCreator={setCreator} />;
       }
       case CreateDerugRequestStep.MintConfig: {
         return <PublicMintConfig />;
       }
     }
   }, [activeStep]);
+
+  const renderStepName = useMemo(() => {
+    switch (activeStep) {
+      case CreateDerugRequestStep.BasicInfo: {
+        return "Basic Info";
+      }
+      case CreateDerugRequestStep.Creators: {
+        return "Creators";
+      }
+      case CreateDerugRequestStep.MintConfig: {
+        return "Mint Config";
+      }
+    }
+  }, [activeStep]);
+
 
   return (
     <div className="flex w-full flex-col">
@@ -141,72 +162,37 @@ export const AddDerugRequst: FC<{
               : methods.handleSubmit(submitRequest);
           }}
         >
-          <Dialog
-            className="bg-gray-800"
-            returnFocusRef={returnFocusRef}
-            isOpen={isOpen}
-            onDismiss={() => setIsOpen(false)}
-            sx={{
-              width: "50%",
-              maxHeight: "100%",
-            }}
-            aria-labelledby="header-id"
-          >
-            <Dialog.Header
-              id="header-id"
-              className="flex justify-between items-center bg-gray-800 rounded-none"
+          <div className="flex flex-col py-4 gap-3">
+            <ProgressBar
+              width={"100%"}
+              progress={((activeStep + 1) / 3) * 100}
+              bg="rgb(9, 194, 246)"
+              sx={{
+                width: "full",
+                height: "8px",
+                background: "#F9FAFB",
+                color: "rgb(45, 212, 191)",
+                "@media (max-width: 768px)": {
+                  width: "200px",
+                },
+              }}
+            />
+            <p className="font-mono text-xs">
+              {renderStepName} {activeStep + 1} / 3
+            </p>
+          </div>
+          {renderCreateDerugRequestContent}
+          <div className="flex w-full justify-end">
+            <button
+              disabled={false}
+              type={"submit"}
+              className="bg-[#36BFFA] w-96 border border-[#36BFFA] shadow-xs text-lg text-black font-bold mt-8 font-mono"
             >
-              <span className="flex w-full justify-between  font-mono text-white-500 text-xl text-white">
-                Derug Request
-              </span>
-            </Dialog.Header>
-
-            <Box className="flex flex-col p-5 gap-5">
-              <ProgressBar
-                width={"100%"}
-                progress={((activeStep + 1) / 3) * 100}
-                bg="rgb(9, 194, 246)"
-                sx={{
-                  width: "full",
-                  height: "8px",
-                  background: "#F9FAFB",
-                  color: "rgb(45, 212, 191)",
-                  "@media (max-width: 768px)": {
-                    width: "200px",
-                  },
-                }}
-              />
-              <p className="font-normal">
-                Derug request details {activeStep + 1} / 3
-              </p>
-              {renderCreateDerugRequestContent}
-            </Box>
-            <Box className="grid grid-cols-2 gap-4 mx-5">
-              <Button
-                size="large"
-                type="button"
-                className="bg-gray-800 my-10 border-[1px] text-white hover:bg-red-300 hover:text-black rounded-md"
-                disabled={false}
-                onClick={
-                  activeStep === 0
-                    ? () => setIsOpen(false)
-                    : () => setActiveStep(activeStep - 1)
-                }
-              >
-                {activeStep === 0 ? "Cancel request" : "Go Back"}
-              </Button>
-              <Button
-                size="large"
-                disabled={false}
-                type={"submit"}
-                className="bg-gray-800 text-lg text-white font-bold my-10 font-mono rounded-md hover:bg-main-blue hover:text-black"
-              >
-                {activeStep === CreateDerugRequestStep.MintConfig
-                  ? "Submit requests"
-                  : "Next Step"}
-              </Button>
-            </Box>
-          </Dialog>
+              {activeStep === CreateDerugRequestStep.MintConfig
+                ? "Submit requests"
+                : "Next Step"}
+            </button>
+          </div>
         </form>
       </FormProvider>
     </div>

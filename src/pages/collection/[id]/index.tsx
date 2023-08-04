@@ -34,6 +34,7 @@ import { IDerugCandyMachine, IGraphData } from "@/interface/derug.interface";
 import { GetServerSideProps } from "next";
 import { getDerugCandyMachine } from "@/solana/methods/public-mint";
 import { getCollectionChainData } from "@/solana/collections";
+import Modal from "@/components/Modal";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const slug = context.params.id;
@@ -182,16 +183,17 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       }}
     >
       <div className="flex flex-col pt-12 xs:px-0 sm:px-8 md:px-32 lg:px-64">
-        <div className="flex flex-col">
-          {wallet && derugRequestVisible && (
+        {wallet && (
+          <Modal isOpen={derugRequestVisible} onClose={setDerugRequestVisible}>
             <AddDerugRequst
               isOpen={derugRequestVisible}
               setIsOpen={(val) => setDerugRequestVisible(val)}
               derugRequests={derugRequests}
               setDerugRequest={setDerugRequests}
             />
-          )}
-
+          </Modal>
+        )}
+        <div className="flex flex-col">
           <div className="flex flex-col lg:flex-row w-full justify-center">
             <div className="flex flex-col w-full justify-center items-center gap-5">
               <LeftPane selectedInfo={selectedInfo} />
@@ -223,33 +225,30 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           />
         </div>
       </div>
-      {collectionDerug ? (
-        <>
-          {(collectionDerug.status === DerugStatus.Initialized ||
-            collectionDerug.status === DerugStatus.Voting) &&
+      {collectionDerug && <>
+        {(collectionDerug.status === DerugStatus.Initialized ||
+          collectionDerug.status === DerugStatus.Voting) &&
           showDerugRequests ? (
-            <DerugRequest />
-          ) : (
-            <>
-              {collectionDerug.status === DerugStatus.PublicMint &&
+          <DerugRequest />
+        ) : (
+          <>
+            {collectionDerug.status === DerugStatus.PublicMint &&
               candyMachine &&
               Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
               Number(candyMachine.candyMachine.itemsLoaded) ===
-                Number(candyMachine.candyMachine.data.itemsAvailable) ? (
-                <PublicMint />
-              ) : (
-                collectionDerug &&
-                collectionDerug.addedRequests.find((ar) => ar.winning) &&
-                derugRequests && (
-                  <Remint getWinningRequest={getWinningRequest} />
-                )
-              )}
-            </>
-          )}
-        </>
-      ) : (
-        <NoDerugRequests openDerugModal={setDerugRequestVisible} />
-      )}
+              Number(candyMachine.candyMachine.data.itemsAvailable) ? (
+              <PublicMint />
+            ) : (
+              collectionDerug &&
+              collectionDerug.addedRequests.find((ar) => ar.winning) &&
+              derugRequests && (
+                <Remint getWinningRequest={getWinningRequest} />
+              )
+            )}
+          </>
+        )}
+      </>
+      }
     </CollectionContext.Provider>
   );
 };

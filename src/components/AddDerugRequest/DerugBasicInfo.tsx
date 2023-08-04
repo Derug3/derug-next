@@ -44,31 +44,50 @@ const DerugBasicInfo = () => {
   };
 
   return (
-    <Box className="flex flex-col gap-10">
-      <div className="flex gap-5 items-center  w-full justify-between ">
-        <span className="font-mono text-white">
-          {wallet?.publicKey && wallet.publicKey.toString()}
-        </span>
-        {!userData?.twitterHandle ? (
-          <button
-            onClick={linkTwitter}
-            type="button"
-            className="flex text-white border-[1px] border-main-blue p-1 px-5 font-mono items-center gap-4 rounded-lg"
-          >
-            Link twitter
-            <FaTwitter style={{ color: "rgb(29 161 242)" }} />
-          </button>
-        ) : (
-          <div className="flex flex-row gap-5 items-center">
-            <p className="text-main-blue text-lg font-bold">
-              {userData.twitterHandle}
-            </p>
-            <img className="rounded-[50px] w-10" src={userData.image} alt="" />
+    <Box className="flex flex-col gap-5 w-full">
+      <div className="flex gap-5 items-center w-full justify-between">
+        <div className="flex w-full flex-col font-mono gap-2 text-white justify-center">
+          <label htmlFor="wallet">Wallet</label>
+          <div className="flex gap-5">
+            <input id="wallet" className="flex w-full px-[14px] py-[10px] w-full items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal" type="text" value={wallet?.publicKey && wallet.publicKey.toString()} />
+            {!userData?.twitterHandle ? (
+              <div className="flex w-fit whitespace-nowrap gap-2 lex font-mono text-white items-center justify-end">
+                <FaTwitter style={{ color: "rgb(29 161 242)" }} />
+                <button
+                  onClick={linkTwitter}
+                  type="button"
+                  className="flex w-fit text-white font-mono items-center gap-4 "
+                >
+                  Link twitter
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-row gap-5 items-center">
+                <p className="text-main-blue text-lg font-bold">
+                  {userData.twitterHandle}
+                </p>
+                <img className="rounded-[50px] w-10" src={userData.image} alt="" />
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
-      <div className="flex grid grid-cols-2">
-        <TextInput
+      <div className="flex flex-col font-mono text-white gap-3">
+        <div className="flex w-full flex-col font-mono gap-2 text-white justify-center">
+          <label htmlFor="name">New collection name</label>
+          <input
+            id="name"
+            className="flex w-full px-[14px] py-[10px] w-full items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+            type="text"
+            onChange={(e) => {
+              e.target.value.length > 0 &&
+                e.target.value.length < 32 &&
+                clearErrors("name");
+            }}
+
+          />
+        </div>
+        {/* <TextInput
           {...register("name", {
             required: "Name cannot be empty",
             maxLength: {
@@ -86,48 +105,57 @@ const DerugBasicInfo = () => {
           sx={{
             width: "100%",
           }}
-        />
+        /> */}
         {errors.name && <p className="text-red-500">{errors.name.message}</p>}
-        <input
-          {...register("symbol", {
-            required: "Symbol cannot be empty",
-            maxLength: {
-              value: 10,
-              message: "Max symbol length is 10 characters",
-            },
-          })}
-          placeholder="new collection symbol"
-          onChange={(e) =>
-            e.target.value.length > 0 &&
-            e.target.value.length < 10 &&
-            clearErrors("symbol")
-          }
-        />
+        <div className="flex w-full flex-col font-mono gap-2 text-white justify-center">
+          <label htmlFor="symbol">New collection symbol</label>
+          <input
+            id="symbol"
+            {...register("symbol", {
+              required: "Symbol cannot be empty",
+              maxLength: {
+                value: 10,
+                message: "Max symbol length is 10 characters",
+              },
+            })}
+            className="flex w-full px-[14px] py-[10px] w-full items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+            onChange={(e) =>
+              e.target.value.length > 0 &&
+              e.target.value.length < 10 &&
+              clearErrors("symbol")
+            }
+          />
+        </div>
         {errors.symbol && (
           <p className="text-red-500 ">{errors.symbol.message}</p>
         )}
       </div>
-      <div className="flex w-full items-center gap-5 ">
-        <div className="flex flex-col ">
-          <p>Royalties %</p>
-          <input
-            className="border-white text-white "
-            {...register("fee")}
-            placeholder="Fee"
-            value={sellerFee}
-            onChange={(e) => handleSellerFeeChange(Number(e.target.value))}
-          />
+      <div className="flex w-full items-center gap-8 font-mono gap-2 text-white">
+        <div className="flex flex-col w-full">
+          <label htmlFor="fee">Royalties</label>
+          <div className="flex items-center gap-8">
+            <input
+              id="fee"
+              className="flex px-[14px] py-[10px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+              {...register("fee")}
+              placeholder="Fee"
+              value={sellerFee}
+              onChange={(e) => handleSellerFeeChange(Number(e.target.value))}
+            />
+            <div className="flex flex-col w-full items-center justify-center">
+              <Slider
+                value={Number(sellerFee)}
+                className="f"
+                onChange={(e) => {
+                  typeof e === "number" && handleSellerFeeChange(e);
+                  +e > 0 && +e <= 100 && clearErrors("fee");
+                }}
+              />
+              {errors.fee && <p className="text-red-500">{errors.fee.message}</p>}
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col w-full items-start">
-          <Slider
-            value={Number(sellerFee)}
-            onChange={(e) => {
-              typeof e === "number" && handleSellerFeeChange(e);
-              +e > 0 && +e <= 100 && clearErrors("fee");
-            }}
-          />
-          {errors.fee && <p className="text-red-500">{errors.fee.message}</p>}
-        </div>
+
       </div>
     </Box>
   );

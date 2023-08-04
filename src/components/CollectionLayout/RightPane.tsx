@@ -17,6 +17,6 @@ export const RightPane: FC<{
 }> = ({ selectedData, traits, iframeRef, chainCollectionData }) => (
   <div className="flex w-full items-center justify-center mt-5">
     {selectedData === "traits" && traits && <TraitsList traits={traits} />}
-    <ListedNfts />
+    {selectedData === "listed" && traits && <ListedNfts />}
   </div>
 );
