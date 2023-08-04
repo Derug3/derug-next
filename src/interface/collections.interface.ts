@@ -45,7 +45,6 @@ export interface IRequest {
   mintCurrency: PublicKey | null;
   newSymbol: string;
   newName: string;
-  utility: IUtility[];
   splToken?: ISplTokenData;
   userData?: IUserData;
 }

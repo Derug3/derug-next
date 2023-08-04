@@ -63,3 +63,7 @@ export const storeWlConfig = async (wlDto: SaveWlSettingsDto) => {
 export const saveMinted = async (mint: string, reminter: string) => {
   return post(`${PUBLIC_REMINT}${SAVE_MINTED}`, { mint, reminter });
 };
+
+export const initPublicMint = (derugData: string) => {
+  return post(`${PUBLIC_REMINT}/save/${derugData}`);
+};

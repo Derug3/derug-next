@@ -101,7 +101,6 @@ export const AddDerugRequst: FC<{
               };
             }),
           chainCollectionData,
-          collectionStats,
           +sellerFee * 10,
           data.symbol,
           data.name,
