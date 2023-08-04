@@ -223,7 +223,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
             <div className="flex flex-col w-full justify-center items-center gap-5">
               <LeftPane selectedInfo={selectedInfo} />
               <div className="flex flex-col gap-5 w-full">
-                <div className="flex items-center justify-end">
+                <div className="flex items-center justify-between">
                   <HeaderTabs
                     setSelectedInfo={setSelectedInfo}
                     selectedData={selectedData}
@@ -242,31 +242,29 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               </div>
             </div>
           </div>
-          <div className="flex w-full items-center justify-center">
-            <RightPane
-              selectedData={selectedData}
-              chainCollectionData={chainCollectionData}
-              traits={traits}
-              iframeRef={iframeRef}
-            />
-          </div>
+          <RightPane
+            selectedData={selectedData}
+            chainCollectionData={chainCollectionData}
+            traits={traits}
+            iframeRef={iframeRef}
+          />
         </div>
       </div>
       {collectionDerug ? (
         <>
           {(collectionDerug.status === DerugStatus.Initialized ||
             collectionDerug.status === DerugStatus.Voting) &&
-          showDerugRequests &&
-          !hasWinning ? (
+            showDerugRequests &&
+            !hasWinning ? (
             <DerugRequest />
           ) : (
             <>
               {remintConfig &&
-              (Number(remintConfig.privateMintEnd) < dayjs().unix() * 1000 ||
-                (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
-              candyMachine &&
-              Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
-              Number(candyMachine.candyMachine.itemsLoaded) ===
+                (Number(remintConfig.privateMintEnd) < dayjs().unix() * 1000 ||
+                  (remintConfig.mintPrice && !remintConfig.privateMintEnd)) &&
+                candyMachine &&
+                Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
+                Number(candyMachine.candyMachine.itemsLoaded) ===
                 Number(candyMachine.candyMachine.data.itemsAvailable) ? (
                 <PublicMint />
               ) : (

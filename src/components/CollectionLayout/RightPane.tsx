@@ -15,10 +15,8 @@ export const RightPane: FC<{
   traits: ITrait[] | undefined;
   iframeRef: any;
 }> = ({ selectedData, traits, iframeRef, chainCollectionData }) => (
-  <div className="flex w-full items-center justify-center">
-    <div className="flex items-center justify-center w-full pl-8">
-      {selectedData === "traits" && traits && <TraitsList traits={traits} />}
-      <ListedNfts />
-    </div>
+  <div className="flex w-full items-center justify-center mt-5">
+    {selectedData === "traits" && traits && <TraitsList traits={traits} />}
+    <ListedNfts />
   </div>
 );

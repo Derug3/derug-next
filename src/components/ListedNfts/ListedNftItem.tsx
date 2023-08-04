@@ -63,54 +63,37 @@ const ListedNftItem: FC<{ listedNft: INftListing }> = ({
 
   return (
     <div
-      className="flex relative flex-col gap-5 items-start border-cyan-500 ease-in duration-300"
+      className="flex relative flex-col gap-5 items-start flex p-2 flex-col items-start gap-4 bg-gray-800 border-gray-800"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
       <img
         src={listedNft.imageUrl || fallbackImage}
         alt="nftImg"
-        className="rounded-lg p-3"
-        style={{ opacity: hover ? 0.2 : 1, borderRadius: "2em" }}
+        className={`${hover ? "opacity-50" : "opacity-100"} transition-all duration-300 ease-in-out`}
         onLoad={() => setImageLoaded(true)}
       />
-
-      {!imageLoaded && (
-        <div className="smooth-preloader">
-          <Skeleton
-            height={128}
-            width={156}
-            baseColor="rgb(22,27,34)"
-            highlightColor="rgb(29,35,44)"
-          />
-        </div>
-      )}
       {hover && (
-        <div className="flex absolute flex-col w-full h-full gap-2 items-center justify-center text-white font-mono">
+        <div className="flex absolute flex-col w-full h-full gap-2 items-center justify-center text-white bg-white-100">
           <div className="flex flex-row  items-center">
             <div className="flex flex-col">
               <div
                 className="text-sm font-bold"
-                style={{ color: "rgba(9, 194, 246)" }}
               >
                 {listedNft.price} SOL
               </div>
             </div>
           </div>
-          <div className="flex flex-row gap-5 items-center">
+          <div className="flex flex-row gap-5 items-center bg-white-500">
             <button
-              className="bg-transparent font-mono font-bold text-lg"
+              className="font-bold text-lg"
               style={{
-                background: "transparent",
-                fontFamily: "monospace",
+                // background: "transparent",
                 padding: "1em",
               }}
               onClick={() => window.open(getUrl, "_blank")}
             >
-              <div
-                className="flex items-center justify-between cursor-pointer"
-                style={{ color: "rgba(9, 194, 246)" }}
-              >
+              <div className="flex items-center justify-between cursor-pointer">
                 <img
                   src={getImgLogo?.src}
                   alt="meLogo"
