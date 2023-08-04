@@ -185,9 +185,9 @@ const PublicMintConfig = () => {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="mt-5 flex flex-col gap-5teps">
+      <div className="mt-5 flex flex-col gap-5">
         <Toggle isChecked={isChecked} handleToggle={handleToggle} />
-        {isChecked && <div className="flex flex-col gap-1">
+        {isChecked && <div className="flex flex-col gap-">
           <label className="text-gray-400 text-sm font-mono text-normal">
             Price
           </label>
