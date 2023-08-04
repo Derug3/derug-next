@@ -105,24 +105,15 @@ export const ActiveListings: FC<{
         <div className="flex flex-col w-full justify-center items-center">
           <span className="text-2xl font-mono text-gray-500	font-bold flex px-4">ACTIVE DERUGS 🛠</span>
         </div>
-        <div
-          className="flex w-full gap-5 cursor-pointer overflow-hidden w-full"
-          style={{
-            overflowY: "scroll",
-          }}
-        >
-          {activeListings.map((cd, index) => {
-            return (
-              <>
-                <ActiveListingItem
-                  key={index}
-                  derugData={cd.derug}
-                  collectionData={cd.collection}
-                />
-              </>
-            );
-          })}
-        </div>
+        {activeListings.map((cd, index) => {
+          return (
+            <ActiveListingItem
+              key={index}
+              derugData={cd.derug}
+              collectionData={cd.collection}
+            />
+          );
+        })}
       </div>
     )}
   </>
