@@ -26,14 +26,14 @@ const CollectionData = () => {
       <div className="flex w-full flex items-center gap-5">
         <div className="flex w-full flex-col gap-4 items-center justify-center h-full">
           <div className="flex items-center justify-evenly w-full h-full">
-            <div className="flex items-start p-4 md:p-5 items-start gap-8 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md w-full">
+            <div className="flex flex-col lg:flex-row items-start p-4 md:p-5 items-start gap-8 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md w-full">
               <img
                 src={collection?.image}
                 alt="collectionImg"
                 className="rounded-[2em] w-64"
               />
               <div className="flex flex-col w-full h-full justify-around">
-                <div className="flex flex-col gap-4">
+                <div className="flex w-full flex-wrap flex-col gap-4">
                   <div className="flex w-full justify-between font-bold text-white-500 text-4xl">
                     {collection?.name ?? (
                       <Skeleton
@@ -78,7 +78,7 @@ const CollectionData = () => {
                       <div className="flex">
                         Rugged by:
                         <span
-                          className="text-yellow-500 font-mon italic"
+                          className="text-yellow-500"
                           style={{
                             fontSize: "1em",
                             marginLeft: "0.5em",
@@ -139,7 +139,7 @@ const CollectionData = () => {
                     />
                   )}
                 </div>
-                {<div className="flex max-w-xl font-mono text-gray-400">
+                {<div className="flex flex-wrap w-full font-mono text-gray-400">
                   {collection?.description}
                 </div> ?? (
                     <Skeleton

@@ -30,7 +30,7 @@ const HeadingItem: FC<{
       </span>
       {!isCounter ? (
         <span
-          className="flex text-sm rounded-lg text-white text-2xl md:text-3xl font-medium"
+          className="flex text-sm rounded-lg text-white text-2xl md:text-lg font-medium"
         >
           {amount} <span className="flex w-full">{desc}</span>
         </span>
@@ -40,7 +40,7 @@ const HeadingItem: FC<{
         >
           <Countdown
             onComplete={refetchData}
-            className="text-2xl md:text-3xl text-red-300 p-2"
+            className="text-2xl md:text-lg text-red-300 p-2"
             date={date}
           />
         </div>

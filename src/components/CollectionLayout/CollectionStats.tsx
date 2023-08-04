@@ -25,7 +25,7 @@ export const CollectionStats: FC<{
       : undefined;
 
   return (
-    <div className="flex flex-col items-center justify-center gap-12 w-full">
+    <div className="flex flex-col items-center justify-center gap-8 w-full">
       <div className="flex gap-5 border-1 w-full">
         <HeadingItem
           amount={collection?.fp}
@@ -51,6 +51,15 @@ export const CollectionStats: FC<{
           amount={collection?.marketCap}
           desc="SOL"
         />
+        {collectionDerug &&
+          collectionDerug.status === DerugStatus.Reminting && (
+            <HeadingItem
+              descColor="#2dd4bf"
+              title="OLD REMINTED"
+              amount={collectionDerug.totalReminted}
+              desc=""
+            />
+          )}
       </div>
       <div className="flex gap-5 border-1 w-full">
         {collectionDerug && (
@@ -73,15 +82,6 @@ export const CollectionStats: FC<{
             desc=""
           />
         )}
-        {collectionDerug &&
-          collectionDerug.status === DerugStatus.Reminting && (
-            <HeadingItem
-              descColor="#2dd4bf"
-              title="OLD REMINTED"
-              amount={collectionDerug.totalReminted}
-              desc=""
-            />
-          )}
       </div>
     </div>
   );

@@ -212,7 +212,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       }}
     >
       <div
-        className="flex flex-col pt-12 lg:px-64 px-0"
+        className="flex flex-col pt-12 xs:px-0 sm:px-8 md:px-32 lg:px-64"
       >
         <div className="flex flex-col">
           {wallet && derugRequestVisible && (
