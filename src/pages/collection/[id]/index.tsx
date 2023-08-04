@@ -212,7 +212,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       }}
     >
       <div
-        className="flex flex-col pt-12 lg:px-24  px-0"
+        className="flex flex-col pt-12 lg:px-64 px-0"
       >
         <div className="flex flex-col">
           {wallet && derugRequestVisible && (
@@ -230,8 +230,8 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               className="flex flex-col w-full justify-center items-center gap-5"
             >
               <LeftPane selectedInfo={selectedInfo} />
-              <div className="flex flex-col gap-12 w-[56em]">
-                <div className="flex items-center justify-center">
+              <div className="flex flex-col gap-12 w-full">
+                <div className="flex items-center justify-end">
                   <HeaderTabs
                     setSelectedInfo={setSelectedInfo}
                     selectedData={selectedData}

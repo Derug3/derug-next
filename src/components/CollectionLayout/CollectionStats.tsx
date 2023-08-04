@@ -25,19 +25,25 @@ export const CollectionStats: FC<{
       : undefined;
 
   return (
-    <div className="flex items-center justify-center w-full gap-12 w-full">
-      <div className="flex flex-col gap-5 border-1 w-1/2">
+    <div className="flex flex-col items-center justify-center gap-12 w-full">
+      <div className="flex gap-5 border-1 w-full">
         <HeadingItem
           amount={collection?.fp}
           descColor="#2dd4bf"
           title="FLOOR PRICE"
           desc="SOL"
         />
-        <HeadingItem
+        {/* <HeadingItem
           title="LISTED"
           descColor="#2dd4bf"
           desc="NFTs"
           amount={collection?.numListed}
+        /> */}
+        <HeadingItem
+          descColor="#2dd4bf"
+          title="TOTAL SUPPLY"
+          desc="NFTs"
+          amount={collection?.numMints}
         />
         <HeadingItem
           descColor="#2dd4bf"
@@ -45,33 +51,8 @@ export const CollectionStats: FC<{
           amount={collection?.marketCap}
           desc="SOL"
         />
-        {collectionDerug && (
-          <HeadingItem
-            descColor="#2dd4bf"
-            title={remintConfigTime ? "PRIVATE MINT END" : "REMAINING TIME"}
-            date={remintConfigTime ?? collectionDerug.periodEnd}
-            isCounter
-            desc=""
-          />
-        )}
       </div>
-
-      <div className="flex flex-col gap-5 gap-3 w-1/2">
-        <HeadingItem
-          descColor="#2dd4bf"
-          title="TOTAL SUPPLY"
-          desc="NFTs"
-          amount={collection?.numMints}
-        />
-        {collectionDerug && (
-          <HeadingItem
-            descColor="#2dd4bf"
-            title="TOTAL REQUESTS"
-            amount={collectionDerug.totalSuggestionCount}
-            desc=""
-          />
-        )}
-
+      <div className="flex gap-5 border-1 w-full">
         {collectionDerug && (
           <HeadingItem
             descColor="#2dd4bf"
@@ -80,6 +61,15 @@ export const CollectionStats: FC<{
               collectionDerug.status[0].toUpperCase() +
               collectionDerug.status.slice(1)
             }
+            desc=""
+          />
+        )}
+        {collectionDerug && (
+          <HeadingItem
+            descColor="#2dd4bf"
+            title={remintConfigTime ? "PRIVATE MINT END" : "REMAINING TIME"}
+            date={remintConfigTime ?? collectionDerug.periodEnd}
+            isCounter
             desc=""
           />
         )}

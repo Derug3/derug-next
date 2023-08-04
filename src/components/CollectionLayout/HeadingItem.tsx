@@ -22,37 +22,25 @@ const HeadingItem: FC<{
   }, [collectionDerug]);
 
   return (
-    <div className="flex flex-row items-center justify-between text-center w-full whitespace-nowrap gap-3">
+    <div className="flex items-start p-4 md:p-5 flex-col items-start gap-1 md:gap-2 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md w-full">
       <span
-        className="flex w-full text-sm border-1 p-2 rounded-lg text-gray-400"
-        style={{
-          fontWeight: 200,
-          border: "1px solid rgba(9,194,246,.15)",
-        }}
+        className="text-gray-400 text-sm md:text-base font-mono font-medium"
       >
         {title}
       </span>
       {!isCounter ? (
         <span
-          className="flex w-full text-sm p-2 rounded-lg text-white"
-          style={{
-            // fontFamily: "monospace",
-            border: "1px solid rgba(9,194,246,.75)",
-          }}
+          className="flex text-sm rounded-lg text-white text-2xl md:text-3xl font-medium"
         >
           {amount} <span className="flex w-full">{desc}</span>
         </span>
       ) : (
         <div
-          className="flex w-full items-center justify-center"
-          style={{
-            border: "1px solid rgb(154 52 18)",
-          }}
+          className="flex items-center justify-center"
         >
           <Countdown
             onComplete={refetchData}
-            className="text-sm
-   text-orange-800 p-2"
+            className="text-2xl md:text-3xl text-red-300 p-2"
             date={date}
           />
         </div>
