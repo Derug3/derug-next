@@ -23,10 +23,8 @@ import dayjs from "dayjs";
 import { getNonMinted } from "../../api/public-mint.api";
 import { RelativeTime } from "@primer/react";
 import Countdown from "react-countdown";
-export const Remint: FC<{
-  getWinningRequest: IRequest | undefined;
-}> = ({}) => {
-  const { derugRequests } = useContext(CollectionContext);
+export const Remint: FC = () => {
+  const { derugRequest } = useContext(CollectionContext);
   const [collectionNfts, setCollectionNfts] = useState<IDerugCollectionNft[]>();
   const [loading, toggleLoading] = useState(true);
 
@@ -115,7 +113,7 @@ export const Remint: FC<{
             className="font-mono text-sm
             text-orange-800 p-2"
             date={dayjs()
-              .add(derugRequests[0].privateMintDuration, "hours")
+              .add(derugRequest.privateMintDuration, "hours")
               .toDate()}
           />
           <RelativeTime />
@@ -127,28 +125,18 @@ export const Remint: FC<{
   const remintNfts = async () => {
     try {
       toggleIsReminting(true);
-      const winningRequest = derugRequests?.sort(
-        (a, b) => a.voteCount - b.voteCount
-      )[derugRequests.length - 1];
+
       if (
         wallet &&
         collectionDerug &&
         collectionNfts &&
-        collectionDerug?.status === DerugStatus.Reminting &&
-        winningRequest
+        collectionDerug?.status === DerugStatus.Reminting
       ) {
         setNfts([]);
         setCollectionNfts(
           collectionNfts?.map((cnft) => {
             return { ...cnft, remintingStatus: RemintingStatus.InProgress };
           })
-        );
-
-        await remintNft(
-          wallet!,
-          collectionDerug,
-          winningRequest,
-          collectionNfts?.filter((nft) => !nft.remintingStatus)
         );
       }
     } catch (error) {
@@ -179,7 +167,6 @@ export const Remint: FC<{
 
   return (
     <div className="w-full flex-col gap-10">
-      {/* <WinningRequest request={getWinningRequest!} /> */}
       <>
         {collectionDerug?.status === DerugStatus.UploadingMetadata ? (
           <div className="text-center text-lg m-10">
@@ -193,7 +180,7 @@ export const Remint: FC<{
             {collectionDerug &&
               collectionDerug.status === DerugStatus.Reminting &&
               dayjs()
-                .add(derugRequests[0].privateMintDuration, "hours")
+                .add(derugRequest.privateMintDuration, "hours")
                 .isAfter(dayjs()) && (
                 <div className="flex flex-col items-center gap-10 w-full mt-10">
                   {!loading &&

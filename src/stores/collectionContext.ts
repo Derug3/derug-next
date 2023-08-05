@@ -21,12 +21,12 @@ export interface CollectionContext {
   chainCollectionData: IChainCollectionData | undefined;
   recentActivities: ICollectionRecentActivities[] | undefined;
   collectionDerug: ICollectionDerugData | undefined;
-  derugRequests: IRequest[] | undefined;
+  derugRequest: IRequest | undefined;
   graphData: IGraphData | undefined;
   candyMachine: IDerugCandyMachine | undefined;
   toggleLoading(loading: boolean): void;
   setGraphData: (data: IGraphData) => void;
-  setRequests: (requests: IRequest[]) => void;
+  setRequests: (requests: IRequest) => void;
   setCollectionDerug: (derug: ICollectionDerugData) => void;
   setRecentActivities: (activities: ICollectionRecentActivities[]) => void;
   setCollection: (collection: ICollectionData) => void;

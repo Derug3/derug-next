@@ -39,6 +39,7 @@ export interface IRequest {
   voteCount: number;
   sellerFeeBps: number;
   mintPrice?: number;
+  status: DerugStatus;
   publicMint: boolean;
   creators: ICreator[];
   privateMintDuration?: number;

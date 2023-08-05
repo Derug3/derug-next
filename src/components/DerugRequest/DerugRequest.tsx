@@ -12,22 +12,9 @@ export const DerugRequest: FC = () => {
   const [currentRequest, setCurrentRequest] = useState<IRequest>();
   const returnFocusRef = useRef(null);
 
-  const { derugRequests, collectionDerug } = useContext(CollectionContext);
+  const { derugRequest, collectionDerug } = useContext(CollectionContext);
 
   const wallet = useWallet();
-  const renderDerugRequests = useMemo(() => {
-    return derugRequests?.map((dr, index) => {
-      return (
-        <>
-          <DerugRequestItem
-            derugRequest={dr}
-            index={index}
-            key={dr.address.toString()}
-          />
-        </>
-      );
-    });
-  }, [derugRequests]);
 
   const getPercentage = () => {
     if (collectionDerug?.addedRequests.length == 1) {
@@ -38,29 +25,6 @@ export const DerugRequest: FC = () => {
     }
     return 5;
   };
-
-  const getWinningRequest = useMemo(() => {
-    const currUnix = dayjs().unix() * 1000;
-    if (
-      wallet &&
-      wallet.publicKey &&
-      collectionDerug &&
-      dayjs(collectionDerug.periodEnd).unix() * 1000 > currUnix
-    ) {
-      const percentage = getPercentage();
-      const majorWinner = collectionDerug?.addedRequests
-        .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
-        .find((ac) => ac.voteCount > collectionDerug.totalSupply / percentage);
-      if (majorWinner) {
-        const request = derugRequests?.find(
-          (dr) => dr.address.toString() === majorWinner.request.toString()
-        );
-        if (request?.derugger.toString() === wallet.publicKey.toString()) {
-          return request;
-        }
-      }
-    }
-  }, [wallet, collectionDerug, derugRequests]);
 
   return (
     <div
@@ -83,11 +47,7 @@ export const DerugRequest: FC = () => {
       </Dialog> */}
       <div className="w-full">
         <div className="flex w-full flex-col gap-1 items-center justify-around p-3">
-          {derugRequests && (
-            <>
-              {renderDerugRequests}
-            </>
-          )}
+          {<></>}
         </div>
       </div>
     </div>

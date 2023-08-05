@@ -21,12 +21,12 @@ export const HeaderTabs: FC<{
   setSelectedData: (s: string) => void;
   openDerugModal: (value: boolean) => void;
 }> = ({ openDerugModal, selectedData, setSelectedData }) => {
-  const { traits, collectionDerug, derugRequests } =
+  const { traits, collectionDerug, derugRequest } =
     useContext(CollectionContext);
   const wallet = useWallet();
 
   const showAddDerugButton = useMemo(() => {
-    if (!derugRequests || derugRequests.length === 0) {
+    if (!derugRequest) {
       return true;
     } else if (
       (collectionDerug &&
@@ -35,14 +35,11 @@ export const HeaderTabs: FC<{
     ) {
       return false;
     }
-  }, [derugRequests, collectionDerug]);
+  }, [derugRequest, collectionDerug]);
 
   return (
     <>
-      <div
-        aria-label="Main"
-        className="flex justify-start w-fit items-center"
-      >
+      <div aria-label="Main" className="flex justify-start w-fit items-center">
         <div
           onClick={() => setSelectedData("listed")}
           style={getNavStyling(selectedData, "listed")}
@@ -73,9 +70,7 @@ export const HeaderTabs: FC<{
         className="py-2 px-3 text-white hover:text-main-blue transition-all hover:bg-[#1D2939] hover:scale-105"
         onClick={() => openDerugModal(true)}
       >
-        <span className="text-sm uppercase">
-          Add derug request
-        </span>
+        <span className="text-sm uppercase">Add derug request</span>
       </button>
     </>
   );

@@ -52,7 +52,6 @@ export const getPrivateMintNft = (metadata: string): Promise<INonMinted> => {
 export const getWlConfig = async (
   derugAddress: string
 ): Promise<WlSettingsDto> => {
-  //TODO:remove ekser
   return get(`${WALLET_WL}${ALL}/${derugAddress}`);
 };
 

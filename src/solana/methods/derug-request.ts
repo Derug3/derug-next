@@ -44,7 +44,7 @@ import { derugProgramFactory, feeWallet, metaplex } from "../utilities";
 import { createDerugDataIx } from "./derug";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { initPublicMint } from "@/api/public-mint.api";
+import { initPublicMint, storeAllNfts } from "@/api/public-mint.api";
 
 dayjs.extend(utc);
 export const createOrUpdateDerugRequest = async (
@@ -215,12 +215,18 @@ export const createOrUpdateDerugRequest = async (
 
   await sendTransaction(RPC_CONNECTION, derugInstruction, wallet);
 
+  storeAllNfts({
+    derugData: collection.derugDataAddress.toString(),
+    derugRequest: derugRequest.toString(),
+    creator: collection.firstCreator,
+  });
+
   return derugRequest;
 };
 
 export const getAllDerugRequest = async (
   derugDataAddress: PublicKey
-): Promise<IRequest[]> => {
+): Promise<IRequest> => {
   try {
     const filters: GetProgramAccountsFilter = {
       memcmp: {
@@ -246,6 +252,7 @@ export const getAllDerugRequest = async (
         address: derug.publicKey,
         newName: derug.account.newName,
         newSymbol: derug.account.newSymbol,
+        status: Object.keys(derug.account.requestStatus)[0] as DerugStatus,
         candyMachineKey: derug.account.mintConfig.candyMachineKey,
         mintCurrency: derug.account.mintConfig.mintCurrency,
         mintPrice: derug.account.mintConfig.publicMintPrice.toNumber(),
@@ -258,7 +265,7 @@ export const getAllDerugRequest = async (
       });
     }
 
-    return requests;
+    return requests[0];
   } catch (error) {
     console.log(error);
     throw error;
@@ -280,6 +287,7 @@ export const getSingleDerugRequest = async (
     derugger: derugAccount.derugger,
     voteCount: derugAccount.voteCount,
     newName: derugAccount.newName,
+    status: Object.keys(derugAccount.requestStatus)[0] as DerugStatus,
     candyMachineKey: derugAccount.mintConfig.candyMachineKey,
     newSymbol: derugAccount.newSymbol,
     mintCurrency: derugAccount.mintCurrency,

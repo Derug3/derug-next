@@ -1082,6 +1082,11 @@ export type DerugProgram = {
           name: "derugData";
           type: "publicKey";
           index: false;
+        },
+        {
+          name: "derugRequest";
+          type: "publicKey";
+          index: false;
         }
       ];
     }
@@ -2267,6 +2272,11 @@ export const IDL: DerugProgram = {
       fields: [
         {
           name: "derugData",
+          type: "publicKey",
+          index: false,
+        },
+        {
+          name: "derugRequest",
           type: "publicKey",
           index: false,
         },

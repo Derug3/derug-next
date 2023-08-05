@@ -112,7 +112,7 @@ export async function remintNft(
   });
 
   const ix = await derugProgram.methods
-    .remintNft("", "")
+    .remintNft()
     .accounts({
       authority,
       oldMint: new PublicKey(mint),

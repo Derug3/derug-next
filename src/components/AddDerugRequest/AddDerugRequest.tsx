@@ -30,8 +30,8 @@ enum CreateDerugRequestStep {
 export const AddDerugRequst: FC<{
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  derugRequests: IRequest[] | undefined;
-  setDerugRequest: (derugRequest: IRequest[] | undefined) => void;
+  derugRequest: IRequest | undefined;
+  setDerugRequest: (derugRequest: IRequest | undefined) => void;
 }> = ({ setIsOpen }) => {
   const wallet = useWallet();
 
@@ -50,7 +50,7 @@ export const AddDerugRequst: FC<{
     setCollectionDerug,
     setRequests,
     collectionStats,
-    derugRequests,
+    derugRequest,
   } = useContext(CollectionContext);
 
   const [activeStep, setActiveStep] = useState(
@@ -94,9 +94,9 @@ export const AddDerugRequst: FC<{
           data.selectedMint.address,
           activeListings ? activeListings[0] : undefined
         );
-        const addedRequests = [...(derugRequests ?? [])];
-        addedRequests.push(await getSingleDerugRequest(requestAddress));
-        setRequests(addedRequests);
+
+        const request = await getSingleDerugRequest(requestAddress);
+        setRequests(request);
       }
       if (chainCollectionData) {
         const derugData = await getCollectionDerugData(
