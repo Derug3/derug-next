@@ -116,6 +116,8 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       const derugProgram = derugProgramFactory();
 
       derugProgram.addEventListener("PrivateMintStarted", async (data) => {
+        console.log("GOT EVENT LISTENER", data);
+
         if (data.derugData.toString() === collectionDerug?.address.toString()) {
           setCollectionDerug(await getCollectionDerugData(data.derugData));
           setDerugRequests(await getSingleDerugRequest(data.derugRequest));
@@ -149,7 +151,16 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
     if (derugRequest)
       switch (derugRequest.status) {
         case DerugStatus.Initialized: {
-          return <Oval color="#36BFFA" secondaryColor="transaprent" />;
+          return (
+            <div className="flex flex-col items-center">
+              <Oval
+                color="#36BFFA"
+                width={"4em"}
+                secondaryColor="transaprent"
+              />
+              <p> ⚠️ Minting will be enabled soon... ⚠️</p>
+            </div>
+          );
         }
         case DerugStatus.Reminting: {
           return <Remint />;
@@ -203,15 +214,11 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
             <div className="flex flex-col w-full justify-center items-center gap-5">
               <LeftPane selectedInfo={selectedInfo} />
               <div className="flex flex-col gap-5 w-full">
-                <div className="flex items-center w-full border-[5px]  justify-center">
-                  {
-                    <Oval
-                      color="#36BFFA"
-                      width={"4em"}
-                      secondaryColor="transaprent"
-                    />
-                  }
-                </div>
+                {derugRequest && (
+                  <div className="flex items-center w-full border-8 border-gray-700 bg-gray-800 shadow-md justify-center py-5">
+                    {renderDerugContent}
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <HeaderTabs
                     setSelectedInfo={setSelectedInfo}

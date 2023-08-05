@@ -58,7 +58,7 @@ export const sendTransaction = async (
               setNfts(savedNfts);
             }
 
-            return "Failed to send transaction:" + parseTransactionError(data);
+            return "Failed to send transaction:" + data.message;
           },
           loading: instructions[index].pendingDescription,
           success: (data) => {
@@ -73,11 +73,13 @@ export const sendTransaction = async (
             return instructions[index].successDescription;
           },
         });
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     }
   } catch (error: any) {
-    toast.error("Failed to send transaction:", error.message);
     console.log(error);
+    toast.error("Failed to send transaction:", error.message);
   }
 };
 

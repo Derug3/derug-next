@@ -98,6 +98,8 @@ export const Remint: FC = () => {
     }
   }, [nfts]);
 
+  console.log(derugRequest, "DR");
+
   const renderCollectionNfts = useMemo(() => {
     return collectionNfts?.length > 0 ? (
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 px-10">
@@ -112,9 +114,7 @@ export const Remint: FC = () => {
           <Countdown
             className="font-mono text-sm
             text-orange-800 p-2"
-            date={dayjs()
-              .add(derugRequest.privateMintDuration, "hours")
-              .toDate()}
+            date={dayjs.unix(derugRequest.privateMintDuration).toDate()}
           />
           <RelativeTime />
         </p>

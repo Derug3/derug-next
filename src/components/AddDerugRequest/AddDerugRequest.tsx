@@ -96,6 +96,8 @@ export const AddDerugRequst: FC<{
         );
 
         const request = await getSingleDerugRequest(requestAddress);
+        console.log(request, "REQUEST");
+
         setRequests(request);
       }
       if (chainCollectionData) {

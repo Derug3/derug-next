@@ -117,14 +117,16 @@ export const parseTransactionError = (data: any) => {
   const derugProgram = derugProgramFactory();
 
   if (
-    parsedData?.logs.find(
+    parsedData?.logs?.find(
       (log: any) => log.includes("lamports") || log.includes("NotEnoughSOL")
     )
   ) {
     return "Insufficient balance for transaction";
   }
 
-  const log = parsedData.logs.find((log: string) => log.includes(ANCHOR_ERROR));
+  const log = parsedData.logs?.find((log: string) =>
+    log.includes(ANCHOR_ERROR)
+  );
 
   if (log) {
     const slicedData = +log.split(ERROR_NUMBER)[1].split(".")[0].trim();
@@ -142,10 +144,11 @@ export const getFungibleTokenMetadata = async (
   try {
     const tokenListProvider = new TokenListProvider();
     const resolved = await tokenListProvider.resolve(Strategy.Static);
-    if (tokenMint === null) {
+
+    if (tokenMint === null || tokenMint.toString() === NATIVE_MINT.toString()) {
       const solToken = resolved
         .getList()
-        .find((t) => t.address === NATIVE_MINT.toString())!;
+        .find((t) => t.address.toString() === NATIVE_MINT.toString())!;
       return {
         decimals: 9,
         name: solToken?.name,

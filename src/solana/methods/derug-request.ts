@@ -210,6 +210,7 @@ export const createOrUpdateDerugRequest = async (
       instructions,
       pendingDescription: "Creating derug request",
       successDescription: "Successfully created derug request!",
+      partialSigner: [collectionMint, tokenAccount],
     },
   ];
 
@@ -243,8 +244,6 @@ export const getAllDerugRequest = async (
     const requests: IRequest[] = [];
 
     for (const derug of allRequestsForCollection) {
-      console.log(derug);
-
       requests.push({
         createdAt: derug.account.createdAt.toNumber(),
         derugger: derug.account.derugger,
@@ -256,11 +255,13 @@ export const getAllDerugRequest = async (
         candyMachineKey: derug.account.mintConfig.candyMachineKey,
         mintCurrency: derug.account.mintConfig.mintCurrency,
         mintPrice: derug.account.mintConfig.publicMintPrice.toNumber(),
-        sellerFeeBps: derug.account.sellerFeeBps,
+        sellerFeeBps: derug.account.mintConfig.sellerFeeBps,
         privateMintDuration: derug.account.mintConfig.remintDuration.toNumber(),
         creators: derug.account.creators,
         publicMint: true,
-        splToken: await getFungibleTokenMetadata(derug.account.mintCurrency),
+        splToken: await getFungibleTokenMetadata(
+          derug.account.mintConfig.mintCurrency
+        ),
         userData: await getUserDataForDerug(derug.account.derugger.toString()),
       });
     }
@@ -280,6 +281,7 @@ export const getSingleDerugRequest = async (
   const derugAccount = await derugProgram.account.derugRequest.fetch(
     derugRequestAddress
   );
+  console.log(derugAccount, "RAW REQUEST");
 
   return {
     address: derugRequestAddress,
@@ -292,7 +294,7 @@ export const getSingleDerugRequest = async (
     newSymbol: derugAccount.newSymbol,
     mintCurrency: derugAccount.mintCurrency,
     mintPrice: derugAccount.mintConfig.publicMintPrice.toNumber(),
-    sellerFeeBps: derugAccount.sellerFeeBps,
+    sellerFeeBps: derugAccount.mintConfig.sellerFeeBps,
     privateMintDuration: derugAccount.mintConfig.remintDuration.toNumber(),
     creators: derugAccount.creators,
     publicMint: true,
