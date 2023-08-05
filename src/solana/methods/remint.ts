@@ -257,10 +257,6 @@ export const remintNft = async (
   const instructions: IDerugInstruction[] = [];
   const derugProgram = derugProgramFactory();
 
-  const [remintConfig] = PublicKey.findProgramAddressSync(
-    [remintConfigSeed, derugData.address.toBuffer()],
-    derugProgram.programId
-  );
   for (const nft of nfts) {
     const tokenAccount = Keypair.generate();
     const mint = Keypair.generate();
@@ -325,15 +321,8 @@ export const remintNft = async (
       });
     }
 
-    const nftData = await getPrivateMintNft(nft.mint.toString());
-
-    if (!nftData.newName || !nftData.newUri) {
-      toast.error("Failed to fetch rugged nft data.");
-      return;
-    }
-
     const remintNftIx = await derugProgram.methods
-      .remintNft(nftData.newName, nftData.newUri)
+      .remintNft()
       .accounts({
         derugData: derugData.address,
         derugRequest: request.address,

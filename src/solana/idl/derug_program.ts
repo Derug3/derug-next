@@ -404,16 +404,7 @@ export type DerugProgram = {
           isSigner: false;
         }
       ];
-      args: [
-        {
-          name: "newName";
-          type: "string";
-        },
-        {
-          name: "newUri";
-          type: "string";
-        }
-      ];
+      args: [];
     },
     {
       name: "closeProgramAccount";
@@ -538,7 +529,12 @@ export type DerugProgram = {
           isSigner: true;
         }
       ];
-      args: [];
+      args: [
+        {
+          name: "totalSupply";
+          type: "u32";
+        }
+      ];
     },
     {
       name: "bypassVoting";
@@ -557,6 +553,22 @@ export type DerugProgram = {
           name: "payer";
           isMut: false;
           isSigner: true;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "initPublicMint";
+      accounts: [
+        {
+          name: "payer";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "derugData";
+          isMut: true;
+          isSigner: false;
         }
       ];
       args: [];
@@ -1579,16 +1591,7 @@ export const IDL: DerugProgram = {
           isSigner: false,
         },
       ],
-      args: [
-        {
-          name: "newName",
-          type: "string",
-        },
-        {
-          name: "newUri",
-          type: "string",
-        },
-      ],
+      args: [],
     },
     {
       name: "closeProgramAccount",
@@ -1713,7 +1716,12 @@ export const IDL: DerugProgram = {
           isSigner: true,
         },
       ],
-      args: [],
+      args: [
+        {
+          name: "totalSupply",
+          type: "u32",
+        },
+      ],
     },
     {
       name: "bypassVoting",
@@ -1732,6 +1740,22 @@ export const IDL: DerugProgram = {
           name: "payer",
           isMut: false,
           isSigner: true,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: "initPublicMint",
+      accounts: [
+        {
+          name: "payer",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "derugData",
+          isMut: true,
+          isSigner: false,
         },
       ],
       args: [],
