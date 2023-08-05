@@ -76,10 +76,6 @@ export const claimVictory = async (
 
   const remainingAccounts: AccountMeta[] = [];
 
-  if (wallet.publicKey?.toString() !== request.derugger.toString()) {
-    throw new Error("Invalid derug authority");
-  }
-
   if (request.publicMint) {
     try {
       const candyMachine = Keypair.generate();

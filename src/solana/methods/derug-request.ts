@@ -2,6 +2,7 @@ import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
   NATIVE_MINT,
+  TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { WalletContextState } from "@solana/wallet-adapter-react";
 import {
@@ -10,6 +11,8 @@ import {
   SystemProgram,
   GetProgramAccountsFilter,
   AccountMeta,
+  Keypair,
+  SYSVAR_RENT_PUBKEY,
 } from "@solana/web3.js";
 import { BN } from "bn.js";
 import { getSingleCollection } from "../../api/collections.api";
@@ -37,7 +40,7 @@ import { METAPLEX_PROGRAM, RPC_CONNECTION } from "../../utilities/utilities";
 import { mapUtilityAction } from "../helpers";
 import { derugDataSeed, metadataSeed, voteRecordSeed } from "../seeds";
 import { sendTransaction } from "../sendTransaction";
-import { derugProgramFactory, feeWallet } from "../utilities";
+import { derugProgramFactory, feeWallet, metaplex } from "../utilities";
 import { createDerugDataIx } from "./derug";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -85,7 +88,7 @@ export const createOrUpdateDerugRequest = async (
   );
 
   const remainingAccounts: AccountMeta[] = [];
-  if (splTokenMint) {
+  if (splTokenMint && splTokenMint.toString() !== NATIVE_MINT.toString()) {
     remainingAccounts.push({
       isSigner: false,
       isWritable: false,
@@ -98,13 +101,14 @@ export const createOrUpdateDerugRequest = async (
   );
 
   let destinationAta: PublicKey | null = null;
-  if (splTokenMint !== NATIVE_MINT) {
+
+  if (splTokenMint.toString() !== NATIVE_MINT.toString()) {
     destinationAta = await getAssociatedTokenAddress(
       splTokenMint,
       wallet.publicKey
     );
     const accountInfo = await RPC_CONNECTION.getAccountInfo(destinationAta);
-    if (accountInfo.data.length === 0) {
+    if (accountInfo?.data.length === 0) {
       instructions.push(
         createAssociatedTokenAccountInstruction(
           wallet.publicKey,
@@ -117,15 +121,20 @@ export const createOrUpdateDerugRequest = async (
   }
 
   const initalizeDerugRequest = await derugProgram.methods
-    .createOrUpdateDerugRequest(newName, newSymbol, creators, {
-      candyMachineKey: new PublicKey(candyMachine),
-      mintCurrency: splTokenMint,
-      destinationAta: destinationAta,
-      publicMintPrice: new BN(publicMintPrice),
-      remintDuration: new BN(privateMintDuration),
-      sellerFeeBps,
-      whitelistConfig: null,
-    })
+    .createOrUpdateDerugRequest(
+      newName,
+      newSymbol,
+      {
+        candyMachineKey: new PublicKey(candyMachine),
+        mintCurrency: splTokenMint,
+        destinationAta: destinationAta,
+        publicMintPrice: new BN(publicMintPrice),
+        remintDuration: new BN(privateMintDuration),
+        sellerFeeBps,
+        whitelistConfig: null,
+      },
+      creators
+    )
     .accounts({
       derugData: collection.derugDataAddress,
       derugRequest,
@@ -149,13 +158,62 @@ export const createOrUpdateDerugRequest = async (
 
   instructions.push(bypassVoting);
 
-  const derugInstruction: IDerugInstruction = {
-    instructions,
-    pendingDescription: "Creating derug request",
-    successDescription: "Successfully created derug request!",
-  };
+  const claimVictoryIx = await derugProgram.methods
+    .claimVictory()
+    .accounts({
+      derugData: collection.derugDataAddress,
+      derugRequest: derugRequest,
+      payer: wallet.publicKey!,
+      feeWallet: feeWallet,
+      systemProgram: SystemProgram.programId,
+    })
+    .remainingAccounts(remainingAccounts)
+    .instruction();
 
-  await sendTransaction(RPC_CONNECTION, [derugInstruction], wallet);
+  instructions.push(claimVictoryIx);
+
+  const collectionMint = Keypair.generate();
+
+  const tokenAccount = Keypair.generate();
+
+  const collectionMetadata = metaplex
+    .nfts()
+    .pdas()
+    .metadata({ mint: collectionMint.publicKey });
+  const collectionEdition = metaplex
+    .nfts()
+    .pdas()
+    .edition({ mint: collectionMint.publicKey });
+
+  const initRemintingIx = await derugProgram.methods
+    .initializeReminting()
+    .accounts({
+      derugData: collection.derugDataAddress,
+      derugRequest: derugRequest,
+      payer: wallet.publicKey!,
+      feeWallet: feeWallet,
+      newCollection: collectionMint.publicKey,
+      tokenAccount: tokenAccount.publicKey,
+      metadataAccount: collectionMetadata,
+      masterEdition: collectionEdition,
+      metadataProgram: METAPLEX_PROGRAM,
+      rent: SYSVAR_RENT_PUBKEY,
+      systemProgram: SystemProgram.programId,
+      tokenProgram: TOKEN_PROGRAM_ID,
+    })
+    .instruction();
+
+  instructions.push(initRemintingIx);
+
+  const derugInstruction: IDerugInstruction[] = [
+    {
+      instructions,
+      pendingDescription: "Creating derug request",
+      successDescription: "Successfully created derug request!",
+    },
+  ];
+
+  await sendTransaction(RPC_CONNECTION, derugInstruction, wallet);
 
   return derugRequest;
 };

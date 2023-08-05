@@ -67,9 +67,7 @@ const HeaderNav: FC = () => {
       <header
         className="flex items-center w-full justify-between px-2 lg:px-20 rounded-lg shadow-xl"
         style={{
-          // padding: "0.5em 6.5em",
           background: "#1D2939",
-          // borderBottom: "1px solid  rgb(9, 194, 246)",
         }}
       >
         <Link
@@ -90,20 +88,15 @@ const HeaderNav: FC = () => {
         </Link>
 
         <div className="flex">
-          {/* <Header.Item full>
-      <motion.button className="font-mono" {...FADE_IN_ANIMATION_SETTINGS}>
-        
-      </motion.button>
-    </Header.Item> */}
           <div className="flex">
-            {/* <WalletMultiButton
+            <WalletMultiButton
               className="w-full hover:bg-main-blue hover:text-white"
               style={{
                 fontSize: "1em",
                 fontFamily: "monospace",
                 fontWeight: "bold",
               }}
-            /> */}
+            />
             {wallet && wallet.publicKey && (
               <div
                 className="flex flex-row gap-3 cursor-pointer"

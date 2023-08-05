@@ -16,7 +16,7 @@ import useDebounce from "@/hooks/useDebounce";
 import Toggle from "../Toggle";
 
 const PublicMintConfig = () => {
-  const methods = useForm<DerugForm>();
+  const methods = useFormContext<DerugForm>();
   const [isChecked, setIsChecked] = useState(true);
 
   const handleToggle = () => {
@@ -25,6 +25,7 @@ const PublicMintConfig = () => {
 
   const {
     clearErrors,
+    setValue,
     formState: { errors },
   } = useFormContext<DerugForm>();
 
@@ -147,6 +148,7 @@ const PublicMintConfig = () => {
             onInputChange={(e) => setSearchValue(e)}
             onChange={(e) => {
               clearErrors("selectedMint");
+              setValue("selectedMint", e);
             }}
             defaultValue={availableTokensList[0]}
             styles={selectStyles}
@@ -204,6 +206,7 @@ const PublicMintConfig = () => {
                     message: "Price can't be empty in public mint",
                   },
                 })}
+                onChange={(e) => setValue("price", +e.target.value)}
                 type={"number"}
                 min="0"
                 step={"0.00001"}
@@ -220,6 +223,13 @@ const PublicMintConfig = () => {
         </label>
         <div className="flex w-full gap-5 relative">
           <input
+            {...methods.register("privateMintEnd", {
+              min: {
+                value: 0,
+                message: "Mint duration can't be less than 0",
+              },
+            })}
+            id="privateMintEnd"
             className="flex w-full px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
             type={"number"}
             min="1"

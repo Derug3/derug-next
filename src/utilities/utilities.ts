@@ -21,6 +21,6 @@ export const DERUG_PROGRAM_ID = process.env.NEXT_PUBLIC_DERUG_PROGRAM as string;
 
 //TODO:load from env
 export const RPC_CONNECTION = new Connection(
-  "https://mainnet.helius-rpc.com/?api-key=1da35f09-ec3c-4af4-a22e-299f4cf00edb",
+  process.env.NEXT_PUBLIC_RPC_CONNECTION,
   "confirmed"
 );

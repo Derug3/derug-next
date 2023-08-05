@@ -106,11 +106,11 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   }, [basicCollectionData, wallet.publicKey]);
   const getChainCollectionDetails = async () => {
     try {
-      const chainDetails = await getCollectionChainData(
-        basicCollectionData!,
-        listings?.at(0)
-      );
-
+      // const chainDetails = await getCollectionChainData(
+      //   basicCollectionData!,
+      //   listings?.at(0)
+      // );
+      const chainDetails = await getDummyCollectionData();
       const derugProgram = derugProgramFactory();
 
       derugProgram.addEventListener("PrivateMintStarted", async (data) => {
@@ -225,30 +225,31 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           />
         </div>
       </div>
-      {collectionDerug && <>
-        {(collectionDerug.status === DerugStatus.Initialized ||
-          collectionDerug.status === DerugStatus.Voting) &&
+      {collectionDerug && (
+        <>
+          {(collectionDerug.status === DerugStatus.Initialized ||
+            collectionDerug.status === DerugStatus.Voting) &&
           showDerugRequests ? (
-          <DerugRequest />
-        ) : (
-          <>
-            {collectionDerug.status === DerugStatus.PublicMint &&
+            <DerugRequest />
+          ) : (
+            <>
+              {collectionDerug.status === DerugStatus.PublicMint &&
               candyMachine &&
               Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
               Number(candyMachine.candyMachine.itemsLoaded) ===
-              Number(candyMachine.candyMachine.data.itemsAvailable) ? (
-              <PublicMint />
-            ) : (
-              collectionDerug &&
-              collectionDerug.addedRequests.find((ar) => ar.winning) &&
-              derugRequests && (
-                <Remint getWinningRequest={getWinningRequest} />
-              )
-            )}
-          </>
-        )}
-      </>
-      }
+                Number(candyMachine.candyMachine.data.itemsAvailable) ? (
+                <PublicMint />
+              ) : (
+                collectionDerug &&
+                collectionDerug.addedRequests.find((ar) => ar.winning) &&
+                derugRequests && (
+                  <Remint getWinningRequest={getWinningRequest} />
+                )
+              )}
+            </>
+          )}
+        </>
+      )}
     </CollectionContext.Provider>
   );
 };

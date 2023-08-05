@@ -81,17 +81,17 @@ export type DerugProgram = {
           type: "string";
         },
         {
+          name: "mintConfig";
+          type: {
+            defined: "MintConfig";
+          };
+        },
+        {
           name: "creators";
           type: {
             vec: {
               defined: "DeruggerCreator";
             };
-          };
-        },
-        {
-          name: "mintConfig";
-          type: {
-            defined: "MintConfig";
           };
         }
       ];
@@ -322,7 +322,6 @@ export type DerugProgram = {
           name: "firstCreator";
           isMut: false;
           isSigner: false;
-          docs: ["CHECK"];
         },
         {
           name: "oldEdition";
@@ -355,23 +354,6 @@ export type DerugProgram = {
           isSigner: false;
         },
         {
-          name: "collectionMint";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "collectionMetadata";
-          isMut: false;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "collectionMasterEdition";
-          isMut: false;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
           name: "payer";
           isMut: true;
           isSigner: true;
@@ -395,18 +377,6 @@ export type DerugProgram = {
           name: "metaplexAuthorizationRules";
           isMut: false;
           isSigner: false;
-        },
-        {
-          name: "metaplexFoundationRuleset";
-          isMut: false;
-          isSigner: false;
-          docs: ["CHECK"];
-        },
-        {
-          name: "metaplexAuthorizationRules";
-          isMut: false;
-          isSigner: false;
-          docs: ["CHECK"];
         },
         {
           name: "metadataProgram";
@@ -1298,17 +1268,17 @@ export const IDL: DerugProgram = {
           type: "string",
         },
         {
+          name: "mintConfig",
+          type: {
+            defined: "MintConfig",
+          },
+        },
+        {
           name: "creators",
           type: {
             vec: {
               defined: "DeruggerCreator",
             },
-          },
-        },
-        {
-          name: "mintConfig",
-          type: {
-            defined: "MintConfig",
           },
         },
       ],
@@ -1539,7 +1509,6 @@ export const IDL: DerugProgram = {
           name: "firstCreator",
           isMut: false,
           isSigner: false,
-          docs: ["CHECK"],
         },
         {
           name: "oldEdition",
@@ -1572,23 +1541,6 @@ export const IDL: DerugProgram = {
           isSigner: false,
         },
         {
-          name: "collectionMint",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "collectionMetadata",
-          isMut: false,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "collectionMasterEdition",
-          isMut: false,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
           name: "payer",
           isMut: true,
           isSigner: true,
@@ -1612,18 +1564,6 @@ export const IDL: DerugProgram = {
           name: "metaplexAuthorizationRules",
           isMut: false,
           isSigner: false,
-        },
-        {
-          name: "metaplexFoundationRuleset",
-          isMut: false,
-          isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "metaplexAuthorizationRules",
-          isMut: false,
-          isSigner: false,
-          docs: ["CHECK"],
         },
         {
           name: "metadataProgram",
