@@ -17,14 +17,13 @@ import Toggle from "../Toggle";
 
 const PublicMintConfig = () => {
   const methods = useForm<DerugForm>();
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
 
   const handleToggle = () => {
     setIsChecked(!isChecked);
   };
 
   const {
-    register,
     clearErrors,
     formState: { errors },
   } = useFormContext<DerugForm>();
@@ -186,32 +185,34 @@ const PublicMintConfig = () => {
   return (
     <div className="flex flex-col gap-8">
       <div className="mt-5 flex flex-col gap-5">
-        <Toggle isChecked={isChecked} handleToggle={handleToggle} />
-        {isChecked && <div className="flex flex-col gap-">
-          <label className="text-gray-400 text-sm font-mono text-normal">
-            Price
-          </label>
-          <div className="flex w-full gap-5">
-            <input
-              className="flex w-full px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
-              {...methods.register("price", {
-                min: {
-                  value: 0,
-                  message: "Minimum price is 0",
-                },
-                required: {
-                  value: true,
-                  message: "Price can't be empty in public mint",
-                },
-              })}
-              type={"number"}
-              min="0"
-              step={"0.00001"}
-              accept="number"
-            />
-            {renderSelect}
+        {/* <Toggle isChecked={isChecked} handleToggle={handleToggle} /> */}
+        {isChecked && (
+          <div className="flex flex-col gap-">
+            <label className="text-gray-400 text-sm font-mono text-normal">
+              Price
+            </label>
+            <div className="flex w-full gap-5">
+              <input
+                className="flex w-full px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+                {...methods.register("price", {
+                  min: {
+                    value: 0,
+                    message: "Minimum price is 0",
+                  },
+                  required: {
+                    value: true,
+                    message: "Price can't be empty in public mint",
+                  },
+                })}
+                type={"number"}
+                min="0"
+                step={"0.00001"}
+                accept="number"
+              />
+              {renderSelect}
+            </div>
           </div>
-        </div>}
+        )}
       </div>
       <div className="flex flex-col gap-1">
         <label className="text-gray-400 text-sm font-mono text-normal">
@@ -224,7 +225,9 @@ const PublicMintConfig = () => {
             min="1"
             step={"1"}
           />
-          <span className="absolute right-10 top-2 font-mono text-white">hours</span>
+          <span className="absolute right-10 top-2 font-mono text-white">
+            hours
+          </span>
         </div>
       </div>
     </div>

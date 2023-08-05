@@ -17,11 +17,13 @@ const DerugBasicInfo = () => {
     register,
     clearErrors,
     formState: { errors },
+    getValues,
+    setValue,
   } = useFormContext<DerugForm>();
   const { userData, setUserData } = userStore();
   const wallet = useAnchorWallet();
 
-  const [sellerFee, setSellerFee] = useState<number>(0);
+  const { fee } = getValues();
 
   const router = useRouter();
 
@@ -40,7 +42,7 @@ const DerugBasicInfo = () => {
   };
 
   const handleSellerFeeChange = (points: number) => {
-    setSellerFee(points);
+    setValue("fee", points);
   };
 
   return (
@@ -49,7 +51,12 @@ const DerugBasicInfo = () => {
         <div className="flex w-full flex-col font-mono gap-2 text-white justify-center">
           <label htmlFor="wallet">Wallet</label>
           <div className="flex gap-5">
-            <input id="wallet" className="flex w-full  px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal" type="text" value={wallet?.publicKey && wallet.publicKey.toString()} />
+            <input
+              id="wallet"
+              className="flex w-full  px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
+              type="text"
+              value={wallet?.publicKey && wallet.publicKey.toString()}
+            />
             {!userData?.twitterHandle ? (
               <div className="flex w-fit whitespace-nowrap gap-2 lex font-mono text-white items-center justify-end">
                 <FaTwitter style={{ color: "rgb(29 161 242)" }} />
@@ -66,7 +73,11 @@ const DerugBasicInfo = () => {
                 <p className="text-main-blue text-lg font-bold">
                   {userData.twitterHandle}
                 </p>
-                <img className="rounded-[50px] w-10" src={userData.image} alt="" />
+                <img
+                  className="rounded-[50px] w-10"
+                  src={userData.image}
+                  alt=""
+                />
               </div>
             )}
           </div>
@@ -84,7 +95,6 @@ const DerugBasicInfo = () => {
                 e.target.value.length < 32 &&
                 clearErrors("name");
             }}
-
           />
         </div>
         {/* <TextInput
@@ -139,23 +149,24 @@ const DerugBasicInfo = () => {
               className="flex px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
               {...register("fee")}
               placeholder="Fee"
-              value={sellerFee}
+              value={fee}
               onChange={(e) => handleSellerFeeChange(Number(e.target.value))}
             />
             <div className="flex flex-col w-full items-center justify-center">
               <Slider
-                value={Number(sellerFee)}
+                value={Number(fee)}
                 className="f"
                 onChange={(e) => {
                   typeof e === "number" && handleSellerFeeChange(e);
                   +e > 0 && +e <= 100 && clearErrors("fee");
                 }}
               />
-              {errors.fee && <p className="text-red-500">{errors.fee.message}</p>}
+              {errors.fee && (
+                <p className="text-red-500">{errors.fee.message}</p>
+              )}
             </div>
           </div>
         </div>
-
       </div>
     </Box>
   );

@@ -9,13 +9,6 @@ import {
 } from "../../solana/methods/derug-request";
 import { CollectionContext } from "../../stores/collectionContext";
 import "rc-slider/assets/index.css";
-import UtilityArray from "../CollectionLayout/UtilityArray";
-import { FaTwitter } from "react-icons/fa";
-import CreatorsArray from "../CollectionLayout/CreatorsArray";
-import MintDetails, {
-  ITreasuryTokenAccInfo,
-} from "../CollectionLayout/MintDetails";
-import { getTrimmedPublicKey } from "../../solana/helpers";
 import { PublicKey } from "@solana/web3.js";
 import { FormProvider, useForm } from "react-hook-form";
 import { validateCreators } from "../../validators/derug-request.validators";
@@ -37,13 +30,17 @@ export const AddDerugRequst: FC<{
   setIsOpen: (isOpen: boolean) => void;
   derugRequests: IRequest[] | undefined;
   setDerugRequest: (derugRequest: IRequest[] | undefined) => void;
-}> = ({ isOpen, setIsOpen }) => {
+}> = ({ setIsOpen }) => {
   const wallet = useWallet();
-  const returnFocusRef = useRef(null);
 
   const { userData, setUserData } = userStore();
 
-  const [creators, setCreator] = useState<Creator[]>([]);
+  const [creators, setCreator] = useState<Creator[]>([
+    {
+      address: wallet.publicKey?.toString(),
+      share: 100,
+    },
+  ]);
 
   const {
     chainCollectionData,
@@ -58,7 +55,7 @@ export const AddDerugRequst: FC<{
     CreateDerugRequestStep.BasicInfo
   );
 
-  const methods = useForm<DerugForm>();
+  const methods = useForm<DerugForm>({ defaultValues: {} });
 
   const handleSubmit = (data?: any) => {
     setActiveStep(activeStep + 1);
@@ -120,7 +117,7 @@ export const AddDerugRequst: FC<{
   const storeUserData = async () => {
     try {
       setUserData(await getUserTwitterData(wallet.publicKey?.toString()!));
-    } catch (error) { }
+    } catch (error) {}
   };
   const renderCreateDerugRequestContent = useMemo(() => {
     switch (activeStep) {
@@ -128,7 +125,7 @@ export const AddDerugRequst: FC<{
         return <DerugBasicInfo />;
       }
       case CreateDerugRequestStep.Creators: {
-        return <Creators creators={creators} setCreator={setCreator} />;
+        return <Creators />;
       }
       case CreateDerugRequestStep.MintConfig: {
         return <PublicMintConfig />;
@@ -149,7 +146,6 @@ export const AddDerugRequst: FC<{
       }
     }
   }, [activeStep]);
-
 
   return (
     <div className="flex w-full flex-col">
@@ -182,11 +178,24 @@ export const AddDerugRequst: FC<{
             </p>
           </div>
           {renderCreateDerugRequestContent}
-          <div className="flex w-full justify-end">
+          <div className="flex w-full justify-between items-center mt-9">
+            <button
+              type="button"
+              className="bg-transparent border-[1px] border-main-blue px-4 text-white py-1"
+              onClick={
+                activeStep === CreateDerugRequestStep.BasicInfo
+                  ? () => setIsOpen(false)
+                  : () => setActiveStep(activeStep - 1)
+              }
+            >
+              {activeStep === CreateDerugRequestStep.BasicInfo
+                ? "Cancel request"
+                : "Go back"}
+            </button>
             <button
               disabled={false}
               type={"submit"}
-              className="bg-[#36BFFA] w-96 border border-[#36BFFA] shadow-xs text-lg text-black font-bold mt-8 font-mono"
+              className="bg-[#36BFFA] border border-[#36BFFA] px-[10%] shadow-xs text-lg text-black font-bold font-mono"
             >
               {activeStep === CreateDerugRequestStep.MintConfig
                 ? "Submit requests"

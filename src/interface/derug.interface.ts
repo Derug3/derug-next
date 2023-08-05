@@ -84,8 +84,7 @@ export type DerugForm = {
   name: string;
   fee: number;
   symbol: string;
-  creatorsFees: number;
-  creatorsKey: string;
+  creators: Creator[];
   privateMintEnd: number;
   price: number;
   selectedMint: ITreasuryTokenAccInfo;
