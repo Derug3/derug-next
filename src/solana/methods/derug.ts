@@ -21,7 +21,6 @@ dayjs.extend(utc);
 export const createDerugDataIx = async (
   collection: IChainCollectionData,
   wallet: WalletContextState,
-  collectionStats: ICollectionStats,
   listedNftMint?: PublicKey
 ) => {
   const derugProgram = derugProgramFactory();
@@ -61,7 +60,7 @@ export const createDerugDataIx = async (
   //TODO:PUT REAL VALUE BEFORE MAINNET
 
   const ix = await derugProgram.methods
-    .initializeDerug(2470, collection.slug)
+    .initializeDerug(collection.totalSupply, collection.slug)
     .accounts({
       collectionKey,
       derugData: collection.derugDataAddress,

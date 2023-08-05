@@ -20,7 +20,7 @@ const ListedNfts: FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-5">{!loading && renderListedNfts()}</div>
+    <div className="grid grid-cols-4 bg-black-500">{!loading && renderListedNfts()}</div>
   );
 };
 

@@ -6,18 +6,12 @@ import { CollectionContext } from "../../stores/collectionContext";
 
 const getNavStyling = (tab: string, selected: string) => {
   return {
-    backgroundColor: tab === selected ? "rgba(9, 194, 246,.35)" : "transparent",
+    backgroundColor: tab === selected ? "#1D2939" : "transparent",
     color: tab === selected ? "rgba(9, 194, 246)" : "white",
     fontSize: "1rem",
     padding: ".5em 1em",
-    borderRadius: "1.5em",
-    // fontWeight: "bold",
-    fontFamily: "monospace",
     cursor: "pointer",
     borderBottom: "none",
-    "&:hover": {
-      color: tab === selected ? "black" : "rgba(9, 194, 246)",
-    },
   };
 };
 
@@ -44,65 +38,45 @@ export const HeaderTabs: FC<{
   }, [derugRequests, collectionDerug]);
 
   return (
-    <div
-      className="flex w-full self-start bg-gradient-to-r
-  font-mono text-gray-700 leading-6 px-10 pb-2 border-none justify-end"
-    >
-      <div className="w-full gap-5 flex justify-end">
-        <div className="w-1/2 flex pl-8">
-          <div className="w-full flex justify-between">
-            {wallet &&
-              wallet.publicKey &&
-              (!collectionDerug ||
-                (collectionDerug &&
-                  dayjs(collectionDerug?.periodEnd).isAfter(dayjs()))) &&
-              !derugRequests?.find(
-                (dr) => dr.derugger.toString() === wallet.publicKey?.toString()
-              ) && (
-                <button
-                  className="rounded-lg text-red px-3 text-white border border-main-blue hover:bg-main-blue"
-                  onClick={() => openDerugModal(true)}
-                >
-                  <span className="text-sm uppercase rounded-lg">
-                    Add derug request
-                  </span>
-                </button>
-              )}
-            <div
-              aria-label="Main"
-              className="sticky flex justify-end w-fit items-center"
-            >
-              <div
-                onClick={() => setSelectedData("listed")}
-                style={getNavStyling(selectedData, "listed")}
-              >
-                NFTS
-              </div>
-              {traits && traits.length > 0 && (
-                <div
-                  onClick={() => setSelectedData("traits")}
-                  style={getNavStyling(selectedData, "traits")}
-                >
-                  TRAITS
-                </div>
-              )}
-
-              <div
-                onClick={() => setSelectedData("statistics")}
-                style={getNavStyling(selectedData, "statistics")}
-              >
-                STATISTICS
-              </div>
-              <div
-                onClick={() => setSelectedData("solanafm")}
-                style={getNavStyling(selectedData, "solanafm")}
-              >
-                SOLANAFM
-              </div>
-            </div>
-          </div>
+    <>
+      <div
+        aria-label="Main"
+        className="flex justify-start w-fit items-center"
+      >
+        <div
+          onClick={() => setSelectedData("listed")}
+          style={getNavStyling(selectedData, "listed")}
+          className="hover:scale-105 transition-all"
+        >
+          NFTS
         </div>
+        {traits && traits.length > 0 && (
+          <div
+            onClick={() => setSelectedData("traits")}
+            style={getNavStyling(selectedData, "traits")}
+            className="hover:scale-105 transition-all"
+          >
+            TRAITS
+          </div>
+        )}
       </div>
-    </div>
+      {/* {(wallet &&
+        wallet.publicKey &&
+        (!collectionDerug ||
+          (collectionDerug &&
+            dayjs(collectionDerug?.periodEnd).isAfter(dayjs()))) &&
+        !derugRequests?.find(
+          (dr) => dr.derugger.toString() === wallet.publicKey?.toString()
+        )) || (
+        )} */}
+      <button
+        className="py-2 px-3 text-white hover:text-main-blue transition-all hover:bg-[#1D2939] hover:scale-105"
+        onClick={() => openDerugModal(true)}
+      >
+        <span className="text-sm uppercase">
+          Add derug request
+        </span>
+      </button>
+    </>
   );
 };

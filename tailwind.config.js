@@ -10,7 +10,7 @@ module.exports = {
       colors: {
         "main-blue": "rgb(9, 194, 246)",
         "green-color": "#2DD4BF",
-        "main-dark": "#0d1117;",
+        "main-dark": "#101828;",
         "text-color": "#dcdcdc",
         'from-steel-500': 'rgb(71, 84, 103)',
         'via-blue-800': 'rgb(29, 41, 57)',

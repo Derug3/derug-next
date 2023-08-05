@@ -1,4 +1,8 @@
-import { NATIVE_MINT } from "@solana/spl-token";
+import {
+  createAssociatedTokenAccountInstruction,
+  getAssociatedTokenAddress,
+  NATIVE_MINT,
+} from "@solana/spl-token";
 import { WalletContextState } from "@solana/wallet-adapter-react";
 import {
   TransactionInstruction,
@@ -9,7 +13,6 @@ import {
 } from "@solana/web3.js";
 import { BN } from "bn.js";
 import { getSingleCollection } from "../../api/collections.api";
-import { getUserTwitterData } from "../../api/twitter.api";
 import {
   getFungibleTokenMetadata,
   getUserDataForDerug,
@@ -38,20 +41,19 @@ import { derugProgramFactory, feeWallet } from "../utilities";
 import { createDerugDataIx } from "./derug";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { initPublicMint } from "@/api/public-mint.api";
 
 dayjs.extend(utc);
 export const createOrUpdateDerugRequest = async (
   wallet: WalletContextState,
-  utilities: IUtilityData[],
   collection: IChainCollectionData,
-  collectionStats: ICollectionStats,
   sellerFeeBps: number,
   newSymbol: string,
   newName: string,
-  creators?: ICreator[],
-  publicMintPrice?: number,
-  privateMintDuration?: number,
-  splTokenMint?: PublicKey,
+  creators: ICreator[],
+  publicMintPrice: number,
+  privateMintDuration: number,
+  splTokenMint: PublicKey,
   listedNft?: INftListing
 ) => {
   const instructions: TransactionInstruction[] = [];
@@ -67,15 +69,9 @@ export const createOrUpdateDerugRequest = async (
     hasActiveData = false;
   }
 
-  //TODO:Change mint before mainnet
   if (!hasActiveData) {
     instructions.push(
-      await createDerugDataIx(
-        collection,
-        wallet,
-        collectionStats,
-        new PublicKey(listedNft.mint)
-      )
+      await createDerugDataIx(collection, wallet, new PublicKey(listedNft.mint))
     );
   }
 
@@ -97,20 +93,39 @@ export const createOrUpdateDerugRequest = async (
     });
   }
 
+  const { candyMachine } = await initPublicMint(
+    collection.derugDataAddress.toString()
+  );
+
+  let destinationAta: PublicKey | null = null;
+  if (splTokenMint !== NATIVE_MINT) {
+    destinationAta = await getAssociatedTokenAddress(
+      splTokenMint,
+      wallet.publicKey
+    );
+    const accountInfo = await RPC_CONNECTION.getAccountInfo(destinationAta);
+    if (accountInfo.data.length === 0) {
+      instructions.push(
+        createAssociatedTokenAccountInstruction(
+          wallet.publicKey,
+          destinationAta,
+          wallet.publicKey,
+          splTokenMint
+        )
+      );
+    }
+  }
+
   const initalizeDerugRequest = await derugProgram.methods
-    .createOrUpdateDerugRequest(
-      utilities.map((ut) => {
-        return { ...ut, action: mapUtilityAction(ut.action) };
-      }),
+    .createOrUpdateDerugRequest(newName, newSymbol, creators, {
+      candyMachineKey: new PublicKey(candyMachine),
+      mintCurrency: splTokenMint,
+      destinationAta: destinationAta,
+      publicMintPrice: new BN(publicMintPrice),
+      remintDuration: new BN(privateMintDuration),
       sellerFeeBps,
-      publicMintPrice ? new BN(publicMintPrice) : null,
-      privateMintDuration ? new BN(privateMintDuration) : null,
-      newName,
-      newSymbol,
-      //TODO:remove ekser
-      255,
-      creators ?? []
-    )
+      whitelistConfig: null,
+    })
     .accounts({
       derugData: collection.derugDataAddress,
       derugRequest,
@@ -122,6 +137,17 @@ export const createOrUpdateDerugRequest = async (
     .instruction();
 
   instructions.push(initalizeDerugRequest);
+
+  const bypassVoting = await derugProgram.methods
+    .bypassVoting()
+    .accounts({
+      derugData: collection.derugDataAddress,
+      derugRequest,
+      payer: wallet.publicKey,
+    })
+    .instruction();
+
+  instructions.push(bypassVoting);
 
   const derugInstruction: IDerugInstruction = {
     instructions,
@@ -159,16 +185,16 @@ export const getAllDerugRequest = async (
         createdAt: derug.account.createdAt.toNumber(),
         derugger: derug.account.derugger,
         voteCount: derug.account.voteCount,
-        utility: derug.account.utilityData,
         address: derug.publicKey,
         newName: derug.account.newName,
         newSymbol: derug.account.newSymbol,
-        mintCurrency: derug.account.mintCurrency,
-        mintPrice: derug.account.mintPrice?.toNumber(),
+        candyMachineKey: derug.account.mintConfig.candyMachineKey,
+        mintCurrency: derug.account.mintConfig.mintCurrency,
+        mintPrice: derug.account.mintConfig.publicMintPrice.toNumber(),
         sellerFeeBps: derug.account.sellerFeeBps,
-        privateMintDuration: derug.account.privateMintDuration?.toNumber(),
+        privateMintDuration: derug.account.mintConfig.remintDuration.toNumber(),
         creators: derug.account.creators,
-        publicMint: !!derug.account.mintPrice,
+        publicMint: true,
         splToken: await getFungibleTokenMetadata(derug.account.mintCurrency),
         userData: await getUserDataForDerug(derug.account.derugger.toString()),
       });
@@ -195,15 +221,15 @@ export const getSingleDerugRequest = async (
     createdAt: derugAccount.createdAt.toNumber(),
     derugger: derugAccount.derugger,
     voteCount: derugAccount.voteCount,
-    utility: derugAccount.utilityData,
     newName: derugAccount.newName,
+    candyMachineKey: derugAccount.mintConfig.candyMachineKey,
     newSymbol: derugAccount.newSymbol,
     mintCurrency: derugAccount.mintCurrency,
-    mintPrice: derugAccount.mintPrice?.toNumber(),
+    mintPrice: derugAccount.mintConfig.publicMintPrice.toNumber(),
     sellerFeeBps: derugAccount.sellerFeeBps,
-    privateMintDuration: derugAccount.privateMintDuration?.toNumber(),
+    privateMintDuration: derugAccount.mintConfig.remintDuration.toNumber(),
     creators: derugAccount.creators,
-    publicMint: !!derugAccount.mintPrice,
+    publicMint: true,
   };
 };
 

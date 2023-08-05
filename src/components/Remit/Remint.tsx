@@ -25,7 +25,7 @@ import { RelativeTime } from "@primer/react";
 import Countdown from "react-countdown";
 export const Remint: FC<{
   getWinningRequest: IRequest | undefined;
-}> = ({ getWinningRequest }) => {
+}> = ({}) => {
   const { derugRequests } = useContext(CollectionContext);
   const [collectionNfts, setCollectionNfts] = useState<IDerugCollectionNft[]>();
   const [loading, toggleLoading] = useState(true);
@@ -34,7 +34,7 @@ export const Remint: FC<{
 
   const [isReminting, toggleIsReminting] = useState(false);
 
-  const { collectionDerug, chainCollectionData, remintConfig } =
+  const { collectionDerug, chainCollectionData } =
     useContext(CollectionContext);
 
   const { nfts, setNfts } = nftStore();
@@ -55,7 +55,7 @@ export const Remint: FC<{
         setNonMintedNfts(
           await getNonMinted(collectionDerug?.address.toString())
         );
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getCollectionNfts = async () => {
@@ -114,13 +114,15 @@ export const Remint: FC<{
           <Countdown
             className="font-mono text-sm
             text-orange-800 p-2"
-            date={remintConfig?.privateMintEnd}
+            date={dayjs()
+              .add(derugRequests[0].privateMintDuration, "hours")
+              .toDate()}
           />
           <RelativeTime />
         </p>
       </div>
     );
-  }, [collectionNfts, collectionDerug, remintConfig]);
+  }, [collectionNfts, collectionDerug]);
 
   const remintNfts = async () => {
     try {
@@ -150,8 +152,6 @@ export const Remint: FC<{
         );
       }
     } catch (error) {
-      console.log(error);
-
       setCollectionNfts(
         collectionNfts?.map((cnft) => {
           if (cnft.remintingStatus) {
@@ -192,7 +192,9 @@ export const Remint: FC<{
           <>
             {collectionDerug &&
               collectionDerug.status === DerugStatus.Reminting &&
-              dayjs(remintConfig?.privateMintEnd).isAfter(dayjs()) && (
+              dayjs()
+                .add(derugRequests[0].privateMintDuration, "hours")
+                .isAfter(dayjs()) && (
                 <div className="flex flex-col items-center gap-10 w-full mt-10">
                   {!loading &&
                     collectionNfts &&

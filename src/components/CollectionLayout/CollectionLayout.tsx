@@ -23,14 +23,14 @@ export const CollectionLayout: FC<ICollectionLayoutProps> = ({
           style={{
             position: "sticky",
             top: 0,
-            display: "grid",
+            display: "flex",
             placeItems: "start",
           }}
         >
           {header}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "55% 45%" }}>
+        <div className="flex">
           <div
             style={{
               maxHeight: "30em",

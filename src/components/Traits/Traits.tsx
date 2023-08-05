@@ -6,15 +6,15 @@ import { generateSkeletonArrays } from "../../utilities/nft-fetching";
 const Traits: FC<{ trait: ITrait }> = ({ trait }) => {
   const { loading } = useContext(CollectionContext);
   const renderTraits = useMemo(() => {
-    return trait.values.map((t, index) => {
+    return trait.traits.map((t, index) => {
       return (
         <div
           key={index}
-          className="flex flex-col gap-2 items-start justify-start mb-2"
+          className="flex w-full flex-col gap-2 items-start justify-start mb-2"
         >
-          <img src={t.image} className="w-32 rounded-lg" />
+          <img src={t.image} className="w-64" />
           <div className="flex flex-col items-start justify-start w-full">
-            <span className="text-sm text-left" style={{ color: "white" }}>
+            <span className="text-sm text-left font-mono text-white">
               {t.name}
             </span>
             <span
@@ -33,8 +33,8 @@ const Traits: FC<{ trait: ITrait }> = ({ trait }) => {
   }, [trait]);
   return (
     <div className="flex flex-col pt-5 items-start">
-      <span className=" font-mono text-white">
-        {trait.name} [{trait.values.length}]
+      <span className="text-white">
+        {trait.name} [{trait.traits.length}]
       </span>
       <div className="grid grid-cols-6 mt-3 gap-2">
         {loading

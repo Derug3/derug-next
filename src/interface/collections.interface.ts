@@ -16,6 +16,7 @@ export interface ICollectionData {
   type?: string[];
   numMints?: number;
   categories?: any[];
+  traits: ITrait[];
 }
 export interface ICollectionVolume {
   collection: ICollectionData;
@@ -41,13 +42,14 @@ export interface IRequest {
   publicMint: boolean;
   creators: ICreator[];
   privateMintDuration?: number;
+  candyMachineKey: PublicKey;
   mintCurrency: PublicKey | null;
   newSymbol: string;
   newName: string;
-  utility: IUtility[];
   splToken?: ISplTokenData;
   userData?: IUserData;
 }
+
 export interface IUtility {
   title: string;
   description: string;
@@ -73,7 +75,7 @@ interface IExtra {
 
 export interface ITrait {
   name: string;
-  values: ITraitInfo[];
+  traits: ITraitInfo[];
 }
 
 export interface ITraitInfo {

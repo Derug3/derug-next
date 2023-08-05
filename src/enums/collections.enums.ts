@@ -12,6 +12,7 @@ export enum DerugStatus {
   UploadingMetadata = "uploadingMetadata",
   Reminting = "reminting",
   Completed = "completed",
+  PublicMint = "publicMint",
 }
 
 export enum DerugRequestStatus {

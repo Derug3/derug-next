@@ -15,24 +15,8 @@ export const RightPane: FC<{
   traits: ITrait[] | undefined;
   iframeRef: any;
 }> = ({ selectedData, traits, iframeRef, chainCollectionData }) => (
-  <div>
-    <div className="sticky">
-      <div className="pl-8">
-        {selectedData === "traits" && traits && <TraitsList traits={traits} />}
-        {selectedData === "statistics" && traits && <ListingsGraph />}
-        {selectedData === "listed" && <ListedNfts />}
-        {selectedData === "solanafm" && (
-          <div id="solanafm" className="flex w-full">
-            <iframe
-              ref={iframeRef}
-              height="600px"
-              width="100%"
-              src={`https://solana.fm/address/${chainCollectionData?.collectionMint}?cluster=mainnet-solana`}
-              // todo remove cluster once we migrate
-            />
-          </div>
-        )}
-      </div>
-    </div>
+  <div className="flex w-full items-center justify-center mt-5">
+    {selectedData === "traits" && traits && <TraitsList traits={traits} />}
+    {selectedData === "listed" && traits && <ListedNfts />}
   </div>
 );

@@ -17,10 +17,6 @@ const DerugRequestDetails: FC<{
   const returnFocusRef = useRef(null);
   const [creatorsData, setCreatorsData] = useState<IUserData[]>();
 
-  const [selecterUtility, setSelectedUtility] = useState(
-    derugRequest.utility[0]
-  );
-
   useEffect(() => {
     void getCreatorsData();
   }, []);
@@ -32,7 +28,7 @@ const DerugRequestDetails: FC<{
         storedCreators.push(
           await getUserTwitterData(creator.address.toString())
         );
-      } catch (error) { }
+      } catch (error) {}
     }
     setCreatorsData(storedCreators);
   };
@@ -72,23 +68,6 @@ const DerugRequestDetails: FC<{
     });
   }, [creatorsData]);
 
-  const renderUtilityTitles = useMemo(() => {
-    return derugRequest.utility.map((u, index) => {
-      return (
-        <div
-          key={index}
-          onClick={() => setSelectedUtility(u)}
-          className={`border-[1px] rounded-md bg-${selecterUtility.title === u.title
-            ? "main-blue/[0.7]"
-            : "transparent"
-            } border-main-blue px-3 py-1`}
-        >
-          <p className="font-bold text-white">{u.title}</p>
-        </div>
-      );
-    });
-  }, [derugRequest.utility, selecterUtility]);
-
   return (
     <div
       style={{
@@ -98,9 +77,7 @@ const DerugRequestDetails: FC<{
       }}
       aria-labelledby="header-id"
     >
-      <div
-        className="flex w-full flex-col"
-      >
+      <div className="flex w-full flex-col">
         <div
           className="flex justify-between items-center bg-gray-800"
           id="header-id"
@@ -212,17 +189,6 @@ const DerugRequestDetails: FC<{
             <div className="flex flex-col gap-1 w-full">{renderCreators}</div>
           </div>
 
-          {derugRequest.utility.length > 0 && (
-            <div className="flex flex-col items-start gap-5">
-              <p className="text-xl">Utilities</p>
-              <div className="flex w-full gap-5">{renderUtilityTitles}</div>
-              <div className="bg-black w-full">
-                <p className="text-white text-md text-start px-3 h-[15em] overflow-scroll">
-                  {selecterUtility.description}
-                </p>
-              </div>
-            </div>
-          )}
           <div className="mt-5 w-full flex justify-between items-center">
             <button
               className="text-white border-[1px] font-bold p-2 rounded-md"

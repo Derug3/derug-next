@@ -15,29 +15,29 @@ export const CollectionStats: FC<{
   openDerugModal: (value: boolean) => void;
   collectionDerug?: ICollectionDerugData;
 }> = ({ collection, collectionDerug }) => {
-  const { remintConfig } = useContext(CollectionContext);
+  const {} = useContext(CollectionContext);
   const currUnix = dayjs().unix() * 1000;
-  const remintConfigTime =
-    remintConfig &&
-      Number(remintConfig.privateMintEnd) * 1000 > currUnix &&
-      collectionDerug?.status === DerugStatus.Reminting
-      ? remintConfig.privateMintEnd
-      : undefined;
 
   return (
-    <div className="flex flex-row items-start justify-between w-full px-10 mt-5 gap-3">
-      <div className="flex flex-col gap-5 border-1 w-1/2">
+    <div className="flex flex-col items-center justify-center gap-8 w-full">
+      <div className="flex gap-5 border-1 w-full">
         <HeadingItem
           amount={collection?.fp}
           descColor="#2dd4bf"
           title="FLOOR PRICE"
           desc="SOL"
         />
-        <HeadingItem
+        {/* <HeadingItem
           title="LISTED"
           descColor="#2dd4bf"
           desc="NFTs"
           amount={collection?.numListed}
+        /> */}
+        <HeadingItem
+          descColor="#2dd4bf"
+          title="TOTAL SUPPLY"
+          desc=" NFTs"
+          amount={collection?.numMints}
         />
         <HeadingItem
           descColor="#2dd4bf"
@@ -45,33 +45,17 @@ export const CollectionStats: FC<{
           amount={collection?.marketCap}
           desc="SOL"
         />
-        {collectionDerug && (
-          <HeadingItem
-            descColor="#2dd4bf"
-            title={remintConfigTime ? "PRIVATE MINT END" : "REMAINING TIME"}
-            date={remintConfigTime ?? collectionDerug.periodEnd}
-            isCounter
-            desc=""
-          />
-        )}
+        {collectionDerug &&
+          collectionDerug.status === DerugStatus.Reminting && (
+            <HeadingItem
+              descColor="#2dd4bf"
+              title="OLD REMINTED"
+              amount={collectionDerug.totalReminted}
+              desc=""
+            />
+          )}
       </div>
-
-      <div className="flex flex-col gap-5 w-1/2 gap-3">
-        <HeadingItem
-          descColor="#2dd4bf"
-          title="TOTAL SUPPLY"
-          desc="NFTs"
-          amount={collection?.numMints}
-        />
-        {collectionDerug && (
-          <HeadingItem
-            descColor="#2dd4bf"
-            title="TOTAL REQUESTS"
-            amount={collectionDerug.totalSuggestionCount}
-            desc=""
-          />
-        )}
-
+      <div className="flex gap-5 border-1 w-full">
         {collectionDerug && (
           <HeadingItem
             descColor="#2dd4bf"
@@ -83,15 +67,15 @@ export const CollectionStats: FC<{
             desc=""
           />
         )}
-        {collectionDerug &&
-          collectionDerug.status === DerugStatus.Reminting && (
-            <HeadingItem
-              descColor="#2dd4bf"
-              title="OLD REMINTED"
-              amount={collectionDerug.totalReminted}
-              desc=""
-            />
-          )}
+        {collectionDerug && (
+          <HeadingItem
+            descColor="#2dd4bf"
+            title={"PRIVATE MINT END"}
+            date={collectionDerug.periodEnd}
+            isCounter
+            desc=""
+          />
+        )}
       </div>
     </div>
   );

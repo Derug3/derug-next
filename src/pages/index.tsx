@@ -279,7 +279,7 @@ const Home = () => {
       </div>
 
       {activeCollections && activeCollections.length ? (
-        <div className="flex w-full mb-10">
+        <div className="flex mb-10">
           <ActiveListings activeListings={activeCollections} />
         </div>
       ) : (

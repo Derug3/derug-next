@@ -43,22 +43,6 @@ export interface IGraphData {
   prices: number[];
 }
 
-export interface IRemintConfig {
-  address: PublicKey;
-  newName: string;
-  newSymbol: string;
-  derugRequest: PublicKey;
-  mintPrice?: number;
-  collection: PublicKey;
-  candyMachineCreator: PublicKey;
-  authority: PublicKey;
-  privateMintEnd?: Date;
-  mintCurrency?: PublicKey;
-  candyMachine: PublicKey;
-  sellerFeeBps: number;
-  splTokenData?: ISplTokenData;
-}
-
 export interface ISplTokenData {
   name: string;
   decimals: number;
@@ -100,8 +84,7 @@ export type DerugForm = {
   name: string;
   fee: number;
   symbol: string;
-  creatorsFees: number;
-  creatorsKey: string;
+  creators: Creator[];
   privateMintEnd: number;
   price: number;
   selectedMint: ITreasuryTokenAccInfo;
@@ -138,6 +121,6 @@ export interface PublicConfig {
 
 export interface IDerugCandyMachine {
   candyMachine: CandyMachine;
-  whitelistingConfig: WhitelistConfig;
+  whitelistingConfig: WhitelistConfig | null;
   publicConfig: PublicConfig;
 }

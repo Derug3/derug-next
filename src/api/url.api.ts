@@ -7,6 +7,7 @@ export const MAGIC_EDEN_COLLECTION = "/collections";
 export const LISTINGS = "/listings";
 export const TENSOR = "/tensor";
 export const FLOOR_PRICE = "/fp";
+export const STATS = "/stats";
 export const TRAITS = "/traits";
 export const ACTIVITIES = "/activities";
 export const PUBLIC_REMINT = "/public-remint";
