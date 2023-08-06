@@ -13,6 +13,10 @@ import {
   AccountMeta,
   Keypair,
   SYSVAR_RENT_PUBKEY,
+  TransactionMessage,
+  VersionedTransaction,
+  Transaction,
+  SYSVAR_INSTRUCTIONS_PUBKEY,
 } from "@solana/web3.js";
 import { BN } from "bn.js";
 import { getSingleCollection } from "../../api/collections.api";
@@ -44,7 +48,13 @@ import { derugProgramFactory, feeWallet, metaplex } from "../utilities";
 import { createDerugDataIx } from "./derug";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { initPublicMint, storeAllNfts } from "@/api/public-mint.api";
+import {
+  initializeDerug,
+  initPublicMint,
+  storeAllNfts,
+} from "@/api/public-mint.api";
+import toast from "react-hot-toast";
+import { ASSOCIATED_PROGRAM_ID } from "@project-serum/anchor/dist/cjs/utils/token";
 
 dayjs.extend(utc);
 export const createOrUpdateDerugRequest = async (
@@ -96,7 +106,7 @@ export const createOrUpdateDerugRequest = async (
     });
   }
 
-  const { candyMachine } = await initPublicMint(
+  const { candyMachine, authority } = await initPublicMint(
     collection.derugDataAddress.toString()
   );
 
@@ -174,7 +184,10 @@ export const createOrUpdateDerugRequest = async (
 
   const collectionMint = Keypair.generate();
 
-  const tokenAccount = Keypair.generate();
+  const tokenAccount = await getAssociatedTokenAddress(
+    collectionMint.publicKey,
+    wallet.publicKey
+  );
 
   const collectionMetadata = metaplex
     .nfts()
@@ -185,6 +198,10 @@ export const createOrUpdateDerugRequest = async (
     .pdas()
     .edition({ mint: collectionMint.publicKey });
 
+  const tokenRecord = metaplex
+    .nfts()
+    .pdas()
+    .tokenRecord({ mint: collectionMint.publicKey, token: tokenAccount });
   const initRemintingIx = await derugProgram.methods
     .initializeReminting()
     .accounts({
@@ -193,8 +210,18 @@ export const createOrUpdateDerugRequest = async (
       payer: wallet.publicKey!,
       feeWallet: feeWallet,
       newCollection: collectionMint.publicKey,
-      tokenAccount: tokenAccount.publicKey,
+      authority: new PublicKey(authority),
+      tokenAccount: tokenAccount,
+      metaplexAuthorizationRules: new PublicKey(
+        "auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg"
+      ),
+      metaplexFoundationRuleset: new PublicKey(
+        "eBJLFYPxJmMGKuFwpDWkzxZeUrad92kZRC5BJLpzyT9"
+      ),
       metadataAccount: collectionMetadata,
+      splAtaProgram: ASSOCIATED_PROGRAM_ID,
+      sysvarInstructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+      tokenRecord,
       masterEdition: collectionEdition,
       metadataProgram: METAPLEX_PROGRAM,
       rent: SYSVAR_RENT_PUBKEY,
@@ -205,16 +232,37 @@ export const createOrUpdateDerugRequest = async (
 
   instructions.push(initRemintingIx);
 
-  const derugInstruction: IDerugInstruction[] = [
-    {
-      instructions,
-      pendingDescription: "Creating derug request",
-      successDescription: "Successfully created derug request!",
-      partialSigner: [collectionMint, tokenAccount],
-    },
-  ];
+  const transaction = new Transaction({
+    feePayer: wallet.publicKey,
+    recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
+  });
+  instructions.forEach((ix) => transaction.add(ix));
+  transaction.partialSign(collectionMint);
 
-  await sendTransaction(RPC_CONNECTION, derugInstruction, wallet);
+  const txSim = await RPC_CONNECTION.simulateTransaction(transaction);
+  console.log(txSim.value.logs);
+  const signedTx = await wallet.signTransaction(transaction);
+
+  try {
+    await toast.promise(
+      initializeDerug(
+        JSON.stringify(signedTx.serialize({ requireAllSignatures: false })),
+        collection.derugDataAddress.toString()
+      ),
+      {
+        error: (data) => {
+          return data.message;
+        },
+        success: (data) => {
+          return "Derug succesfully initialized";
+        },
+        loading: "Initializing derug...",
+      }
+    );
+  } catch (error) {
+    toast.error(error.message);
+    return;
+  }
 
   storeAllNfts({
     derugData: collection.derugDataAddress.toString(),

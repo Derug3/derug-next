@@ -10,19 +10,19 @@ import {
   generateSkeletonArrays,
   getAllNftsFromCollection,
 } from "../../utilities/nft-fetching";
-// import WinningRequest from "../DerugRequest/WinningRequest";
+
 import { toast } from "react-hot-toast";
 import RemintNft from "./RemintNft";
 import Skeleton from "react-loading-skeleton";
 import { DerugStatus, RemintingStatus } from "../../enums/collections.enums";
-import { remintNft } from "../../solana/methods/remint";
-import { chunk } from "lodash";
+
 import nftStore from "../../stores/nftStore";
 import { Oval } from "react-loader-spinner";
 import dayjs from "dayjs";
 import { getNonMinted } from "../../api/public-mint.api";
 import { RelativeTime } from "@primer/react";
 import Countdown from "react-countdown";
+import { remintMultipleNfts } from "@/api/remint-nft.api";
 export const Remint: FC = () => {
   const { derugRequest } = useContext(CollectionContext);
   const [collectionNfts, setCollectionNfts] = useState<IDerugCollectionNft[]>();
@@ -98,8 +98,6 @@ export const Remint: FC = () => {
     }
   }, [nfts]);
 
-  console.log(derugRequest, "DR");
-
   const renderCollectionNfts = useMemo(() => {
     return collectionNfts?.length > 0 ? (
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 px-10">
@@ -138,8 +136,15 @@ export const Remint: FC = () => {
             return { ...cnft, remintingStatus: RemintingStatus.InProgress };
           })
         );
+        await remintMultipleNfts(
+          collectionNfts.map((cnft) => cnft.mint.toString()),
+          wallet,
+          derugRequest,
+          collectionDerug
+        );
       }
     } catch (error) {
+      toast.error(error.message);
       setCollectionNfts(
         collectionNfts?.map((cnft) => {
           if (cnft.remintingStatus) {

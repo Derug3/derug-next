@@ -66,3 +66,11 @@ export const saveMinted = async (mint: string, reminter: string) => {
 export const initPublicMint = (derugData: string) => {
   return post(`${PUBLIC_REMINT}/save/${derugData}`);
 };
+
+export const getAuthority = (derugData: string) => {
+  return get(`${PUBLIC_REMINT}/authority/${derugData}`);
+};
+
+export const initializeDerug = (tx: string, derugData: string) => {
+  return post(`${PUBLIC_REMINT}/initialize-derug`, { tx, derugData });
+};

@@ -27,12 +27,7 @@ export const CollectionStats: FC<{
           title="FLOOR PRICE"
           desc="SOL"
         />
-        {/* <HeadingItem
-          title="LISTED"
-          descColor="#2dd4bf"
-          desc="NFTs"
-          amount={collection?.numListed}
-        /> */}
+
         <HeadingItem
           descColor="#2dd4bf"
           title="TOTAL SUPPLY"
@@ -71,7 +66,7 @@ export const CollectionStats: FC<{
           <HeadingItem
             descColor="#2dd4bf"
             title={"PRIVATE MINT END"}
-            date={dayjs.unix(derugRequest.privateMintDuration).toDate()}
+            date={dayjs.unix(derugRequest?.privateMintDuration).toDate()}
             isCounter
             desc=""
           />
