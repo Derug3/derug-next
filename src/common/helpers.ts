@@ -16,10 +16,14 @@ import {
 import { IUserData } from "../interface/user.interface";
 import { getUserTwitterData } from "../api/twitter.api";
 import { NATIVE_MINT } from "@solana/spl-token";
-import { CollectionVolumeFilter } from "../enums/collections.enums";
+import {
+  CollectionVolumeFilter,
+  RemintingStatus,
+} from "../enums/collections.enums";
 import { findCandyMachineAuthorityPda } from "@metaplex-foundation/mpl-candy-machine";
 import { publicKey } from "@metaplex-foundation/umi";
 import { ITreasuryTokenAccInfo } from "@/components/CollectionLayout/MintDetails";
+import nftStore from "@/stores/nftStore";
 export const splitTimestamps = (
   recentCollections: ICollectionRecentActivities[]
 ) => {
@@ -227,3 +231,11 @@ export const getDefaultValues = async () => {
     symbol: "",
   };
 };
+
+export function updateRemintedNft(mint: string, status: RemintingStatus) {
+  const { nfts, setNfts } = nftStore.getState();
+  const relatedNftIndex = nfts.findIndex((n) => n.mint.toString() === mint);
+  const storedNfts = [...nfts];
+  storedNfts[relatedNftIndex] = { mint: new PublicKey(mint), status };
+  setNfts(storedNfts);
+}

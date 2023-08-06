@@ -27,6 +27,9 @@ import { PUBLIC_REMINT } from "./url.api";
 import { get, post } from "./request.api";
 import toast from "react-hot-toast";
 import { getAuthority } from "./public-mint.api";
+import nftStore from "@/stores/nftStore";
+import { RemintingStatus } from "@/enums/collections.enums";
+import { updateRemintedNft } from "@/common/helpers";
 
 export async function remintNft(
   wallet: AnchorWallet,
@@ -202,7 +205,7 @@ export async function remintMultipleNfts(
     tx.serialize({ requireAllSignatures: false })
   );
 
-  for (const tx of serializedTxs) {
+  for (const [index, tx] of serializedTxs.entries()) {
     await toast.promise(
       post(`${PUBLIC_REMINT}/remint`, {
         signedTx: JSON.stringify(tx),
@@ -213,9 +216,13 @@ export async function remintMultipleNfts(
         success: (data: RemintResponse) => {
           if (!data.succeded) {
             throw new Error(data.message);
-          } else return "Successfully reminted";
+          } else {
+            updateRemintedNft(mints[index], RemintingStatus.Succeded);
+            return "Successfully reminted";
+          }
         },
         error: (data: string) => {
+          updateRemintedNft(mints[index], RemintingStatus.Failed);
           return data;
         },
       }

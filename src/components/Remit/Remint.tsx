@@ -53,7 +53,7 @@ export const Remint: FC = () => {
         setNonMintedNfts(
           await getNonMinted(collectionDerug?.address.toString())
         );
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getCollectionNfts = async () => {
@@ -137,7 +137,16 @@ export const Remint: FC = () => {
           })
         );
         await remintMultipleNfts(
-          collectionNfts.map((cnft) => cnft.mint.toString()),
+          collectionNfts
+            .filter(
+              (cnft) =>
+                !nfts.find(
+                  (n) =>
+                    n.mint.toString() === cnft.mint.toString() &&
+                    n.status === RemintingStatus.Succeded
+                )
+            )
+            .map((cnft) => cnft.mint.toString()),
           wallet,
           derugRequest,
           collectionDerug
@@ -193,7 +202,9 @@ export const Remint: FC = () => {
                     collectionNfts?.length > 0 &&
                     showRemintButton && (
                       <div className="flex w-full flex-col lg:flex-row items-center p-4 md:p-5 justify-between gap-5">
-                        <span className="text-white whitespace-nowrap">Remint YOUR NFTS</span>
+                        <span className="text-white whitespace-nowrap">
+                          Remint YOUR NFTS
+                        </span>
                         <div className="h-[1px] bg-[#344054] w-full"></div>
                         <button
                           onClick={remintNfts}
