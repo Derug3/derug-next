@@ -170,13 +170,7 @@ export const Remint: FC = () => {
   };
 
   const showRemintButton = useMemo(() => {
-    return (
-      collectionNfts?.filter(
-        (cnft) =>
-          !cnft.remintingStatus ||
-          cnft.remintingStatus !== RemintingStatus.Failed
-      ).length ?? 0 > 0
-    );
+    return collectionNfts?.length > 0;
   }, [collectionNfts, collectionDerug]);
 
   return (
@@ -208,14 +202,15 @@ export const Remint: FC = () => {
                         <div className="h-[1px] bg-[#344054] w-full"></div>
                         <button
                           onClick={remintNfts}
-                          className="bg-[#36BFFA] border border-[#36BFFA] px-[10%] shadow-xs text-lg text-black font-bold font-mono"
+                          className="bg-[#36BFFA] flex items-center justify-center border border-[#36BFFA] px-[10%] shadow-xs text-lg text-black font-bold font-mono"
                         >
                           {!isReminting ? (
                             <p>Remint</p>
                           ) : (
                             <Oval
                               color="black"
-                              wrapperClass="px-4 py-6 h-6 text-black font-lg"
+                              wrapperClass="text-black font-lg"
+                              height={"20"}
                               width={"1em"}
                               secondaryColor="transparent"
                             />

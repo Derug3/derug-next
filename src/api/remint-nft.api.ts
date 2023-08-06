@@ -221,9 +221,9 @@ export async function remintMultipleNfts(
             return "Successfully reminted";
           }
         },
-        error: (data: string) => {
+        error: (data: any) => {
           updateRemintedNft(mints[index], RemintingStatus.Failed);
-          return data;
+          return data.message;
         },
       }
     );
