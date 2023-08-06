@@ -249,7 +249,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         </div>
       </div>
 
-      {collectionDerug && (
+      {/* {collectionDerug && (
         <>
           {collectionDerug.status === DerugStatus.Initialized ? (
             <DerugRequest />
@@ -269,7 +269,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
             </>
           )}
         </>
-      )}
+      )} */}
     </CollectionContext.Provider>
   );
 };

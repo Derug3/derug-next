@@ -53,7 +53,7 @@ export const Remint: FC = () => {
         setNonMintedNfts(
           await getNonMinted(collectionDerug?.address.toString())
         );
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getCollectionNfts = async () => {
@@ -100,7 +100,7 @@ export const Remint: FC = () => {
 
   const renderCollectionNfts = useMemo(() => {
     return collectionNfts?.length > 0 ? (
-      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 px-10">
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 p-4 md:p-5">
         {collectionNfts?.map((cnft) => {
           return <RemintNft nft={cnft} key={cnft.mint.toString()} />;
         })}
@@ -187,36 +187,30 @@ export const Remint: FC = () => {
               dayjs()
                 .add(derugRequest.privateMintDuration, "hours")
                 .isAfter(dayjs()) && (
-                <div className="flex flex-col items-center gap-10 w-full mt-10">
+                <div className="flex flex-col items-center gap-5 w-full">
                   {!loading &&
                     collectionNfts &&
                     collectionNfts?.length > 0 &&
                     showRemintButton && (
-                      <button
-                        onClick={remintNfts}
-                        style={{
-                          background: "rgb(9, 194, 246)",
-                          borderRadius: "4px",
-                          color: "black",
-                          fontWeight: "bold",
-                          border: "1px solid none",
-                          minWidth: "10em",
-                          fontSize: "1.5em",
-                          padding: " 0.25em 1em",
-                          fontFamily: "monospace",
-                        }}
-                      >
-                        {!isReminting ? (
-                          <p>Remint</p>
-                        ) : (
-                          <Oval
-                            color="black"
-                            wrapperClass="px-4 py-6 h-6 text-black font-lg"
-                            width={"1em"}
-                            secondaryColor="transparent"
-                          />
-                        )}
-                      </button>
+                      <div className="flex w-full flex-col lg:flex-row items-center p-4 md:p-5 justify-between gap-5">
+                        <span className="text-white whitespace-nowrap">Remint YOUR NFTS</span>
+                        <div className="h-[1px] bg-[#344054] w-full"></div>
+                        <button
+                          onClick={remintNfts}
+                          className="bg-[#36BFFA] border border-[#36BFFA] px-[10%] shadow-xs text-lg text-black font-bold font-mono"
+                        >
+                          {!isReminting ? (
+                            <p>Remint</p>
+                          ) : (
+                            <Oval
+                              color="black"
+                              wrapperClass="px-4 py-6 h-6 text-black font-lg"
+                              width={"1em"}
+                              secondaryColor="transparent"
+                            />
+                          )}
+                        </button>
+                      </div>
                     )}
 
                   {loading ? (
