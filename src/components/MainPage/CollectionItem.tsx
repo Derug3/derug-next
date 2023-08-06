@@ -19,27 +19,23 @@ const CollectionItem: FC<{
   };
 
   return (
-    <div
-      onClick={() => navigate(`/collection/${collection.symbol}`)}
-      className="rounded-lg w-fit flex p-2 cursor-pointer overflow-hidden items-center justify-between rounded-lg shadow-xl bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%	animate-text"
-    >
-      <div className="flex justify-start w-full gap-5 items-center relative" onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}>
-        <img
-          src={collection.image}
-          alt="collectionImage"
-          className={`${bigImage ? "w-[30em] h-[30em]" : "w-16 h-16"} `}
-          onError={handleImageError}
-        />
+    isValid && (
+      <div
+        onClick={() => navigate(`/collection/${collection.symbol}`)}
+        className="flex flex-col items-start gap-16 bg-gray-800 shadow-md w-[40em]  rounded-xl p-5 cursor-pointer"
+      >
+        <div className="flex h-full justify-between w-full gap-5 items-start relative" onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}>
+          <img
+            src={collection.image}
+            alt="collectionImage"
+            className={`${bigImage ? "w-[15em] h-[15em]" : "w-16 h-16"} `}
+            onError={handleImageError}
+          />
 
-        {/* <AiOutlineStar
-          style={{ color: "white" }}
-          className="absolute text-4xl text-red cursor-pointer top-[15px] right-[15px] bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%"
-        /> */}
-        {hover ?
-          <div className="w-full flex flex-col items-center justify-between	absolute bottom-0 animate-scale">
-            <div className="flex w-full justify-between h-fit py-1 px-10" style={{ background: '#475467' }}>
-              <p className="text-xl font-white " style={{ fontWeight: 400, lineHeight: '44px' }}>
+          <div className="w-full h-full flex flex-col items-start justify-between h-[15em]">
+            <div className="flex w-full justify-between h-fit py-1 px-2">
+              <p className="text-xl font-white truncate" style={{ fontWeight: 400, lineHeight: '44px' }}>
                 {collection.name}
               </p>
               <div className="flex gap-3 items-center">
@@ -55,7 +51,7 @@ const CollectionItem: FC<{
                 />
               </div>
             </div>
-            <div className="flex flex-col w-full justify-start items-start gap-2 px-1.5 py-1 px-10" style={{ background: 'rgb(14 26 43)' }}>
+            <div className="flex flex-col w-full justify-start items-start gap-2 px-1.5 gap-5 py-2 px-10" style={{ background: 'rgb(14 26 43)' }}>
               <p className="text-lg font-extralight flex w-full justify-between relateve">
                 Floor price{" "}
                 <span className="text-emerald-400">{ } 1 SOL</span>
@@ -71,9 +67,10 @@ const CollectionItem: FC<{
                 <span className="text-emerald-400">{ } 333</span>
               </p>
             </div>
-          </div> : <></>}
+          </div>
+        </div>
       </div>
-    </div>
+    )
   );
 };
 

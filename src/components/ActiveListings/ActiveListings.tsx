@@ -15,12 +15,7 @@ export const ActiveListings: FC<{
 }> = ({ activeListings }) => (
   <>
     {activeListings && (
-      <div className="flex flex-col w-full gap-5">
-        <div className="flex flex-col w-full justify-center items-center">
-          <span className="text-2xl font-mono text-gray-500	font-bold flex px-4">
-            ACTIVE DERUGS 🛠
-          </span>
-        </div>
+      <div className="flex flex-col w-full gap-5 mt-10">
         {activeListings.map((cd, index) => {
           return (
             <ActiveListingItem

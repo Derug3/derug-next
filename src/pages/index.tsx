@@ -30,6 +30,7 @@ import 'swiper/css/effect-cards';
 import { EffectCoverflow } from 'swiper/modules';
 import { makeRequest } from "@/api/request.api";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import TabComponent from "@/components/Tab";
 
 
 
@@ -50,23 +51,6 @@ const Home = () => {
   const { name } = useDebounce(searchValue);
   const router = useRouter()
   const isMobile = useIsMobile();
-
-  const swiperOptions = {
-    effect: 'coverflow',
-    coverflowEffect: {
-      rotate: 0,
-      stretch: 40,
-      depth: 100,
-      modifier: 1,
-      slideShadows: false,
-    },
-    grabCursor: true,
-    spaceBetween: 0,
-    slidesPerView: isMobile ? 1 : 4,
-    centeredSlides: true,
-    loop: true,
-    modules: [EffectCoverflow],
-  };
 
   useEffect(() => {
     void getCollectionsData();
@@ -120,20 +104,13 @@ const Home = () => {
 
   const getCollectionsData = async () => {
     try {
-      const validCollections: ICollectionData[] = [];
       setLoading(true);
       const randomCollections = await getRandomCollections();
       setCollections(randomCollections);
 
-      for (const collection of randomCollections) {
-        const isValid = await checkImageStatus(collection.image); // Check image status
-        if (isValid) {
-          validCollections.push(collection);
-        }
-      }
 
-      setFilteredCollections(validCollections);
-      setCollections(validCollections);
+      setFilteredCollections(randomCollections);
+      setCollections(randomCollections);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -203,20 +180,25 @@ const Home = () => {
   }, [filteredCollections, searchLoading]);
 
   const renderRandomCollections = useMemo(() => (
-    <Swiper {...swiperOptions}>
-      {collections && collections.map((c, index) => (
-        <SwiperSlide key={index}>
-          <CollectionItem collection={c} key={c.symbol} bigImage={true} />
-        </SwiperSlide>)
-      )}
-    </Swiper>
+    <div className="flex flex-col w-full">
+      <div className="flex flex-wrap gap-12 w-full items-center justify-center mt-10">
+        {collections && collections.map((c, index) => (
+          <CollectionItem collection={c} key={c.symbol} bigImage={true} />)
+        )}
+      </div>
+    </div>
+
   ), [collections]);
 
-  // const renderHotCollections = useMemo(() => {
-  //   return hotCollections?.map((c) => {
-  //     return <CollectionItem collection={c} key={c.symbol} bigImage={false} />;
-  //   });
-  // }, [hotCollections]);
+  const renderActiveCollections = useMemo(() => (
+    activeCollections && activeCollections.length ? (
+      <div className="flex mb-10">
+        <ActiveListings activeListings={activeCollections} />
+      </div>
+    ) : (
+      <></>
+    )
+  ), [activeCollections]);
 
   const getFilterOptions = useMemo(() => {
     return Object.values(CollectionVolumeFilter).map((c: any) => {
@@ -227,16 +209,24 @@ const Home = () => {
     });
   }, []);
 
+  const [activeTab, setActiveTab] = useState('Hot');
+
+  const tabs = [
+    {
+      title: 'Active',
+      id: 'Active',
+    },
+    {
+      title: 'HOT 🔥',
+      id: 'Hot',
+    },
+  ];
+
   return (
     <div
-      className="w-full h-full lg:py-12 py-5 lg:px-32 px-5"
+      className="w-full h-full lg:py-12 py-5 lg:px-32 px-5 flex flex-col items-center justify-center"
       style={{
-        width: "100%",
-        margin: "auto",
-        display: "flex",
-        flexDirection: "column",
         zoom: "70%",
-        // padding: "3em 8em",
         fontFamily: "Bungee",
         overflowX: "hidden",
       }}
@@ -247,6 +237,7 @@ const Home = () => {
           margin: "auto",
           position: "relative",
           marginBottom: "80px",
+          gap: '2em',
         }}
       >
         <h1
@@ -259,42 +250,11 @@ const Home = () => {
           </div>
         </h1>
         {renderSelect}
-        {/* <Text
-          onClick={() =>
-            window.open(`https://derug-us.gitbook.io/derug_us/`, "_blank")
-          }
-          className="text-xl font-mono text-yellow-500 cursor-pointer flex justify-center w-full"
-        >
-          <span
-            className="px-4"
-            style={{
-              border: "1px solid rgb(9, 194, 246)",
-              borderTop: "none",
-              paddingTop: "5px",
-            }}
-          >
-            how it works?
-          </span>
-        </Text> */}
       </div>
-
-      {activeCollections && activeCollections.length ? (
-        <div className="flex mb-10">
-          <ActiveListings activeListings={activeCollections} />
-        </div>
-      ) : (
-        <></>
-      )}
-
-      {/* create me a grid with 3 cols */}
-      <div className="flex flex-col w-full">
-        <div className="flex flex-wrap gap-12">
-          <div className="flex flex-col w-full justify-center items-center">
-            <span className="text-2xl font-mono text-gray-500	font-bold flex px-4">HOT COLLECTIONS 🔥</span>
-          </div>
-          {renderRandomCollections}
-        </div>
+      <div className="flex w-full my-5 items-center justify-center">
+        <TabComponent tabs={tabs} activeTab={activeTab} handleTabClick={(tab) => setActiveTab(tab)} />
       </div>
+      {activeTab === 'Active' && renderActiveCollections || activeTab === 'Hot' && renderRandomCollections}
     </div>
   );
 };
