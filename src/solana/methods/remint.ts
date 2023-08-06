@@ -334,7 +334,6 @@ export const remintNft = async (
         newMetadata: newMetadata,
         oldCollection: derugData.collection,
         metadataProgram: METAPLEX_PROGRAM,
-        rent: SYSVAR_RENT_PUBKEY,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })

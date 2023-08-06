@@ -236,6 +236,6 @@ export function updateRemintedNft(mint: string, status: RemintingStatus) {
   const { nfts, setNfts } = nftStore.getState();
   const relatedNftIndex = nfts.findIndex((n) => n.mint.toString() === mint);
   const storedNfts = [...nfts];
-  storedNfts[relatedNftIndex] = { mint: new PublicKey(mint), status };
+  storedNfts.push({ mint: new PublicKey(mint), status });
   setNfts(storedNfts);
 }
