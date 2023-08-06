@@ -8,12 +8,14 @@ import { AddDerugRequst } from "@/components/AddDerugRequest/AddDerugRequest";
 import { CollectionStats } from "@/components/CollectionLayout/CollectionStats";
 import { HeaderTabs } from "@/components/CollectionLayout/HeaderTabs";
 import DerugRequest from "@/components/DerugRequest/DerugRequest";
-import NoDerugRequests from "@/components/DerugRequest/NoDerugRequests";
 import PublicMint from "@/components/Remit/PublicMint";
 import Remint from "@/components/Remit/Remint";
 import { getDummyCollectionData } from "@/solana/dummy";
 import { getCollectionDerugData } from "@/solana/methods/derug";
-import { getAllDerugRequest } from "@/solana/methods/derug-request";
+import {
+  getAllDerugRequest,
+  getSingleDerugRequest,
+} from "@/solana/methods/derug-request";
 import { derugProgramFactory } from "@/solana/utilities";
 import { CollectionContext } from "@/stores/collectionContext";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -35,6 +37,7 @@ import { GetServerSideProps } from "next";
 import { getDerugCandyMachine } from "@/solana/methods/public-mint";
 import { getCollectionChainData } from "@/solana/collections";
 import Modal from "@/components/Modal";
+import { Oval } from "react-loader-spinner";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const slug = context.params.id;
@@ -65,7 +68,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   const [graphData, setGraphData] = useState<IGraphData>();
   const [candyMachine, setCandyMachine] = useState<IDerugCandyMachine>();
 
-  const [derugRequests, setDerugRequests] = useState<IRequest[]>();
+  const [derugRequest, setDerugRequests] = useState<IRequest>();
   const iframeRef = useRef(null);
 
   const wallet = useWallet();
@@ -92,7 +95,6 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           listingsData = await getListings(collectionStats.slug);
         }
         setListings(listingsData);
-
         setTraits(collection.traits);
       }
     } catch (error) {
@@ -106,16 +108,19 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   }, [basicCollectionData, wallet.publicKey]);
   const getChainCollectionDetails = async () => {
     try {
-      const chainDetails = await getCollectionChainData(
-        basicCollectionData!,
-        listings?.at(0)
-      );
-
+      // const chainDetails = await getCollectionChainData(
+      //   basicCollectionData!,
+      //   listings?.at(0)
+      // );
+      const chainDetails = await getDummyCollectionData();
       const derugProgram = derugProgramFactory();
 
       derugProgram.addEventListener("PrivateMintStarted", async (data) => {
+        console.log("GOT EVENT LISTENER", data);
+
         if (data.derugData.toString() === collectionDerug?.address.toString()) {
           setCollectionDerug(await getCollectionDerugData(data.derugData));
+          setDerugRequests(await getSingleDerugRequest(data.derugRequest));
         }
       });
 
@@ -124,10 +129,10 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       if (chainDetails.hasActiveDerugData) {
         if (
           wallet &&
-          derugRequests.length > 0 &&
+          derugRequest &&
           collectionDerug.status === DerugStatus.PublicMint
         ) {
-          const cm = await getDerugCandyMachine(wallet, derugRequests[0]);
+          const cm = await getDerugCandyMachine(wallet, derugRequest[0]);
           if (cm) setCandyMachine(cm);
         }
         setCollectionDerug(
@@ -141,19 +146,30 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       console.log(error);
     }
   };
-  const getWinningRequest = useMemo(() => {
-    return derugRequests?.sort((a, b) => a.voteCount - b.voteCount)[
-      derugRequests.length - 1
-    ];
-  }, [derugRequests]);
 
-  const showDerugRequests = useMemo(() => {
-    if (collectionDerug) {
-      return !!!collectionDerug.winningRequest;
-    } else {
-      return false;
-    }
-  }, [collectionDerug, derugRequests]);
+  const renderDerugContent = useMemo(() => {
+    if (derugRequest)
+      switch (derugRequest.status) {
+        case DerugStatus.Initialized: {
+          return (
+            <div className="flex flex-col items-center">
+              <Oval
+                color="#36BFFA"
+                width={"4em"}
+                secondaryColor="transaprent"
+              />
+              <p> ⚠️ Minting will be enabled soon... ⚠️</p>
+            </div>
+          );
+        }
+        case DerugStatus.Reminting: {
+          return <Remint />;
+        }
+        case DerugStatus.PublicMint: {
+          return <PublicMint />;
+        }
+      }
+  }, [derugRequest]);
 
   return (
     <CollectionContext.Provider
@@ -174,7 +190,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         setRecentActivities,
         collectionDerug,
         setCollectionDerug,
-        derugRequests,
+        derugRequest,
         setRequests: setDerugRequests,
         graphData,
         setGraphData,
@@ -186,9 +202,9 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         {wallet && (
           <Modal isOpen={derugRequestVisible} onClose={setDerugRequestVisible}>
             <AddDerugRequst
+              derugRequest={derugRequest}
               isOpen={derugRequestVisible}
               setIsOpen={(val) => setDerugRequestVisible(val)}
-              derugRequests={derugRequests}
               setDerugRequest={setDerugRequests}
             />
           </Modal>
@@ -198,6 +214,11 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
             <div className="flex flex-col w-full justify-center items-center gap-5">
               <LeftPane selectedInfo={selectedInfo} />
               <div className="flex flex-col gap-5 w-full">
+                {derugRequest && (
+                  <div className="flex items-center w-full border-8 border-gray-700 bg-gray-800 shadow-md justify-center py-5">
+                    {renderDerugContent}
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <HeaderTabs
                     setSelectedInfo={setSelectedInfo}
@@ -208,6 +229,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
                     }}
                   />
                 </div>
+
                 <CollectionStats
                   collection={collectionStats}
                   collectionDerug={collectionDerug}
@@ -217,6 +239,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               </div>
             </div>
           </div>
+
           <RightPane
             selectedData={selectedData}
             chainCollectionData={chainCollectionData}
@@ -225,30 +248,28 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           />
         </div>
       </div>
-      {collectionDerug && <>
-        {(collectionDerug.status === DerugStatus.Initialized ||
-          collectionDerug.status === DerugStatus.Voting) &&
-          showDerugRequests ? (
-          <DerugRequest />
-        ) : (
-          <>
-            {collectionDerug.status === DerugStatus.PublicMint &&
+
+      {collectionDerug && (
+        <>
+          {collectionDerug.status === DerugStatus.Initialized ? (
+            <DerugRequest />
+          ) : (
+            <>
+              {collectionDerug.status === DerugStatus.PublicMint &&
               candyMachine &&
               Number(candyMachine.candyMachine.itemsLoaded) > 0 &&
               Number(candyMachine.candyMachine.itemsLoaded) ===
-              Number(candyMachine.candyMachine.data.itemsAvailable) ? (
-              <PublicMint />
-            ) : (
-              collectionDerug &&
-              collectionDerug.addedRequests.find((ar) => ar.winning) &&
-              derugRequests && (
-                <Remint getWinningRequest={getWinningRequest} />
-              )
-            )}
-          </>
-        )}
-      </>
-      }
+                Number(candyMachine.candyMachine.data.itemsAvailable) ? (
+                <PublicMint />
+              ) : (
+                collectionDerug &&
+                collectionDerug.addedRequests.find((ar) => ar.winning) &&
+                derugRequest && <Remint />
+              )}
+            </>
+          )}
+        </>
+      )}
     </CollectionContext.Provider>
   );
 };

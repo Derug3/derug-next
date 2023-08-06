@@ -13,20 +13,16 @@ export const NoDerugRequests: FC<{
   const [currentRequest, setCurrentRequest] = useState<IRequest>();
   const returnFocusRef = useRef(null);
 
-  const { derugRequests, collectionDerug } = useContext(CollectionContext);
+  const { derugRequest, collectionDerug } = useContext(CollectionContext);
   const wallet = useWallet();
   const showAddDerugButton = useMemo(() => {
     return (
       wallet &&
       wallet.publicKey &&
       (!collectionDerug ||
-        (collectionDerug &&
-          dayjs(collectionDerug?.periodEnd).isAfter(dayjs()))) &&
-      !derugRequests?.find(
-        (dr) => dr.derugger.toString() === wallet.publicKey?.toString()
-      )
+        (collectionDerug && dayjs(collectionDerug?.periodEnd).isAfter(dayjs())))
     );
-  }, [derugRequests, collectionDerug, wallet]);
+  }, [collectionDerug, wallet]);
 
   return (
     <div

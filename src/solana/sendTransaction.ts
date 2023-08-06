@@ -12,6 +12,7 @@ import nftStore from "../stores/nftStore";
 import { RemintingStatus } from "../enums/collections.enums";
 import { derugProgramFactory } from "./utilities";
 import { parseTransactionError } from "../common/helpers";
+import { RPC_CONNECTION } from "@/utilities/utilities";
 export const sendTransaction = async (
   connection: Connection,
   instructions: IDerugInstruction[],
@@ -33,16 +34,17 @@ export const sendTransaction = async (
       if (instructionSet.partialSigner) {
         versionedTransaction.sign(instructionSet.partialSigner);
       }
+      const logs = await RPC_CONNECTION.simulateTransaction(
+        versionedTransaction
+      );
+      console.log(logs);
+
       transactions.push(versionedTransaction);
     }
 
     const sigendTransactions = await wallet.signAllTransactions!(transactions);
 
     for (const [index, tx] of sigendTransactions.entries()) {
-      const txSim = await connection.simulateTransaction(tx);
-
-      console.log(txSim, "TX SIM");
-
       const savedNfts = [...nfts];
 
       try {
@@ -56,7 +58,7 @@ export const sendTransaction = async (
               setNfts(savedNfts);
             }
 
-            return "Failed to send transaction:" + parseTransactionError(data);
+            return "Failed to send transaction:" + data.message;
           },
           loading: instructions[index].pendingDescription,
           success: (data) => {
@@ -71,11 +73,13 @@ export const sendTransaction = async (
             return instructions[index].successDescription;
           },
         });
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     }
   } catch (error: any) {
-    toast.error("Failed to send transaction:", error.message);
     console.log(error);
+    toast.error("Failed to send transaction:", error.message);
   }
 };
 

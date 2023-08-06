@@ -8,7 +8,7 @@ import { PublicKey } from "@solana/web3.js";
 import { useRouter } from "next/router";
 import Slider from "rc-slider";
 import React, { useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useForm, useFormContext, useFormState } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaTwitter } from "react-icons/fa";
 
@@ -20,8 +20,12 @@ const DerugBasicInfo = () => {
     getValues,
     setValue,
   } = useFormContext<DerugForm>();
-  const { userData, setUserData } = userStore();
+  const { userData } = userStore();
   const wallet = useAnchorWallet();
+
+  const values = getValues();
+
+  console.log(values);
 
   const { fee } = getValues();
 
@@ -52,6 +56,7 @@ const DerugBasicInfo = () => {
           <label htmlFor="wallet">Wallet</label>
           <div className="flex gap-5">
             <input
+              disabled
               id="wallet"
               className="flex w-full  px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
               type="text"
@@ -87,40 +92,38 @@ const DerugBasicInfo = () => {
         <div className="flex w-full flex-col font-mono gap-2 text-white justify-center">
           <label htmlFor="name">New collection name</label>
           <input
+            {...register("name", {
+              required: {
+                message: "Name is required",
+                value: true,
+              },
+              maxLength: {
+                value: 3,
+                message: "Name can't be longer than 32 characters!",
+              },
+            })}
             id="name"
+            name="name"
             className="flex w-full  px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
             type="text"
             onChange={(e) => {
-              e.target.value.length > 0 &&
-                e.target.value.length < 32 &&
-                clearErrors("name");
+              // e.target.value.length > 0 &&
+              //   e.target.value.length < 32 &&
+              //   clearErrors("name");
+              setValue("name", e.target.value);
             }}
           />
+          {errors.name && (
+            <p className="text-xs color-red">{errors.name.message}</p>
+          )}
         </div>
-        {/* <TextInput
-          {...register("name", {
-            required: "Name cannot be empty",
-            maxLength: {
-              message: "Max name length is 32 characters",
-              value: 32,
-            },
-          })}
-          onChange={(e) => {
-            e.target.value.length > 0 &&
-              e.target.value.length < 32 &&
-              clearErrors("name");
-          }}
-          placeholder="new collection name"
-          className="text-gray-400 "
-          sx={{
-            width: "100%",
-          }}
-        /> */}
+
         {errors.name && <p className="text-red-500">{errors.name.message}</p>}
         <div className="flex w-full flex-col font-mono gap-2 text-white justify-center">
           <label htmlFor="symbol">New collection symbol</label>
           <input
             id="symbol"
+            name="symbol"
             {...register("symbol", {
               required: "Symbol cannot be empty",
               maxLength: {
@@ -129,11 +132,12 @@ const DerugBasicInfo = () => {
               },
             })}
             className="flex w-full px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
-            onChange={(e) =>
+            onChange={(e) => {
               e.target.value.length > 0 &&
-              e.target.value.length < 10 &&
-              clearErrors("symbol")
-            }
+                e.target.value.length < 10 &&
+                clearErrors("symbol");
+              setValue("symbol", e.target.value);
+            }}
           />
         </div>
         {errors.symbol && (

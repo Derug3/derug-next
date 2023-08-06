@@ -1,14 +1,17 @@
 import { Creator, DerugForm } from "@/interface/derug.interface";
 import "rc-slider/assets/index.css";
 import { FC, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 const CreatorsArray: FC<{}> = ({}) => {
   const [maxPercentage, setMaxPercentage] = useState(100);
 
-  const { getValues, setValue } = useFormContext<DerugForm>();
+  const { setValue, control } = useFormContext<DerugForm>();
 
-  const { creators } = getValues();
+  const { fields: creators, insert } = useFieldArray({
+    control,
+    name: "creators",
+  });
 
   const handleItemsAddressChange = (value: string, index: number) => {
     if (!creators) return;
@@ -40,7 +43,7 @@ const CreatorsArray: FC<{}> = ({}) => {
         creators.map((creator, index) => (
           <div
             key={creator.address}
-            className="flex flex-col w-full justify-between creators-start gap-3"
+            className="flex flex-col w-full justify-between creators-start gap-3 mt-5"
           >
             <span>Address</span>
             <div className="flex w-full flex-row gap-4">
@@ -80,6 +83,37 @@ const CreatorsArray: FC<{}> = ({}) => {
             </div>
           </div>
         ))}
+      <div className="flex mt-5 gap-1">
+        {creators.length < 5 && (
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 4.16667V15.8333M4.16667 10H15.8333"
+              stroke="#36BFFA"
+              stroke-width="1.66667"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        )}
+        {creators.length < 5 && (
+          <button
+            type="button"
+            className="flex w-full text-[#36BFFA] font-mono text-sm"
+            disabled={creators?.length >= 5}
+            onClick={() => {
+              insert(creators.length, { address: "", share: 0 });
+            }}
+          >
+            Add creator
+          </button>
+        )}
+      </div>
     </div>
   );
 };

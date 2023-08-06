@@ -76,10 +76,6 @@ export const claimVictory = async (
 
   const remainingAccounts: AccountMeta[] = [];
 
-  if (wallet.publicKey?.toString() !== request.derugger.toString()) {
-    throw new Error("Invalid derug authority");
-  }
-
   if (request.publicMint) {
     try {
       const candyMachine = Keypair.generate();
@@ -244,7 +240,7 @@ export const claimVictory = async (
   storeAllNfts({
     derugData: derug.address.toString(),
     derugRequest: request.address.toString(),
-    updateAuthority: chainCollectionData.firstCreator,
+    creator: chainCollectionData.firstCreator,
   });
 };
 
@@ -334,21 +330,15 @@ export const remintNft = async (
         payer: wallet.publicKey!,
         oldMint: nft.mint,
         feeWallet: feeWallet,
-        pdaAuthority,
         newEdition: newMasterEdition,
         newMetadata: newMetadata,
         oldCollection: derugData.collection,
-        newCollection: derugData.newCollection!,
         metadataProgram: METAPLEX_PROGRAM,
         rent: SYSVAR_RENT_PUBKEY,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .preInstructions([
-        ComputeBudgetProgram.setComputeUnitLimit({
-          units: 130000000,
-        }),
-      ])
+
       .remainingAccounts(remainingAccounts)
       .instruction();
 

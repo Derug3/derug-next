@@ -8,13 +8,18 @@ import {
 import { ISplTokenData } from "../interface/derug.interface";
 import { derugProgramFactory, metaplex, umi } from "../solana/utilities";
 import { ANCHOR_ERROR, ERROR_NUMBER } from "./constants";
-import { Strategy, TokenListProvider } from "@solana/spl-token-registry";
+import {
+  StaticTokenListResolutionStrategy,
+  Strategy,
+  TokenListProvider,
+} from "@solana/spl-token-registry";
 import { IUserData } from "../interface/user.interface";
 import { getUserTwitterData } from "../api/twitter.api";
 import { NATIVE_MINT } from "@solana/spl-token";
 import { CollectionVolumeFilter } from "../enums/collections.enums";
 import { findCandyMachineAuthorityPda } from "@metaplex-foundation/mpl-candy-machine";
 import { publicKey } from "@metaplex-foundation/umi";
+import { ITreasuryTokenAccInfo } from "@/components/CollectionLayout/MintDetails";
 export const splitTimestamps = (
   recentCollections: ICollectionRecentActivities[]
 ) => {
@@ -112,14 +117,16 @@ export const parseTransactionError = (data: any) => {
   const derugProgram = derugProgramFactory();
 
   if (
-    parsedData.logs.find(
+    parsedData?.logs?.find(
       (log: any) => log.includes("lamports") || log.includes("NotEnoughSOL")
     )
   ) {
     return "Insufficient balance for transaction";
   }
 
-  const log = parsedData.logs.find((log: string) => log.includes(ANCHOR_ERROR));
+  const log = parsedData.logs?.find((log: string) =>
+    log.includes(ANCHOR_ERROR)
+  );
 
   if (log) {
     const slicedData = +log.split(ERROR_NUMBER)[1].split(".")[0].trim();
@@ -137,10 +144,11 @@ export const getFungibleTokenMetadata = async (
   try {
     const tokenListProvider = new TokenListProvider();
     const resolved = await tokenListProvider.resolve(Strategy.Static);
-    if (tokenMint === null) {
+
+    if (tokenMint === null || tokenMint.toString() === NATIVE_MINT.toString()) {
       const solToken = resolved
         .getList()
-        .find((t) => t.address === NATIVE_MINT.toString())!;
+        .find((t) => t.address.toString() === NATIVE_MINT.toString())!;
       return {
         decimals: 9,
         name: solToken?.name,
@@ -183,4 +191,39 @@ export const mapFilterTypeToValue = (filterType: CollectionVolumeFilter) => {
     case CollectionVolumeFilter.NumMints:
       return "total supply";
   }
+};
+
+export const getSolToken = (): ITreasuryTokenAccInfo => {
+  const availableToken: ITreasuryTokenAccInfo[] = [];
+  const tokens = new StaticTokenListResolutionStrategy().resolve();
+
+  const tokenList = tokens
+
+    .filter((item) => item.logoURI !== undefined)
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const solToken = tokenList.find(
+    (item) => item.address === NATIVE_MINT.toString()
+  );
+  return {
+    decimals: solToken.decimals,
+    logoURI: solToken.logoURI,
+    address: new PublicKey(solToken.address),
+    name: "Solana",
+    symbol: solToken.symbol,
+    tags: solToken?.tags,
+    chainId: solToken?.chainId,
+    extensions: solToken?.extensions,
+  };
+};
+
+export const getDefaultValues = async () => {
+  return {
+    creators: [],
+    duration: 0,
+    fee: 0,
+    name: "",
+    selectedMint: getSolToken(),
+    symbol: "",
+  };
 };

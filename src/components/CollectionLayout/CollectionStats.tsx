@@ -15,7 +15,7 @@ export const CollectionStats: FC<{
   openDerugModal: (value: boolean) => void;
   collectionDerug?: ICollectionDerugData;
 }> = ({ collection, collectionDerug }) => {
-  const {} = useContext(CollectionContext);
+  const { derugRequest } = useContext(CollectionContext);
   const currUnix = dayjs().unix() * 1000;
 
   return (
@@ -27,12 +27,7 @@ export const CollectionStats: FC<{
           title="FLOOR PRICE"
           desc="SOL"
         />
-        {/* <HeadingItem
-          title="LISTED"
-          descColor="#2dd4bf"
-          desc="NFTs"
-          amount={collection?.numListed}
-        /> */}
+
         <HeadingItem
           descColor="#2dd4bf"
           title="TOTAL SUPPLY"
@@ -71,7 +66,7 @@ export const CollectionStats: FC<{
           <HeadingItem
             descColor="#2dd4bf"
             title={"PRIVATE MINT END"}
-            date={collectionDerug.periodEnd}
+            date={dayjs.unix(derugRequest?.privateMintDuration).toDate()}
             isCounter
             desc=""
           />

@@ -93,7 +93,7 @@ export type DerugForm = {
 
 export interface StoreCandyMachineData {
   derugRequest: string;
-  updateAuthority: string;
+  creator: string;
   derugData: string;
 }
 

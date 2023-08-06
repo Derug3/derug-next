@@ -39,6 +39,7 @@ export interface IRequest {
   voteCount: number;
   sellerFeeBps: number;
   mintPrice?: number;
+  status: DerugStatus;
   publicMint: boolean;
   creators: ICreator[];
   privateMintDuration?: number;
@@ -158,4 +159,14 @@ export interface WlSettingsDto {
 
 export interface SaveWlSettingsDto extends WlSettingsDto {
   signedMessage: string;
+}
+
+export interface RemintDto {
+  signedTx: Buffer[];
+}
+
+export interface RemintResponse {
+  mint: string;
+  succeded: boolean;
+  message?: string;
 }

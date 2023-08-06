@@ -18,6 +18,8 @@ import { ProgressBar } from "@primer/react";
 import DerugBasicInfo from "./DerugBasicInfo";
 import Creators from "./Creators";
 import PublicMintConfig from "./PublicMintConfig";
+import { getDefaultValues, getSolToken } from "@/common/helpers";
+import toast from "react-hot-toast";
 
 enum CreateDerugRequestStep {
   BasicInfo,
@@ -28,8 +30,8 @@ enum CreateDerugRequestStep {
 export const AddDerugRequst: FC<{
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  derugRequests: IRequest[] | undefined;
-  setDerugRequest: (derugRequest: IRequest[] | undefined) => void;
+  derugRequest: IRequest | undefined;
+  setDerugRequest: (derugRequest: IRequest | undefined) => void;
 }> = ({ setIsOpen }) => {
   const wallet = useWallet();
 
@@ -48,26 +50,37 @@ export const AddDerugRequst: FC<{
     setCollectionDerug,
     setRequests,
     collectionStats,
-    derugRequests,
+    derugRequest,
   } = useContext(CollectionContext);
 
   const [activeStep, setActiveStep] = useState(
     CreateDerugRequestStep.BasicInfo
   );
 
-  const methods = useForm<DerugForm>({ defaultValues: {} });
+  const methods = useForm<DerugForm>({
+    defaultValues: {
+      creators: [],
+      duration: 0,
+      fee: 0,
+      selectedMint: getSolToken(),
+      name: "",
+      price: 0,
+      privateMintEnd: 0,
+      symbol: "",
+    },
+  });
 
   const handleSubmit = (data?: any) => {
     setActiveStep(activeStep + 1);
   };
 
-  const submitRequest = async (data?: any) => {
+  const submitRequest = async (data: DerugForm) => {
     try {
       if (wallet && chainCollectionData && collectionStats && data) {
         const requestAddress = await createOrUpdateDerugRequest(
           wallet,
           chainCollectionData,
-          +data.sellerFee * 10,
+          +data.fee * 10,
           data.symbol,
           data.name,
           creators.map((c) => {
@@ -81,9 +94,11 @@ export const AddDerugRequst: FC<{
           data.selectedMint.address,
           activeListings ? activeListings[0] : undefined
         );
-        const addedRequests = [...(derugRequests ?? [])];
-        addedRequests.push(await getSingleDerugRequest(requestAddress));
-        setRequests(addedRequests);
+
+        const request = await getSingleDerugRequest(requestAddress);
+        console.log(request, "REQUEST");
+
+        setRequests(request);
       }
       if (chainCollectionData) {
         const derugData = await getCollectionDerugData(
@@ -131,7 +146,7 @@ export const AddDerugRequst: FC<{
         return <PublicMintConfig />;
       }
     }
-  }, [activeStep]);
+  }, [activeStep, methods]);
 
   const renderStepName = useMemo(() => {
     switch (activeStep) {
@@ -155,7 +170,7 @@ export const AddDerugRequst: FC<{
             e.preventDefault();
             activeStep < CreateDerugRequestStep.MintConfig
               ? handleSubmit()
-              : methods.handleSubmit(submitRequest);
+              : submitRequest(methods.getValues());
           }}
         >
           <div className="flex flex-col py-4 gap-3">
@@ -181,7 +196,7 @@ export const AddDerugRequst: FC<{
           <div className="flex w-full justify-between items-center mt-9">
             <button
               type="button"
-              className="bg-transparent border-[1px] border-main-blue px-4 text-white py-1"
+              className="bg-transparent border-[1px] border-main-blue px-4 text-white py-1 font-mono"
               onClick={
                 activeStep === CreateDerugRequestStep.BasicInfo
                   ? () => setIsOpen(false)
@@ -194,7 +209,6 @@ export const AddDerugRequst: FC<{
             </button>
             <button
               disabled={false}
-              type={"submit"}
               className="bg-[#36BFFA] border border-[#36BFFA] px-[10%] shadow-xs text-lg text-black font-bold font-mono"
             >
               {activeStep === CreateDerugRequestStep.MintConfig

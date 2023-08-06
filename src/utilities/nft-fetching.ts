@@ -86,7 +86,6 @@ export const getAllNftsFromCollection = async (
 
     multipleAccInfo.forEach((mai, index) => {
       const [metadata] = Metadata.fromAccountInfo(mai!);
-      console.log(metadata);
 
       if (
         (metadata.collection &&

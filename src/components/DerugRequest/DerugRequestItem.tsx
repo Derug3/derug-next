@@ -18,11 +18,11 @@ import DerugRequestDetails from "./DerugRequestDetails";
 export const DerugRequestItem: FC<{
   derugRequest: IRequest;
   index: number;
-}> = ({ derugRequest, index }) => {
+}> = ({ index }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [loading, toggleLoading] = useState(false);
-  const { collectionDerug, chainCollectionData, setRequests, derugRequests } =
+  const { collectionDerug, chainCollectionData, setRequests, derugRequest } =
     useContext(CollectionContext);
 
   const [isHovered, toggleIsHovered] = useState(false);
@@ -70,12 +70,8 @@ export const DerugRequestItem: FC<{
         const updatedRequest = await getSingleDerugRequest(
           derugRequest.address
         );
-        const addedRequests = [...(derugRequests ?? [])];
-        const derugIndex = addedRequests.findIndex(
-          (dr) => dr.address.toString() === derugRequest.address.toString()
-        );
-        addedRequests[derugIndex] = { ...updatedRequest };
-        setRequests(addedRequests);
+
+        setRequests(updatedRequest);
         setIsOpen(false);
       } catch (error: any) {
         toast.error("Failed to vote:", error);
@@ -175,9 +171,7 @@ export const DerugRequestItem: FC<{
               </button>
             )}
             {showRemintButton() && (
-              <button style={{ color: "rgba(9,194,246)" }}>
-                Remint
-              </button>
+              <button style={{ color: "rgba(9,194,246)" }}>Remint</button>
             )}
 
             <div className="relative">

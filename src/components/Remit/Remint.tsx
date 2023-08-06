@@ -10,23 +10,21 @@ import {
   generateSkeletonArrays,
   getAllNftsFromCollection,
 } from "../../utilities/nft-fetching";
-// import WinningRequest from "../DerugRequest/WinningRequest";
+
 import { toast } from "react-hot-toast";
 import RemintNft from "./RemintNft";
 import Skeleton from "react-loading-skeleton";
 import { DerugStatus, RemintingStatus } from "../../enums/collections.enums";
-import { remintNft } from "../../solana/methods/remint";
-import { chunk } from "lodash";
+
 import nftStore from "../../stores/nftStore";
 import { Oval } from "react-loader-spinner";
 import dayjs from "dayjs";
 import { getNonMinted } from "../../api/public-mint.api";
 import { RelativeTime } from "@primer/react";
 import Countdown from "react-countdown";
-export const Remint: FC<{
-  getWinningRequest: IRequest | undefined;
-}> = ({}) => {
-  const { derugRequests } = useContext(CollectionContext);
+import { remintMultipleNfts } from "@/api/remint-nft.api";
+export const Remint: FC = () => {
+  const { derugRequest } = useContext(CollectionContext);
   const [collectionNfts, setCollectionNfts] = useState<IDerugCollectionNft[]>();
   const [loading, toggleLoading] = useState(true);
 
@@ -114,9 +112,7 @@ export const Remint: FC<{
           <Countdown
             className="font-mono text-sm
             text-orange-800 p-2"
-            date={dayjs()
-              .add(derugRequests[0].privateMintDuration, "hours")
-              .toDate()}
+            date={dayjs.unix(derugRequest.privateMintDuration).toDate()}
           />
           <RelativeTime />
         </p>
@@ -127,15 +123,12 @@ export const Remint: FC<{
   const remintNfts = async () => {
     try {
       toggleIsReminting(true);
-      const winningRequest = derugRequests?.sort(
-        (a, b) => a.voteCount - b.voteCount
-      )[derugRequests.length - 1];
+
       if (
         wallet &&
         collectionDerug &&
         collectionNfts &&
-        collectionDerug?.status === DerugStatus.Reminting &&
-        winningRequest
+        collectionDerug?.status === DerugStatus.Reminting
       ) {
         setNfts([]);
         setCollectionNfts(
@@ -143,15 +136,15 @@ export const Remint: FC<{
             return { ...cnft, remintingStatus: RemintingStatus.InProgress };
           })
         );
-
-        await remintNft(
-          wallet!,
-          collectionDerug,
-          winningRequest,
-          collectionNfts?.filter((nft) => !nft.remintingStatus)
+        await remintMultipleNfts(
+          collectionNfts.map((cnft) => cnft.mint.toString()),
+          wallet,
+          derugRequest,
+          collectionDerug
         );
       }
     } catch (error) {
+      toast.error(error.message);
       setCollectionNfts(
         collectionNfts?.map((cnft) => {
           if (cnft.remintingStatus) {
@@ -179,7 +172,6 @@ export const Remint: FC<{
 
   return (
     <div className="w-full flex-col gap-10">
-      {/* <WinningRequest request={getWinningRequest!} /> */}
       <>
         {collectionDerug?.status === DerugStatus.UploadingMetadata ? (
           <div className="text-center text-lg m-10">
@@ -193,7 +185,7 @@ export const Remint: FC<{
             {collectionDerug &&
               collectionDerug.status === DerugStatus.Reminting &&
               dayjs()
-                .add(derugRequests[0].privateMintDuration, "hours")
+                .add(derugRequest.privateMintDuration, "hours")
                 .isAfter(dayjs()) && (
                 <div className="flex flex-col items-center gap-10 w-full mt-10">
                   {!loading &&
