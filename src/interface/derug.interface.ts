@@ -1,7 +1,7 @@
-import { CandyMachine } from "@metaplex-foundation/mpl-candy-machine";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import { Keypair, TransactionInstruction } from "@solana/web3.js";
 import { PublicKey } from "@solana/web3.js";
+import { CandyMachine } from "derug-tech-mpl-candy-machine";
 import { ITreasuryTokenAccInfo } from "../components/CollectionLayout/MintDetails";
 import { ListingSource, RemintingStatus } from "../enums/collections.enums";
 export interface IUtilityData {

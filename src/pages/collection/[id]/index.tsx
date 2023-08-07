@@ -105,7 +105,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   };
   useEffect(() => {
     if (basicCollectionData) void getChainCollectionDetails();
-  }, [basicCollectionData, wallet.publicKey]);
+  }, [basicCollectionData, wallet]);
   const getChainCollectionDetails = async () => {
     try {
       // const chainDetails = await getCollectionChainData(
@@ -116,8 +116,6 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       const derugProgram = derugProgramFactory();
 
       derugProgram.addEventListener("PrivateMintStarted", async (data) => {
-        console.log("GOT EVENT LISTENER", data);
-
         if (data.derugData.toString() === collectionDerug?.address.toString()) {
           setCollectionDerug(await getCollectionDerugData(data.derugData));
           setDerugRequests(await getSingleDerugRequest(data.derugRequest));
@@ -127,12 +125,9 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       chainDetails.slug = slug!;
       setChainCollectionData(chainDetails);
       if (chainDetails.hasActiveDerugData) {
-        if (
-          wallet &&
-          derugRequest &&
-          collectionDerug.status === DerugStatus.PublicMint
-        ) {
-          const cm = await getDerugCandyMachine(wallet, derugRequest[0]);
+        if (wallet && derugRequest) {
+          const cm = await getDerugCandyMachine(wallet, derugRequest);
+
           if (cm) setCandyMachine(cm);
         }
         setCollectionDerug(
@@ -148,7 +143,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   };
 
   const renderDerugContent = useMemo(() => {
-    if (derugRequest)
+    if (derugRequest) {
       switch (derugRequest.status) {
         case DerugStatus.Initialized: {
           return (
@@ -163,12 +158,17 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
           );
         }
         case DerugStatus.Reminting: {
-          return <Remint />;
+          if (derugRequest.privateMintDuration > dayjs().unix()) {
+            return <Remint />;
+          } else {
+            return <PublicMint />;
+          }
         }
         case DerugStatus.PublicMint: {
           return <PublicMint />;
         }
       }
+    }
   }, [derugRequest]);
 
   return (

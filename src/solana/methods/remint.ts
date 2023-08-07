@@ -56,12 +56,12 @@ import {
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { findCandyMachineAuthorityPda } from "@metaplex-foundation/mpl-candy-machine";
 import { stringifyData } from "../../common/helpers";
 import { UPLOAD_METADATA_FEE } from "../../common/constants";
 import { publicKey } from "@metaplex-foundation/umi";
 import nftStore from "@/stores/nftStore";
 import { RemintingStatus } from "@/enums/collections.enums";
+import { findCandyMachineAuthorityPda } from "derug-tech-mpl-candy-machine";
 
 dayjs.extend(utc);
 

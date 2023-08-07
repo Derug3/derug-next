@@ -22,6 +22,7 @@ import {
   SYSVAR_RENT_PUBKEY,
   SystemProgram,
   Transaction,
+  LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
 import { PUBLIC_REMINT } from "./url.api";
 import { get, post } from "./request.api";
@@ -30,6 +31,7 @@ import { getAuthority } from "./public-mint.api";
 import nftStore from "@/stores/nftStore";
 import { RemintingStatus } from "@/enums/collections.enums";
 import { updateRemintedNft } from "@/common/helpers";
+import { bs58 } from "@project-serum/anchor/dist/cjs/utils/bytes";
 
 export async function remintNft(
   wallet: AnchorWallet,
@@ -232,4 +234,56 @@ export async function remintMultipleNfts(
 
 export async function saveDerugData(derugData: PublicKey) {
   await get(`${PUBLIC_REMINT}/save/${derugData}`);
+}
+
+export async function initializePublicMint(
+  wallet: AnchorWallet,
+  derugData: string,
+  messageSig: Uint8Array
+) {
+  const authority = await getAuthority(derugData);
+
+  const authBalance = await RPC_CONNECTION.getBalance(
+    new PublicKey(authority.authority)
+  );
+
+  if (authBalance < 100) {
+    const transferIx = SystemProgram.transfer({
+      fromPubkey: wallet.publicKey,
+      lamports: 1 * LAMPORTS_PER_SOL,
+      toPubkey: new PublicKey(authority.authority),
+    });
+
+    const tx = new Transaction({
+      feePayer: wallet.publicKey,
+      recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
+    });
+
+    tx.add(transferIx);
+
+    const signedTx = await wallet.signTransaction(tx);
+
+    await RPC_CONNECTION.sendRawTransaction(signedTx.serialize());
+  }
+
+  await toast.promise(
+    post(`${PUBLIC_REMINT}/initialize`, {
+      derugData,
+      payer: wallet.publicKey.toString(),
+      signedMessage: bs58.encode(messageSig),
+    }),
+    {
+      loading: "Initializing public mint!",
+      success: (data) => {
+        if (data.code === 200) {
+          return data.message;
+        } else {
+          throw new Error(data.message);
+        }
+      },
+      error: (data) => {
+        return data.message;
+      },
+    }
+  );
 }

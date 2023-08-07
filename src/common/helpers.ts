@@ -20,7 +20,7 @@ import {
   CollectionVolumeFilter,
   RemintingStatus,
 } from "../enums/collections.enums";
-import { findCandyMachineAuthorityPda } from "@metaplex-foundation/mpl-candy-machine";
+import { findCandyMachineAuthorityPda } from "derug-tech-mpl-candy-machine";
 import { publicKey } from "@metaplex-foundation/umi";
 import { ITreasuryTokenAccInfo } from "@/components/CollectionLayout/MintDetails";
 import nftStore from "@/stores/nftStore";

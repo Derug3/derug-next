@@ -1,4 +1,3 @@
-import { CandyMachine } from "@metaplex-foundation/mpl-candy-machine";
 import React from "react";
 import {
   IChainCollectionData,

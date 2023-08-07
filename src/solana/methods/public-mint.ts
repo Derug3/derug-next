@@ -1,17 +1,16 @@
 import { walletAdapterIdentity } from "@metaplex-foundation/js";
 import {
-  addConfigLines,
   mintV2,
   create,
   DefaultGuardSetArgs,
   GuardGroupArgs,
   MintLimit,
-  findCandyGuardPda,
+  findMintCounterPda,
   SolPayment,
   TokenPayment,
-  fetchCandyMachine,
-  findMintCounterPda,
   fetchCandyGuard,
+  fetchCandyMachine,
+  findCandyGuardPda,
   CandyGuard,
   DefaultGuardSet,
   GuardGroup,
@@ -41,6 +40,7 @@ import {
 } from "@solana/web3.js";
 import toast from "react-hot-toast";
 import {
+  getAuthority,
   getCandyMachine,
   getNonMinted,
   getWlConfig,
@@ -271,7 +271,6 @@ export const mintNftFromCandyMachine = async (
     const guardPda = findCandyGuardPda(umi, {
       base: publicKey(request.candyMachineKey),
     });
-
     //TODO:remove ekser
     // const wlConfig = await getWlConfig("nice-mice");
 
@@ -300,7 +299,7 @@ export const mintNftFromCandyMachine = async (
         group: some("wl"),
         tokenStandard: TokenStandard.ProgrammableNonFungible,
         authorizationRules: publicKey(metaplexAuthorizationRuleSet),
-        candyGuard: guardPda,
+        candyGuard: publicKey(guardPda),
         mintArgs: {
           // allowList: some({ merkleRoot }),
           solPayment: some({
@@ -334,7 +333,6 @@ export const mintNftFromCandyMachine = async (
     throw new Error(parseTransactionError(parsedError));
   }
 };
-
 export const mintPublic = async (
   request: IRequest,
   wallet: AnchorWallet,
@@ -344,21 +342,32 @@ export const mintPublic = async (
   try {
     umi.use(umiAdapterIdentity(wallet));
     const nftMint = generateSigner(umi);
-
     const guardPda = findCandyGuardPda(umi, {
       base: publicKey(request.candyMachineKey),
     });
+    const derugProgram = derugProgramFactory();
+    const [authorityPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("derug"), request.candyMachineKey.toBuffer()],
+      derugProgram.programId
+    );
+    const authority = await getAuthority(collectionDerug.address.toString());
 
+    const collectionMetadata = metaplex
+      .nfts()
+      .pdas()
+      .metadata({ mint: collectionDerug.newCollection });
     await toast.promise(
       mintV2(umi, {
+        authorityPda: publicKey(authorityPda),
         candyMachine: publicKey(request.candyMachineKey),
         nftMint: nftMint,
         collectionMint: publicKey(collectionDerug.newCollection),
-        collectionUpdateAuthority: publicKey(request.derugger),
-        group: some("all"),
+        collectionMetadata: publicKey(collectionMetadata),
+        collectionUpdateAuthority: publicKey(authority.authority),
+        group: some("public"),
         tokenStandard: TokenStandard.ProgrammableNonFungible,
         authorizationRules: publicKey(metaplexAuthorizationRuleSet),
-        candyGuard: guardPda,
+        candyGuard: publicKey(guardPda),
         mintArgs: {
           solPayment: some({
             destination: publicKey(request.derugger),
@@ -373,6 +382,7 @@ export const mintPublic = async (
         success: "Successfully minted!",
       }
     );
+
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return await metaplex
       .nfts()
@@ -393,7 +403,7 @@ export async function getDerugCandyMachine(
   request: IRequest
 ): Promise<IDerugCandyMachine> {
   try {
-    const candyMachine = await fetchCandyMachine(
+    const candyMachineAccount = await fetchCandyMachine(
       umi,
       publicKey(request.candyMachineKey)
     );
@@ -402,10 +412,10 @@ export async function getDerugCandyMachine(
       base: publicKey(request.candyMachineKey),
     });
 
-    const guards = await fetchCandyGuard(umi, guardPda);
+    const guards = await fetchCandyGuard(umi, publicKey(guardPda));
 
     return {
-      candyMachine,
+      candyMachine: candyMachineAccount,
       publicConfig: await getPublicConfiguration(guards),
       whitelistingConfig: null,
     };
@@ -489,7 +499,7 @@ export const getWhitelistingConfig = async (
 export const getPublicConfiguration = async (
   guards: CandyGuard<DefaultGuardSet>
 ): Promise<PublicConfig> => {
-  const wlGroup = guards.groups.find((g) => g.label === "all");
+  const wlGroup = guards.groups.find((g) => g.label === "public");
 
   const { price, currency } = await getGuardPayment(wlGroup);
 
