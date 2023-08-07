@@ -35,7 +35,7 @@ const CollectionItem: FC<{
 
           <div className="w-full h-full flex flex-col items-start justify-between ">
             <div className="flex w-full justify-between h-fit py-1 px-2">
-              <p className="text-xl font-white truncate" style={{ fontWeight: 400, lineHeight: '44px' }}>
+              <p className="text-lg lg:text-xl font-white truncate" style={{ fontWeight: 400, lineHeight: '44px' }}>
                 {collection.name}
               </p>
               <div className="flex gap-3 items-center">
@@ -51,17 +51,17 @@ const CollectionItem: FC<{
                 />
               </div>
             </div>
-            <div className="flex flex-col w-full justify-start items-start gap-2 px-1.5 gap-5 py-2 px-10" style={{ background: 'rgb(14 26 43)' }}>
-              <p className="text-lg font-extralight flex w-full justify-between relateve">
+            <div className="flex flex-col w-full justify-start items-start gap-2 px-1.5 gap-5 py-2 px-2" style={{ background: 'rgb(14 26 43)' }}>
+              <p className="text-md lg:text-lg font-extralight flex w-full justify-between relateve">
                 Floor price{" "}
                 <span className="text-emerald-400">{ } 1 SOL</span>
               </p>
-              <p className="text-lg font-extralight flex w-full justify-between">
+              <p className="text-md lg:text-lg font-extralight flex w-full justify-between">
                 Market cap{" "}
                 <span className="text-main-blue">{ }</span>
                 <span className="text-emerald-400">{ } 15 SOL</span>
               </p>
-              <p className="text-lg font-extralight flex w-full justify-between">
+              <p className="text-md lg:text-lg  font-extralight flex w-full justify-between">
                 Total supply{" "}
                 <span className="text-main-blue">{ }</span>
                 <span className="text-emerald-400">{ } 333</span>
