@@ -22,19 +22,6 @@ export const CollectionStats: FC<{
     <div className="flex flex-col items-center justify-center gap-8 w-full">
       <div className="flex gap-5 border-1 w-full">
         <HeadingItem
-          amount={collection?.fp}
-          descColor="#2dd4bf"
-          title="FLOOR PRICE"
-          desc="SOL"
-        />
-
-        <HeadingItem
-          descColor="#2dd4bf"
-          title="TOTAL SUPPLY"
-          desc=" NFTs"
-          amount={collection?.numMints}
-        />
-        <HeadingItem
           descColor="#2dd4bf"
           title="MARKET CAP"
           amount={collection?.marketCap}
@@ -49,6 +36,21 @@ export const CollectionStats: FC<{
               desc=""
             />
           )}
+      </div>
+      <div className="flex gap-5 border-1 w-full">
+        <HeadingItem
+          amount={collection?.fp}
+          descColor="#2dd4bf"
+          title="FLOOR PRICE"
+          desc="SOL"
+        />
+
+        <HeadingItem
+          descColor="#2dd4bf"
+          title="TOTAL SUPPLY"
+          desc=" NFTs"
+          amount={collection?.numMints}
+        />
       </div>
       <div className="flex gap-5 border-1 w-full">
         {collectionDerug && (

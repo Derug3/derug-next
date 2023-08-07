@@ -23,7 +23,6 @@ export const ActiveListingItem: FC<{
   derugData: ICollectionDerugData;
   collectionData: ICollectionData;
 }> = ({ collectionData, derugData }) => {
-  const [hover, setHover] = useState(false);
   const [winningRequest, setWinningRequest] = useState<IRequest>();
   const [twitterUserData, setTwtiterUserData] = useState<IUserData>();
 
@@ -84,10 +83,10 @@ export const ActiveListingItem: FC<{
         <img
           src={collectionData.image}
           alt="collectionImage"
-          className={`w-[30em] h-[30em]`}
+          className={`w-[15em] h-[15em]`}
         />
-        <div className="w-full flex flex-col items-center justify-between	absolute bottom-0 opacity-[0.85]">
-          <div className="w-full flex justify-between px-10" style={{ background: '#475467' }}>
+        <div className="w-full flex flex-col items-center justify-between h-[15em]">
+          <div className="w-full flex justify-between px-2">
             <p className="text-xl font-white" style={{ fontWeight: 400, lineHeight: '44px' }}>
               {collectionData.name}
             </p>
@@ -133,7 +132,7 @@ export const ActiveListingItem: FC<{
             <div className="flex justify-between w-full px-10" style={{ background: '#475467' }}>
               <p className="text-lg font-extralight flex w-full justify-between">
                 New Name:{" "}
-                <span className="text-white">{winningRequest.newName}</span>
+                <span className="text-white font-mono ml-4">{winningRequest.newName}</span>
               </p>
             </div>
           )}
