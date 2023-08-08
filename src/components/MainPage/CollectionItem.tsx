@@ -24,16 +24,16 @@ const CollectionItem: FC<{
         onClick={() => navigate(`/collection/${collection.symbol}`)}
         className="flex flex-col items-start gap-16 bg-gray-800 shadow-md w-[40em]  rounded-xl p-5 cursor-pointer"
       >
-        <div className="flex h-full justify-between w-full gap-5 items-start relative" onMouseEnter={() => setHover(true)}
+        <div className="flex justify-between w-full gap-5 items-start relative h-60	" onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}>
           <img
             src={collection.image}
             alt="collectionImage"
-            className={`${bigImage ? "w-[15em] h-[15em]" : "w-16 h-16"} `}
+            className={`${bigImage ? "w-[15em] h-60	" : "w-16 h-16"} `}
             onError={handleImageError}
           />
 
-          <div className="w-full h-full flex flex-col items-start justify-between h-[15em]">
+          <div className="w-full h-full flex flex-col items-start justify-between">
             <div className="flex w-full justify-between h-fit py-1 px-2">
               <p className="text-xl font-white truncate" style={{ fontWeight: 400, lineHeight: '44px' }}>
                 {collection.name}

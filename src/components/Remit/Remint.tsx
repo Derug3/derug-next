@@ -53,7 +53,7 @@ export const Remint: FC = () => {
         setNonMintedNfts(
           await getNonMinted(collectionDerug?.address.toString())
         );
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getCollectionNfts = async () => {
@@ -107,11 +107,10 @@ export const Remint: FC = () => {
       </div>
     ) : (
       <div className="w-full text-center">
-        <p className="text-xl font-mono font-bold">
-          You don't have NFTs from collection! Public mint will be in{" "}
+        <p className="text-xl ">
+          <span className="font-mono">You don't have NFTs from collection! Public mint will be in{" "}</span>
           <Countdown
-            className="font-mono text-sm
-            text-orange-800 p-2"
+            className="text-2xl md:text-lg text-red-300 p-2"
             date={dayjs.unix(derugRequest.privateMintDuration).toDate()}
           />
           <RelativeTime />
