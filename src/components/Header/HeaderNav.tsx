@@ -1,6 +1,7 @@
 import derugPfp from "../../assets/derugPfp2.svg";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { FC, useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
 import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import { FaTwitter } from "react-icons/fa";
@@ -16,6 +17,12 @@ import { HOME } from "@/utilities/constants";
 import { useRouter } from "next/router";
 import { getTrimmedPublicKey } from "@/solana/helpers";
 const settings = ["Twitter", "Discord"];
+
+const WalletMultiButtonDynamic = dynamic(
+  async () =>
+    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+  { ssr: false }
+);
 
 const HeaderNav: FC = () => {
   const { push: navigate } = useRouter();
@@ -89,7 +96,7 @@ const HeaderNav: FC = () => {
 
         <div className="flex">
           <div className="flex">
-            <WalletMultiButton
+            <WalletMultiButtonDynamic
               className="w-full hover:bg-main-blue hover:text-white"
               style={{
                 fontSize: "1em",
