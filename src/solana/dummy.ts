@@ -30,7 +30,7 @@ export const getDummyCollectionData =
     }
 
     return {
-      collectionMint: "DokxHuiYjAcnWzRzq2BqE3i8CeHMCpZJbpTdDNHZ99ei",
+      collectionMint: "2DnXsZEfUWVGH1jLSGkmkhdfrDBrJNpbaEpxDPGkerrA",
       hasActiveDerugData,
       slug: "boogle_gen",
       totalSupply: 99,
