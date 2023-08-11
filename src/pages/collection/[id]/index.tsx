@@ -146,7 +146,6 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   };
 
   const renderDerugContent = useMemo(() => {
-    return <Remint />;
     if (derugRequest) {
       switch (derugRequest.status) {
         case DerugStatus.Initialized: {
