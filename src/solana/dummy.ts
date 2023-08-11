@@ -11,7 +11,7 @@ export const getDummyCollectionData =
       [
         derugDataSeed,
         new PublicKey(
-          "2DnXsZEfUWVGH1jLSGkmkhdfrDBrJNpbaEpxDPGkerrA"
+          "F6oGCNCqThNBrvpe9KpG7mg9Ya2LRyDyfx9gCpNy2NPK"
         ).toBuffer(),
       ],
       derugProgram.programId
@@ -30,11 +30,11 @@ export const getDummyCollectionData =
     }
 
     return {
-      collectionMint: "2DnXsZEfUWVGH1jLSGkmkhdfrDBrJNpbaEpxDPGkerrA",
+      collectionMint: "F6oGCNCqThNBrvpe9KpG7mg9Ya2LRyDyfx9gCpNy2NPK",
       hasActiveDerugData,
       slug: "boogle_gen",
       totalSupply: 99,
-      firstCreator: "EDFrxPZ85jEsssAXpq24WDhTMdqPUYTLDgmEJbQ4vfkL",
+      firstCreator: "A6DHb3s8VKSKV3cC58xYzLooyVsLuKCrWwQEe2ZdbEZg",
       derugDataAddress: derugData,
     };
   };
