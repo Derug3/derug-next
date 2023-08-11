@@ -34,7 +34,7 @@ export const getDummyCollectionData =
       hasActiveDerugData,
       slug: "boogle_gen",
       totalSupply: 99,
-      firstCreator: "Gv2XWaeCj8AFNNSux6fY1oe1UHoiF51jna52ZCmxPNic",
+      firstCreator: "EDFrxPZ85jEsssAXpq24WDhTMdqPUYTLDgmEJbQ4vfkL",
       derugDataAddress: derugData,
     };
   };
