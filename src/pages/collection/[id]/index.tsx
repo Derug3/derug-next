@@ -127,7 +127,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       if (chainDetails.hasActiveDerugData) {
         if (wallet && derugRequest) {
           const cm = await getDerugCandyMachine(wallet, derugRequest);
-
+          debugger;
           if (cm) setCandyMachine(cm);
         }
         setCollectionDerug(

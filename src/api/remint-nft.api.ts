@@ -42,7 +42,8 @@ export async function remintNft(
   candyMachineKey: PublicKey,
   oldCollectionMint: PublicKey,
   newCollectionMint: PublicKey,
-  authorityAddress: string
+  authorityAddress: string,
+  firstCreator: string
 ) {
   const derugProgram = derugProgramFactory();
 
@@ -95,16 +96,6 @@ export async function remintNft(
     .nfts()
     .pdas()
     .metadata({ mint: newMint.publicKey });
-
-  const [proof] = PublicKey.findProgramAddressSync(
-    [Buffer.from("derug"), mintPubkey.toBuffer()],
-    derugProgram.programId
-  );
-
-  const [firstCreator] = PublicKey.findProgramAddressSync(
-    [Buffer.from("derug"), candyMachineKey.toBuffer()],
-    derugProgram.programId
-  );
 
   const collectionMasterEdition = metaplex.nfts().pdas().masterEdition({
     mint: newCollectionMint,
@@ -182,7 +173,8 @@ export async function remintMultipleNfts(
         request.candyMachineKey,
         collectionDerug.collection,
         collectionDerug.newCollection,
-        authority.authority
+        authority.authority,
+        authority.firstCreator
       );
 
       transaction.add(

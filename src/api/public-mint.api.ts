@@ -74,3 +74,10 @@ export const getAuthority = (derugData: string) => {
 export const initializeDerug = (tx: string, derugData: string) => {
   return post(`${PUBLIC_REMINT}/initialize-derug`, { tx, derugData });
 };
+
+export const mintCandyMachine = (derugData: string, signedTx: string) => {
+  return post(`${PUBLIC_REMINT}/mint`, {
+    signedTx,
+    derugData,
+  });
+};

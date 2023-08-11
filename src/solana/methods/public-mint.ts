@@ -15,7 +15,12 @@ import {
   DefaultGuardSet,
   GuardGroup,
   fetchMintCounter,
+  findCandyMachineAuthorityPda,
 } from "derug-tech-mpl-candy-machine";
+import {
+  toWeb3JsInstruction,
+  toWeb3JsKeypair,
+} from "@metaplex-foundation/umi-web3js-adapters";
 import { walletAdapterIdentity as umiAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 
 import {
@@ -32,11 +37,13 @@ import {
 
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import {
+  ComputeBudgetProgram,
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
   SystemProgram,
   Transaction,
+  TransactionInstruction,
 } from "@solana/web3.js";
 import toast from "react-hot-toast";
 import {
@@ -44,6 +51,7 @@ import {
   getCandyMachine,
   getNonMinted,
   getWlConfig,
+  mintCandyMachine,
 } from "../../api/public-mint.api";
 import {
   ICollectionDerugData,
@@ -352,34 +360,76 @@ export const mintPublic = async (
     );
     const authority = await getAuthority(collectionDerug.address.toString());
 
+    const authPda = findCandyMachineAuthorityPda(umi, {
+      candyMachine: publicKey(request.candyMachineKey),
+    });
+
+    const [wAuth] = PublicKey.findProgramAddressSync(
+      [Buffer.from("derug"), request.candyMachineKey.toBuffer()],
+      derugProgram.programId
+    );
+    console.log(authPda, authorityPda.toString(), wAuth.toString(), "APDA");
+
     const collectionMetadata = metaplex
       .nfts()
       .pdas()
       .metadata({ mint: collectionDerug.newCollection });
+
+    const instruction = mintV2(umi, {
+      firstCreator: createNoopSigner(publicKey(authority.firstCreator)),
+      candyMachine: publicKey(request.candyMachineKey),
+      nftMint: nftMint,
+      collectionMint: publicKey(collectionDerug.newCollection),
+      payer: createNoopSigner(publicKey(wallet.publicKey)),
+      collectionMetadata: publicKey(collectionMetadata),
+      collectionUpdateAuthority: publicKey(authority.authority),
+      group: some("public"),
+      tokenStandard: TokenStandard.ProgrammableNonFungible,
+      authorizationRules: publicKey(metaplexAuthorizationRuleSet),
+      candyGuard: publicKey(guardPda),
+      mintArgs: {
+        solPayment: some({
+          destination: publicKey(request.derugger),
+        }),
+      },
+    })
+      .getInstructions()
+      .map((ix) => toWeb3JsInstruction(ix));
+
+    const transaction = new Transaction({
+      feePayer: wallet.publicKey,
+      recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
+    });
+    transaction.add(
+      ComputeBudgetProgram.setComputeUnitLimit({ units: 800_000 })
+    );
+    transaction.add(instruction[0]);
+
+    transaction.sign(toWeb3JsKeypair(nftMint));
+
+    const signedTx = await wallet.signTransaction(transaction);
+
+    const txSim = await RPC_CONNECTION.simulateTransaction(signedTx);
+    console.log(txSim.value.logs);
+
+    const serializedTx = JSON.stringify(
+      signedTx.serialize({ requireAllSignatures: false })
+    );
+
     await toast.promise(
-      mintV2(umi, {
-        authorityPda: publicKey(authorityPda),
-        candyMachine: publicKey(request.candyMachineKey),
-        nftMint: nftMint,
-        collectionMint: publicKey(collectionDerug.newCollection),
-        collectionMetadata: publicKey(collectionMetadata),
-        collectionUpdateAuthority: publicKey(authority.authority),
-        group: some("public"),
-        tokenStandard: TokenStandard.ProgrammableNonFungible,
-        authorizationRules: publicKey(metaplexAuthorizationRuleSet),
-        candyGuard: publicKey(guardPda),
-        mintArgs: {
-          solPayment: some({
-            destination: publicKey(request.derugger),
-          }),
-        },
-      })
-        .add(setComputeUnitLimit(umi, { units: 800_000 }))
-        .sendAndConfirm(umi),
+      mintCandyMachine(collectionDerug.address.toString(), serializedTx),
       {
-        error: "Failed to mint!",
+        error: (data) => {
+          return data.message;
+        },
         loading: "Minting...",
-        success: "Successfully minted!",
+        success: (data) => {
+          if (data.code === 200) {
+            return data.message;
+          } else {
+            throw new Error(data.message);
+          }
+        },
       }
     );
 
@@ -388,13 +438,7 @@ export const mintPublic = async (
       .nfts()
       .findByMint({ mintAddress: new PublicKey(nftMint.publicKey) });
   } catch (error: any) {
-    console.log(JSON.parse(JSON.stringify(error)));
-
-    const parsedError = JSON.parse(JSON.stringify(error)).cause;
-    if (parsedError.logs.find((l: any) => l.includes("NotEnoughToken"))) {
-      throw new Error(" Not enough tokens to pay for this minting.");
-    }
-    throw new Error(parseTransactionError(parsedError));
+    throw error;
   }
 };
 
