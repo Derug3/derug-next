@@ -199,7 +199,7 @@ export async function remintMultipleNfts(
   // for (const tx of transactions) {
   //   const txSim = await RPC_CONNECTION.simulateTransaction(tx);
   // }
-  debugger;
+
   const signedTxs = await wallet.signAllTransactions(transactions);
 
   const serializedTxs = signedTxs.map((tx) =>

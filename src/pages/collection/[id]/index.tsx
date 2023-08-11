@@ -112,6 +112,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       //   basicCollectionData!,
       //   listings?.at(0)
       // );
+
       const chainDetails = await getDummyCollectionData();
       const derugProgram = derugProgramFactory();
 
@@ -124,12 +125,14 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
 
       chainDetails.slug = slug!;
       setChainCollectionData(chainDetails);
+
       if (chainDetails.hasActiveDerugData) {
         if (wallet && derugRequest) {
           const cm = await getDerugCandyMachine(wallet, derugRequest);
-          debugger;
+
           if (cm) setCandyMachine(cm);
         }
+
         setCollectionDerug(
           await getCollectionDerugData(chainDetails.derugDataAddress)
         );
@@ -143,6 +146,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   };
 
   const renderDerugContent = useMemo(() => {
+    return <Remint />;
     if (derugRequest) {
       switch (derugRequest.status) {
         case DerugStatus.Initialized: {

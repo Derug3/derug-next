@@ -11,7 +11,7 @@ export const getDummyCollectionData =
       [
         derugDataSeed,
         new PublicKey(
-          "DokxHuiYjAcnWzRzq2BqE3i8CeHMCpZJbpTdDNHZ99ei"
+          "2DnXsZEfUWVGH1jLSGkmkhdfrDBrJNpbaEpxDPGkerrA"
         ).toBuffer(),
       ],
       derugProgram.programId
