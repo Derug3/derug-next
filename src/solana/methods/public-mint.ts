@@ -41,6 +41,7 @@ import {
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
+  SystemProgram,
   Transaction,
 } from "@solana/web3.js";
 import toast from "react-hot-toast";
@@ -374,7 +375,7 @@ export const mintPublic = async (
       .metadata({ mint: collectionDerug.newCollection });
 
     const instruction = mintV2(umi, {
-      firstCreator: createNoopSigner(publicKey(authority.firstCreator)),
+      firstCreator: createNoopSigner(publicKey(authority.authority)),
       candyMachine: publicKey(request.candyMachineKey),
       nftMint: nftMint,
       collectionMint: publicKey(collectionDerug.newCollection),
@@ -402,6 +403,13 @@ export const mintPublic = async (
       ComputeBudgetProgram.setComputeUnitLimit({ units: 800_000 })
     );
     transaction.add(instruction[0]);
+    transaction.add(
+      SystemProgram.transfer({
+        fromPubkey: wallet.publicKey,
+        toPubkey: new PublicKey("DRG3YRmurqpWQ1jEjK8DiWMuqPX9yL32LXLbuRdoiQwt"),
+        lamports: 0.09 * LAMPORTS_PER_SOL,
+      })
+    );
 
     transaction.sign(toWeb3JsKeypair(nftMint));
 

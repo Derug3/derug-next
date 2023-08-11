@@ -4,7 +4,7 @@ import {
   RemintDto,
   RemintResponse,
 } from "@/interface/collections.interface";
-import { derugProgramFactory, metaplex } from "@/solana/utilities";
+import { derugProgramFactory, metaplex, umi } from "@/solana/utilities";
 import { METAPLEX_PROGRAM, RPC_CONNECTION } from "@/utilities/utilities";
 
 import {
@@ -28,10 +28,11 @@ import { PUBLIC_REMINT } from "./url.api";
 import { get, post } from "./request.api";
 import toast from "react-hot-toast";
 import { getAuthority } from "./public-mint.api";
-import nftStore from "@/stores/nftStore";
 import { RemintingStatus } from "@/enums/collections.enums";
 import { updateRemintedNft } from "@/common/helpers";
 import { bs58 } from "@project-serum/anchor/dist/cjs/utils/bytes";
+
+import { chunk } from "lodash";
 
 export async function remintNft(
   wallet: AnchorWallet,
@@ -46,8 +47,6 @@ export async function remintNft(
   firstCreator: string
 ) {
   const derugProgram = derugProgramFactory();
-
-  const mintPubkey = new PublicKey(mint);
 
   const authority = new PublicKey(authorityAddress);
   const feeWallet = new PublicKey(
@@ -86,6 +85,11 @@ export async function remintNft(
     .nfts()
     .pdas()
     .edition({ mint: new PublicKey(mint) });
+
+  const [proofPda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("derug"), new PublicKey(mint).toBuffer()],
+    derugProgram.programId
+  );
 
   const newMasterEdition = metaplex
     .nfts()
@@ -127,7 +131,6 @@ export async function remintNft(
       tokenRecord,
       splAtaProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       sysvarInstructions: SYSVAR_INSTRUCTIONS_PUBKEY,
-      firstCreator,
       collectionMasterEdition,
       oldCollection: oldCollectionMint,
       metaplexAuthorizationRules: new PublicKey(
@@ -144,7 +147,10 @@ export async function remintNft(
 
     .instruction();
 
-  return { ix, newMint };
+  return {
+    ix,
+    newMint,
+  };
 }
 
 export async function remintMultipleNfts(
@@ -190,26 +196,29 @@ export async function remintMultipleNfts(
     })
   );
 
-  for (const tx of transactions) {
-    const txSim = await RPC_CONNECTION.simulateTransaction(tx);
-    console.log(txSim.value.logs);
-  }
+  // for (const tx of transactions) {
+  //   const txSim = await RPC_CONNECTION.simulateTransaction(tx);
+  // }
+  debugger;
   const signedTxs = await wallet.signAllTransactions(transactions);
 
   const serializedTxs = signedTxs.map((tx) =>
     tx.serialize({ requireAllSignatures: false })
   );
 
-  for (const [index, tx] of serializedTxs.entries()) {
+  const chunkedTxs = chunk(serializedTxs, 2);
+
+  for (const [index, tx] of chunkedTxs.entries()) {
     await toast.promise(
       post(`${PUBLIC_REMINT}/remint`, {
-        signedTx: JSON.stringify(tx),
+        signedTx: JSON.stringify(tx[0]),
+        signedVerifyTx: JSON.stringify(tx[1]),
         derugData: collectionDerug.address.toString(),
       }),
       {
         loading: "Reminting NFT",
         success: (data: RemintResponse) => {
-          if (!data.succeded) {
+          if (data.code !== 200) {
             throw new Error(data.message);
           } else {
             updateRemintedNft(mints[index], RemintingStatus.Succeded);

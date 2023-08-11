@@ -358,12 +358,6 @@ export type DerugProgram = {
           docs: ["CHECK"];
         },
         {
-          name: "firstCreator";
-          isMut: false;
-          isSigner: true;
-          docs: ["CHECK"];
-        },
-        {
           name: "oldEdition";
           isMut: true;
           isSigner: false;
@@ -1590,12 +1584,6 @@ export const IDL: DerugProgram = {
           name: "newMetadata",
           isMut: true,
           isSigner: false,
-          docs: ["CHECK"],
-        },
-        {
-          name: "firstCreator",
-          isMut: false,
-          isSigner: true,
           docs: ["CHECK"],
         },
         {

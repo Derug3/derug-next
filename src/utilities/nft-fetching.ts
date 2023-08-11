@@ -19,7 +19,7 @@ import {
 } from "@metaplex-foundation/mpl-token-metadata";
 import { IDerugCollectionNft } from "../interface/derug.interface";
 import { umi } from "@/solana/utilities";
-import { publicKey } from "@metaplex-foundation/umi";
+import { publicKey, unwrapOption } from "@metaplex-foundation/umi";
 
 export const generateSkeletonArrays = (quantity: number) => [
   ...Array(quantity).keys(),
@@ -69,7 +69,7 @@ export const getAllNftsFromCollection = async (
 
   const allMetadataAddresses: string[] = [];
 
-  let derugNfts: IDerugCollectionNft[] = [];
+  let derugNfts: (IDerugCollectionNft | null)[] = [];
 
   const tokenAccounts: {
     pubkey: PublicKey;
@@ -77,28 +77,43 @@ export const getAllNftsFromCollection = async (
   }[] = [];
 
   for (const walletNft of walletNfts) {
-    const [metadata] = findMetadataPda(umi, {
-      mint: publicKey(walletNft.account.data.parsed.info.mint),
-    });
+    try {
+      const [metadata] = findMetadataPda(umi, {
+        mint: publicKey(walletNft.account.data.parsed.info.mint),
+      });
 
-    allMetadataAddresses.push(metadata.toString());
-    tokenAccounts.push(walletNft);
+      allMetadataAddresses.push(metadata.toString());
+      tokenAccounts.push(walletNft);
+    } catch (error) {}
   }
 
   derugNfts = await Promise.all(
     allMetadataAddresses.map(async (meta, index) => {
-      const metadataAccount = await fetchMetadata(umi, publicKey(meta));
+      try {
+        const metadataAccount = await fetchMetadata(umi, publicKey(meta));
+        console.log(metadataAccount);
 
-      return {
-        mint: new PublicKey(metadataAccount.mint),
-        metadata: metadataAccount,
-        tokenAccount: tokenAccounts.find(
-          (w) =>
-            w.account.data.parsed.info.mint === metadataAccount.mint.toString()
-        ).pubkey,
-      };
+        if (
+          unwrapOption(metadataAccount.collection).key.toString() ===
+          derug.collection.toString()
+        ) {
+          return {
+            mint: new PublicKey(metadataAccount.mint),
+            metadata: metadataAccount,
+            tokenAccount: tokenAccounts.find(
+              (w) =>
+                w.account.data.parsed.info.mint ===
+                metadataAccount.mint.toString()
+            ).pubkey,
+          };
+        } else {
+          return null;
+        }
+      } catch (error) {
+        return null;
+      }
     })
   );
 
-  return derugNfts;
+  return derugNfts.filter((nft) => nft !== null);
 };

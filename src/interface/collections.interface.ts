@@ -167,6 +167,6 @@ export interface RemintDto {
 
 export interface RemintResponse {
   mint: string;
-  succeded: boolean;
+  code: number;
   message?: string;
 }
