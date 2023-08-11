@@ -11,21 +11,22 @@ const RemintNft: FC<{ nft: IDerugCollectionNft }> = ({ nft }) => {
 
   const fetchImageUrl = async () => {
     try {
-      const nftImage = await (await fetch(nft.metadata.data.uri)).json();
+      const nftImage = await (await fetch(nft.metadata.uri)).json();
 
       setImageUrl(nftImage.image);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   return (
     <div
       style={{
-        border: `2.5px solid ${nft.remintingStatus === RemintingStatus.Succeded
-          ? "rgb(45, 212, 191)"
-          : nft.remintingStatus === RemintingStatus.Failed
+        border: `2.5px solid ${
+          nft.remintingStatus === RemintingStatus.Succeded
+            ? "rgb(45, 212, 191)"
+            : nft.remintingStatus === RemintingStatus.Failed
             ? "#FD5D5D"
             : "rgb(9, 194, 246)"
-          }`,
+        }`,
         padding: "0.5em",
         display: "flex",
         flexWrap: "wrap",
@@ -36,10 +37,11 @@ const RemintNft: FC<{ nft: IDerugCollectionNft }> = ({ nft }) => {
         <div className="flex flex-col items-center gap-5">
           <img
             src={imageUrl}
-            className={`w-full h-full ${nft.remintingStatus === RemintingStatus.InProgress && "blur-sm"
-              }`}
+            className={`w-full h-full ${
+              nft.remintingStatus === RemintingStatus.InProgress && "blur-sm"
+            }`}
           />
-          <span className="text-white">{nft.metadata.data.name}</span>
+          <span className="text-white">{nft.metadata.name}</span>
         </div>
       )}
     </div>

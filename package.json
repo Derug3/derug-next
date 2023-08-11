@@ -13,7 +13,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@metaplex-foundation/js": "^0.19.4",
-    "@metaplex-foundation/mpl-token-metadata": "^2.9.1",
+    "@metaplex-foundation/mpl-token-metadata": "3.0.0-alpha.24",
     "@metaplex-foundation/mpl-toolbox": "^0.8.0",
     "@metaplex-foundation/umi": "^0.8.2",
     "@metaplex-foundation/umi-bundle-defaults": "^0.8.2",

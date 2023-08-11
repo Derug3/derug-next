@@ -370,14 +370,6 @@ export const remintNft = async (
       ],
       METAPLEX_PROGRAM
     );
-
-    instructions.push({
-      instructions: [createTokenAcc, createMint, remintNftIx],
-      pendingDescription: `Reminting ${nft.metadata.data.name}}`,
-      successDescription: `Successfully reminted ${nft.metadata.data.name}`,
-      partialSigner: [tokenAccount, mint],
-      remintingNft: nft,
-    });
   }
   await sendTransaction(RPC_CONNECTION, instructions, wallet);
 

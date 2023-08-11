@@ -41,9 +41,7 @@ import {
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
-  SystemProgram,
   Transaction,
-  TransactionInstruction,
 } from "@solana/web3.js";
 import toast from "react-hot-toast";
 import {
@@ -76,7 +74,7 @@ import { chunk } from "lodash";
 import { parseKeyArray, parseTransactionError } from "../../common/helpers";
 import { RPC_CONNECTION } from "../../utilities/utilities";
 import {
-  PROGRAM_ID,
+  MPL_TOKEN_METADATA_PROGRAM_ID,
   TokenStandard,
 } from "@metaplex-foundation/mpl-token-metadata";
 import { WlType } from "../../enums/collections.enums";
@@ -240,7 +238,7 @@ export const initCandyMachine = async (
           tokenStandard: TokenStandard.NonFungible,
           isMutable: true,
           symbol: remintConfigAccount.newSymbol,
-          tokenMetadataProgram: publicKey(PROGRAM_ID),
+          tokenMetadataProgram: publicKey(MPL_TOKEN_METADATA_PROGRAM_ID),
           collectionMint: publicKey(remintConfigAccount.collection),
           collectionUpdateAuthority: createNoopSigner(
             publicKey(remintConfigAccount.authority)

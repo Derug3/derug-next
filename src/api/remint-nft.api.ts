@@ -185,6 +185,7 @@ export async function remintMultipleNfts(
 
       transaction.add(ix);
       transaction.sign(newMint);
+
       return transaction;
     })
   );

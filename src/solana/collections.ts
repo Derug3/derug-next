@@ -1,5 +1,10 @@
 import { getListings } from "@/api/tensor";
-import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
+import {
+  fetchMetadata,
+  findMetadataPda,
+  Metadata,
+} from "@metaplex-foundation/mpl-token-metadata";
+import { publicKey, unwrapOption } from "@metaplex-foundation/umi";
 import { PublicKey } from "@solana/web3.js";
 import { getMagicEdenListingsBySlug } from "../api/collections.api";
 import {
@@ -13,7 +18,7 @@ import {
   RPC_CONNECTION,
 } from "../utilities/utilities";
 import { derugDataSeed } from "./seeds";
-import { derugProgramFactory } from "./utilities";
+import { derugProgramFactory, umi } from "./utilities";
 
 export async function getCollectionChainData(
   collection: ICollectionData,
@@ -30,29 +35,18 @@ export async function getCollectionChainData(
     throw new Error("Failed to retrieve collection Metalpex data!");
   }
 
-  const [metadata] = PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("metadata"),
-      METAPLEX_PROGRAM.toBuffer(),
-      new PublicKey(mint!).toBuffer(),
-    ],
-    METAPLEX_PROGRAM
-  );
+  const [metadataAddress] = findMetadataPda(umi, { mint: publicKey(mint) });
 
-  const metadataAccount = await Metadata.fromAccountAddress(
-    MAINNET_RPC_CONNECTION,
-    metadata
-  );
+  const metadataAccount = await fetchMetadata(umi, metadataAddress);
 
-  if (!metadataAccount || !metadataAccount.data.creators)
+  if (!metadataAccount || !metadataAccount.creators)
     throw new Error("Failed to retrieve collection Metalpex data!");
 
   const derugCollection = metadataAccount.collection
-    ? metadataAccount.collection.key.toString()
-    : metadataAccount?.data.creators
+    ? metadataAccount.collection.toString()
+    : unwrapOption(metadataAccount?.creators)
         .find((c) => c.share > 0)
-        ?.address.toString() ??
-      metadataAccount.data.creators[0].address.toString();
+        ?.address.toString() ?? metadataAccount.creators[0].address.toString();
 
   const [derugData] = PublicKey.findProgramAddressSync(
     [derugDataSeed, new PublicKey(derugCollection).toBuffer()],
