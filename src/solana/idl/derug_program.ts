@@ -397,6 +397,12 @@ export type DerugProgram = {
           isSigner: false;
         },
         {
+          name: "oldTokenRecord";
+          isMut: true;
+          isSigner: false;
+          docs: ["CHECK"];
+        },
+        {
           name: "feeWallet";
           isMut: true;
           isSigner: false;
@@ -1624,6 +1630,12 @@ export const IDL: DerugProgram = {
           name: "systemProgram",
           isMut: false,
           isSigner: false,
+        },
+        {
+          name: "oldTokenRecord",
+          isMut: true,
+          isSigner: false,
+          docs: ["CHECK"],
         },
         {
           name: "feeWallet",

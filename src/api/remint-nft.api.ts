@@ -86,6 +86,14 @@ export async function remintNft(
     .pdas()
     .edition({ mint: new PublicKey(mint) });
 
+  const oldTokenRecord = metaplex
+    .nfts()
+    .pdas()
+    .tokenRecord({
+      mint: new PublicKey(mint),
+      token: oldToken.value[0].pubkey,
+    });
+
   const [proofPda] = PublicKey.findProgramAddressSync(
     [Buffer.from("derug"), new PublicKey(mint).toBuffer()],
     derugProgram.programId
@@ -117,6 +125,7 @@ export async function remintNft(
       // tokenProgram: TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId,
       feeWallet,
+      oldTokenRecord,
       newToken: newToken,
       oldToken: oldToken.value[0].pubkey,
       oldEdition: oldMasterEdition,
@@ -191,6 +200,9 @@ export async function remintMultipleNfts(
 
       transaction.add(ix);
       transaction.sign(newMint);
+
+      const txSim = await RPC_CONNECTION.simulateTransaction(transaction);
+      console.log(txSim.value.logs);
 
       return transaction;
     })
