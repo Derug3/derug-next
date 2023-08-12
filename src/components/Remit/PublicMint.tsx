@@ -136,14 +136,14 @@ const PublicMint = () => {
             <div className="overflow-y-scroll grid  w-full grid-cols-3 gap-5 max-h-[17.5em]">
               {loading
                 ? generateSkeletonArrays(15).map((_, index) => (
-                    <Skeleton
-                      key={index}
-                      height={100}
-                      width={110}
-                      baseColor="rgb(22,27,34)"
-                      highlightColor="rgb(29,35,44)"
-                    />
-                  ))
+                  <Skeleton
+                    key={index}
+                    height={100}
+                    width={110}
+                    baseColor="rgb(22,27,34)"
+                    highlightColor="rgb(29,35,44)"
+                  />
+                ))
                 : renderNfts}
             </div>
           </div>
@@ -305,13 +305,13 @@ const PublicMint = () => {
           <p>Public mint will be enabled soon!</p>
           {wallet?.publicKey.toString() ===
             derugRequest.derugger.toString() && (
-            <button
-              onClick={initializePublicMintHandler}
-              className="bg-main-blue color-white px-3 py-1 align-end"
-            >
-              Initialize Public Mint
-            </button>
-          )}
+              <button
+                onClick={initializePublicMintHandler}
+                className="bg-main-blue color-white px-3 py-1 align-end"
+              >
+                Initialize Public Mint
+              </button>
+            )}
         </div>
       )}
     </>

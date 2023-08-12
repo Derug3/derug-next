@@ -31,7 +31,7 @@ export const CollectionStats: FC<{
           collectionDerug.status === DerugStatus.Reminting && (
             <HeadingItem
               descColor="#2dd4bf"
-              title="OLD REMINTED"
+              title="REMINTED"
               amount={collectionDerug.totalReminted}
               desc=""
             />

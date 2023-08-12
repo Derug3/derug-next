@@ -99,7 +99,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   };
   useEffect(() => {
     if (basicCollectionData) void getChainCollectionDetails();
-  }, [basicCollectionData, wallet, derugRequest]);
+  }, [basicCollectionData, wallet]);
   const getChainCollectionDetails = async () => {
     try {
       const chainDetails = await getDummyCollectionData();

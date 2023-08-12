@@ -439,7 +439,7 @@ export const mintPublic = async (
       }
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     return await metaplex
       .nfts()
       .findByMint({ mintAddress: new PublicKey(nftMint.publicKey) });
