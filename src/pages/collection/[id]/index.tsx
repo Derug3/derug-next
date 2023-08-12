@@ -198,7 +198,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               <LeftPane selectedInfo={selectedInfo} />
               <div className="flex flex-col gap-5 w-full">
                 {derugRequest && (
-                  <div className="flex items-center w-full border-8 border-gray-700 bg-gray-800 shadow-md justify-center py-5">
+                  <div className="flex items-center w-full bg-gray-800 shadow-md justify-center p-10 gap-24 border-8 border-active">
                     {renderDerugContent}
                   </div>
                 )}

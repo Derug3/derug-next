@@ -9,12 +9,13 @@ module.exports = {
       },
       colors: {
         "main-blue": "rgb(9, 194, 246)",
-        "green-color": "#2DD4BF",
+        "green-color": "#3CCB7F",
         "main-dark": "#101828;",
         "text-color": "#dcdcdc",
         'from-steel-500': 'rgb(71, 84, 103)',
         'via-blue-800': 'rgb(29, 41, 57)',
-        'to-coolGray-900': '#fff'
+        'to-coolGray-900': '#fff',
+        'active': '#36BFFA',
       },
       dropShadow: {
         "2xl": "white 0px 0px 10px",
