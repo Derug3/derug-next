@@ -208,23 +208,18 @@ export async function remintMultipleNfts(
     })
   );
 
-  // for (const tx of transactions) {
-  //   const txSim = await RPC_CONNECTION.simulateTransaction(tx);
-  // }
-
   const signedTxs = await wallet.signAllTransactions(transactions);
 
   const serializedTxs = signedTxs.map((tx) =>
     tx.serialize({ requireAllSignatures: false })
   );
 
-  const chunkedTxs = chunk(serializedTxs, 2);
-
-  for (const [index, tx] of chunkedTxs.entries()) {
+  for (const [index, tx] of serializedTxs.entries()) {
     await toast.promise(
       post(`${PUBLIC_REMINT}/remint`, {
-        signedTx: JSON.stringify(tx[0]),
-        signedVerifyTx: JSON.stringify(tx[1]),
+        signedTx: JSON.stringify(tx),
+        //TODO:remove
+        signedVerifyTx: "",
         derugData: collectionDerug.address.toString(),
       }),
       {
