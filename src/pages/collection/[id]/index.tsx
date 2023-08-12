@@ -7,16 +7,11 @@ import { getFloorPrice, getListings } from "@/api/tensor";
 import { AddDerugRequst } from "@/components/AddDerugRequest/AddDerugRequest";
 import { CollectionStats } from "@/components/CollectionLayout/CollectionStats";
 import { HeaderTabs } from "@/components/CollectionLayout/HeaderTabs";
-import DerugRequest from "@/components/DerugRequest/DerugRequest";
 import PublicMint from "@/components/Remit/PublicMint";
 import Remint from "@/components/Remit/Remint";
 import { getDummyCollectionData } from "@/solana/dummy";
 import { getCollectionDerugData } from "@/solana/methods/derug";
-import {
-  getAllDerugRequest,
-  getSingleDerugRequest,
-} from "@/solana/methods/derug-request";
-import { derugProgramFactory } from "@/solana/utilities";
+import { getAllDerugRequest } from "@/solana/methods/derug-request";
 import { CollectionContext } from "@/stores/collectionContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -35,7 +30,6 @@ import {
 import { IDerugCandyMachine, IGraphData } from "@/interface/derug.interface";
 import { GetServerSideProps } from "next";
 import { getDerugCandyMachine } from "@/solana/methods/public-mint";
-import { getCollectionChainData } from "@/solana/collections";
 import Modal from "@/components/Modal";
 import { Oval } from "react-loader-spinner";
 
@@ -105,23 +99,14 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   };
   useEffect(() => {
     if (basicCollectionData) void getChainCollectionDetails();
-  }, [basicCollectionData, wallet]);
+  }, [basicCollectionData, wallet, derugRequest]);
   const getChainCollectionDetails = async () => {
     try {
+      const chainDetails = await getDummyCollectionData();
       // const chainDetails = await getCollectionChainData(
       //   basicCollectionData!,
       //   listings?.at(0)
       // );
-
-      const chainDetails = await getDummyCollectionData();
-      const derugProgram = derugProgramFactory();
-
-      derugProgram.addEventListener("PrivateMintStarted", async (data) => {
-        if (data.derugData.toString() === collectionDerug?.address.toString()) {
-          setCollectionDerug(await getCollectionDerugData(data.derugData));
-          setDerugRequests(await getSingleDerugRequest(data.derugRequest));
-        }
-      });
 
       chainDetails.slug = slug!;
       setChainCollectionData(chainDetails);
@@ -129,7 +114,6 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
       if (chainDetails.hasActiveDerugData) {
         if (wallet && derugRequest) {
           const cm = await getDerugCandyMachine(wallet, derugRequest);
-
           if (cm) setCandyMachine(cm);
         }
 
@@ -160,7 +144,8 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
             </div>
           );
         }
-        case DerugStatus.Reminting: {
+        case DerugStatus.Reminting:
+        case DerugStatus.UploadingMetadata: {
           if (derugRequest.privateMintDuration > dayjs().unix()) {
             return <Remint />;
           } else {
@@ -172,7 +157,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         }
       }
     }
-  }, [derugRequest]);
+  }, [derugRequest, candyMachine]);
 
   return (
     <CollectionContext.Provider

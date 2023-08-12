@@ -2,6 +2,7 @@ import { PublicKey } from "@solana/web3.js";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import {
+  ICollectionDerugData,
   ICollectionRecentActivities,
   IRequest,
 } from "../interface/collections.interface";
@@ -24,6 +25,7 @@ import { findCandyMachineAuthorityPda } from "derug-tech-mpl-candy-machine";
 import { publicKey } from "@metaplex-foundation/umi";
 import { ITreasuryTokenAccInfo } from "@/components/CollectionLayout/MintDetails";
 import nftStore from "@/stores/nftStore";
+import { getAuthority } from "@/api/public-mint.api";
 export const splitTimestamps = (
   recentCollections: ICollectionRecentActivities[]
 ) => {
@@ -56,7 +58,8 @@ export const getNftName = (totalReminted: number) => {
 
 export const getNftsFromDeruggedCollection = async (
   owner: PublicKey,
-  request: IRequest
+  request: IRequest,
+  collectionDerug: ICollectionDerugData
 ) => {
   try {
     const collectionNfts: { image: string; name: string }[] = [];
@@ -65,16 +68,12 @@ export const getNftsFromDeruggedCollection = async (
       owner: owner,
     });
 
-    const creator = findCandyMachineAuthorityPda(umi, {
-      candyMachine: publicKey(request.candyMachineKey),
-    });
+    const authority = await getAuthority(collectionDerug.address.toString());
 
     for (const nft of nfts) {
       try {
         if (
-          nft.creators.find(
-            (c) => creator[0].toString() === c.address.toString()
-          )
+          nft.creators.find((c) => authority.authority === c.address.toString())
         ) {
           collectionNfts.push({
             name: nft.name,

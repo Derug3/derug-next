@@ -42,25 +42,14 @@ const PublicMint = () => {
     if (!nfts || nfts.length === 0) void getNfts();
   }, [wallet?.publicKey]);
 
-  // const stopMint = useCallback(async () => {
-  //   try {
-  //     if (remintConfig && wallet) {
-  //       await closeCandyMachine(remintConfig, wallet);
-
-  //       setCandyMachine(undefined);
-  //     }
-  //   } catch (error) {
-  //     toast.error("Failed to stop minting ");
-  //   }
-  // }, [remintConfig, wallet]);
-
   const getNfts = async () => {
     toggleLoading(true);
     try {
       if (wallet && derugRequest) {
         const nfts = await getNftsFromDeruggedCollection(
           wallet.publicKey,
-          derugRequest
+          derugRequest,
+          collectionDerug
         );
 
         setNfts(nfts);
@@ -134,18 +123,6 @@ const PublicMint = () => {
       toast.error(error.message);
     }
   }, [wallet]);
-
-  // const showMintButton = useMemo(() => {
-  //   return (
-  //     (candyMachine.whitelistingConfig.isActive &&
-  //       candyMachine.whitelistingConfig.isWhitelisted &&
-  //       (candyMachine.whitelistingConfig.walletLimit
-  //         ? //TODO:remove ekser
-  //           3 - candyMachine.whitelistingConfig.walletLimit > 0
-  //         : true)) ||
-  //     !candyMachine.whitelistingConfig.isActive
-  //   );
-  // }, [candyMachine]);
 
   return (
     <>
