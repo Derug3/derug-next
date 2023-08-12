@@ -105,9 +105,7 @@ const HeaderNav: FC = () => {
               }}
             />
             {wallet && wallet.publicKey && (
-              <div
-                className="flex flex-row gap-3 cursor-pointer"
-              >
+              <div className="flex flex-row gap-3 cursor-pointer">
                 <div className="flex items-center w-full gap-3">
                   {userData && (
                     <img src={userData.image} className="w-8 rounded-[50%]" />
@@ -116,11 +114,14 @@ const HeaderNav: FC = () => {
                     {userData && userData.twitterHandle ? (
                       userData.twitterHandle
                     ) : (
-                      <div className="flex gap-2 items-center" onClick={
-                        userData && userData.twitterHandle
-                          ? unlinkTwitter
-                          : linkTwitter
-                      }>
+                      <div
+                        className="flex gap-2 items-center"
+                        onClick={() => {
+                          userData && userData.twitterHandle
+                            ? unlinkTwitter()
+                            : linkTwitter();
+                        }}
+                      >
                         <FaTwitter color="rgb(9, 194, 246)" />
                         <span>link twitter </span>
                       </div>
