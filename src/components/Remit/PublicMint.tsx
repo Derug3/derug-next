@@ -1,7 +1,6 @@
 import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import Skeleton from "react-loading-skeleton";
-import solanaLogo from "../../assets/solanaLogo.jpeg";
 import { getNftsFromDeruggedCollection } from "../../common/helpers";
 import { CollectionContext } from "../../stores/collectionContext";
 import { generateSkeletonArrays } from "../../utilities/nft-fetching";
@@ -13,8 +12,7 @@ import {
 } from "../../solana/methods/public-mint";
 import toast from "react-hot-toast";
 import { Oval } from "react-loader-spinner";
-import { Box, Button, ProgressBar, Text } from "@primer/react";
-import Countdown from "react-countdown";
+import { Box, ProgressBar, Text } from "@primer/react";
 import { initializePublicMint } from "@/api/remint-nft.api";
 
 const PublicMint = () => {
@@ -58,6 +56,14 @@ const PublicMint = () => {
     } finally {
       toggleLoading(false);
     }
+  };
+
+  useEffect(() => {
+    void getCandyMachineData();
+  }, []);
+
+  const getCandyMachineData = async () => {
+    setCandyMachine(await getDerugCandyMachine(wallet, derugRequest));
   };
 
   const mintNfts = async () => {
@@ -136,14 +142,14 @@ const PublicMint = () => {
             <div className="overflow-y-scroll grid  w-full grid-cols-3 gap-5 max-h-[17.5em]">
               {loading
                 ? generateSkeletonArrays(15).map((_, index) => (
-                  <Skeleton
-                    key={index}
-                    height={100}
-                    width={110}
-                    baseColor="rgb(22,27,34)"
-                    highlightColor="rgb(29,35,44)"
-                  />
-                ))
+                    <Skeleton
+                      key={index}
+                      height={100}
+                      width={110}
+                      baseColor="rgb(22,27,34)"
+                      highlightColor="rgb(29,35,44)"
+                    />
+                  ))
                 : renderNfts}
             </div>
           </div>
@@ -305,13 +311,13 @@ const PublicMint = () => {
           <p>Public mint will be enabled soon!</p>
           {wallet?.publicKey.toString() ===
             derugRequest.derugger.toString() && (
-              <button
-                onClick={initializePublicMintHandler}
-                className="bg-main-blue color-white px-3 py-1 align-end"
-              >
-                Initialize Public Mint
-              </button>
-            )}
+            <button
+              onClick={initializePublicMintHandler}
+              className="bg-main-blue color-white px-3 py-1 align-end"
+            >
+              Initialize Public Mint
+            </button>
+          )}
         </div>
       )}
     </>
