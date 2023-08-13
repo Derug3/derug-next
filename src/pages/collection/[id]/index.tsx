@@ -141,7 +141,10 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
         }
         case DerugStatus.Reminting:
         case DerugStatus.UploadingMetadata: {
-          if (derugRequest.privateMintDuration > dayjs().unix()) {
+          if (
+            derugRequest.privateMintDuration > dayjs().unix() ||
+            derugRequest.status === DerugStatus.UploadingMetadata
+          ) {
             return <Remint />;
           } else {
             return <PublicMint />;

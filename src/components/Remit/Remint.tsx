@@ -177,7 +177,7 @@ export const Remint: FC = () => {
   return (
     <div className="w-full flex-col gap-10">
       <>
-        {collectionDerug?.status === DerugStatus.UploadingMetadata ? (
+        {derugRequest?.status === DerugStatus.UploadingMetadata ? (
           <div className="text-center text-lg m-10">
             <p className="text-white">
               ⚠️ Uploading metadata and preparing private mint.Minting will be
