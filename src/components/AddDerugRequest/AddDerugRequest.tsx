@@ -10,7 +10,7 @@ import {
 import { CollectionContext } from "../../stores/collectionContext";
 import "rc-slider/assets/index.css";
 import { PublicKey } from "@solana/web3.js";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { validateCreators } from "../../validators/derug-request.validators";
 import { getUserTwitterData } from "../../api/twitter.api";
 import { userStore } from "../../stores/userStore";
@@ -36,13 +36,6 @@ export const AddDerugRequst: FC<{
   const wallet = useWallet();
 
   const { userData, setUserData } = userStore();
-
-  const [creators, setCreator] = useState<Creator[]>([
-    {
-      address: wallet.publicKey?.toString(),
-      share: 100,
-    },
-  ]);
 
   const {
     chainCollectionData,
@@ -70,6 +63,8 @@ export const AddDerugRequst: FC<{
     },
   });
 
+  const { creators } = methods.getValues();
+
   const handleSubmit = (data?: any) => {
     setActiveStep(activeStep + 1);
   };
@@ -83,7 +78,7 @@ export const AddDerugRequst: FC<{
           +data.fee * 10,
           data.symbol,
           data.name,
-          creators.map((c) => {
+          data.creators.map((c) => {
             return {
               address: new PublicKey(c.address),
               share: c.share,
@@ -114,7 +109,7 @@ export const AddDerugRequst: FC<{
   };
 
   useEffect(() => {
-    if (creators[creators.length - 1]?.address)
+    if (creators[creators?.length - 1]?.address)
       validateCreators(creators, methods.setError, methods.clearErrors);
   }, [creators]);
 
@@ -125,7 +120,7 @@ export const AddDerugRequst: FC<{
         address: wallet.publicKey!.toString(),
         share: 100,
       };
-      setCreator([newElement]);
+      methods.setValue("creators", [newElement]);
     }
   }, [wallet]);
 

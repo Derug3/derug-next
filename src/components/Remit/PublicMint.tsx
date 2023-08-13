@@ -97,12 +97,11 @@ const PublicMint = () => {
   const renderNfts = useMemo(() => {
     return nfts.map((n, index) => {
       return (
-        <div key={index} className="flex flex-wrap flex-col items-center justify-start gap-2">
-          <img
-            src={n.image}
-            alt=""
-            className="w-28 h-26 rounded-md"
-          />
+        <div
+          key={index}
+          className="flex flex-wrap flex-col items-center justify-start gap-2"
+        >
+          <img src={n.image} alt="" className="w-28 h-26 rounded-md" />
           <p className="text-white text-center text-sm w-full break-all">
             {n.name}
           </p>
@@ -136,7 +135,9 @@ const PublicMint = () => {
       {candyMachine ? (
         <div className="flex w-full gap-8">
           <div className="flex w-2/3 flex-col gap-8">
-            <span className="text-base-white text-2xl text-white font-normal leading-32">Your {collection.name} NFTs</span>
+            <span className="text-base-white text-2xl text-white font-normal leading-32">
+              Your {collection.name} NFTs
+            </span>
             <div className="flex w-full gap-8">
               <div className="flex flex-col gap-10 items-center">
                 {collection ? (
@@ -175,9 +176,13 @@ const PublicMint = () => {
                 )}
               </div>
               <div className="flex flex-col items-start gap-3 justify-between">
-                <p className="text-white text-lg font-mono font-black">MINT DETAILS</p>
+                <p className="text-white text-lg font-mono font-black">
+                  MINT DETAILS
+                </p>
                 <div className="flex flex-col gap-3 items-start">
-                  <p className="text-bold text-green-color text-md font-mono">Private Mint</p>
+                  <p className="text-bold text-green-color text-md font-mono">
+                    Private Mint
+                  </p>
                   <div className="flex gap-5 items-center">
                     <p className="font-mono">
                       {collectionDerug?.totalReminted ?? 200}/
@@ -201,12 +206,13 @@ const PublicMint = () => {
                         },
                       }}
                     />
-
                   </div>
                 </div>
                 {candyMachine && (
                   <div className="flex flex-col gap-3 items-start">
-                    <p className="text-bold text-active font-mono text-md">Public Mint</p>
+                    <p className="text-bold text-active font-mono text-md">
+                      Public Mint
+                    </p>
                     <div className="flex gap-5 items-center">
                       <p className="font-mono">
                         {Number(candyMachine.candyMachine.itemsRedeemed)}/
@@ -216,7 +222,9 @@ const PublicMint = () => {
                         width={"100%"}
                         progress={
                           (Number(candyMachine.candyMachine.itemsRedeemed) /
-                            Number(candyMachine.candyMachine.data.itemsAvailable)) *
+                            Number(
+                              candyMachine.candyMachine.data.itemsAvailable
+                            )) *
                           100
                         }
                         bg="rgb(9, 194, 246)"
@@ -230,7 +238,6 @@ const PublicMint = () => {
                           },
                         }}
                       />
-
                     </div>
                   </div>
                 )}
@@ -259,7 +266,8 @@ const PublicMint = () => {
                         candyMachine.whitelistingConfig.isWhitelisted && (
                           <Text className="text-white font-bold font-mono text-sm">
                             Remaining mints{" "}
-                            {3 - candyMachine.whitelistingConfig?.walletLimit} / {3}
+                            {3 - candyMachine.whitelistingConfig?.walletLimit} /{" "}
+                            {3}
                           </Text>
                         )}
 
@@ -274,7 +282,9 @@ const PublicMint = () => {
                   <div className="flex p-4 md:p-5 items-start gap-1 md:gap-2 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md">
                     {candyMachine && (
                       <>
-                        <p className="text-white text-lg font-mono">MINT PRICE : </p>
+                        <p className="text-white text-lg font-mono">
+                          MINT PRICE :{" "}
+                        </p>
                         <p className="text-lg">
                           {candyMachine.whitelistingConfig?.isActive
                             ? candyMachine.whitelistingConfig.price
@@ -291,14 +301,17 @@ const PublicMint = () => {
                     )}
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
           <div className="flex flex-wrap gap-3 w-1/3 h-[25em] overflow-y-scroll">
-            {nfts.length ? renderNfts : <span className="flex text-white items-center">
-              No NFTs from a {collection.name} yet
-            </span>}
+            {nfts.length ? (
+              renderNfts
+            ) : (
+              <span className="flex text-white items-center">
+                No NFTs from a {collection.name} yet
+              </span>
+            )}
           </div>
         </div>
       ) : (
@@ -306,13 +319,13 @@ const PublicMint = () => {
           <p>Public mint will be enabled soon!</p>
           {wallet?.publicKey.toString() ===
             derugRequest.derugger.toString() && (
-              <button
-                onClick={initializePublicMintHandler}
-                className="bg-main-blue color-white px-3 py-1 align-end"
-              >
-                Initialize Public Mint
-              </button>
-            )}
+            <button
+              onClick={initializePublicMintHandler}
+              className="bg-main-blue color-white px-3 py-1 align-end"
+            >
+              Initialize Public Mint
+            </button>
+          )}
         </div>
       )}
     </>
