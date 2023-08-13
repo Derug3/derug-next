@@ -151,7 +151,7 @@ const Home = () => {
 
     return (
       <Select
-        className="absolute text-center top-0 left-0 w-full h-full z-10 p-2 border border-gray-200 rounded-lg shadow"
+        className="absolute text-center top-0 left-0 h-full z-10 p-2 border border-gray-200 rounded-lg shadow w-[50em]"
         placeholder="Search rugged collections"
         isLoading={searchLoading}
         onInputChange={handleSearch}
@@ -234,9 +234,13 @@ const Home = () => {
       <div
         style={{
           // width: "50%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
           margin: "auto",
           position: "relative",
-          marginBottom: "80px",
+          marginBottom: "20px",
           gap: '2em',
         }}
       >
@@ -244,7 +248,7 @@ const Home = () => {
           className="py-5 text-center"
         >
           <div
-            className="w-full animate-text bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% text-2xl  bg-clip-text text-center font-display text-transparent drop-shadow-sm lg:text-3xl align-center animate-[wiggle_1s_ease-in-out_infinite]"
+            className="w-full animate-text bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% text-2xl  bg-clip-text text-center font-display text-transparent drop-shadow-sm lg:text-5xl align-center animate-[wiggle_1s_ease-in-out_infinite]"
           >
             Getting rugged collections back to life
           </div>
