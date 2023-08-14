@@ -66,16 +66,12 @@ export const HeaderTabs: FC<{
           (dr) => dr.derugger.toString() === wallet.publicKey?.toString()
         )) || (
         )} */}
-      {
-        wallet.publicKey.toString() === '9wn4U5ATizKpKwxPN85RDLqwhVCGmNqY5BZViGSeLwnf' || wallet.publicKey.toString() === 'A6DHb3s8VKSKV3cC58xYzLooyVsLuKCrWwQEe2ZdbEZg' || wallet.publicKey.toString() === '6smu36j5E6AfW4NM2RQPpDbdzEpp9tKZvg7ZTE2KKgcL' && (
-          <button
-            className="py-2 px-3 text-white hover:text-main-blue transition-all hover:bg-[#1D2939] hover:scale-105"
-            onClick={() => openDerugModal(true)}
-          >
-            <span className="text-sm uppercase">Add derug request</span>
-          </button>
-        )
-      }
+      <button
+        className="py-2 px-3 text-white hover:text-main-blue transition-all hover:bg-[#1D2939] hover:scale-105"
+        onClick={() => openDerugModal(true)}
+      >
+        <span className="text-sm uppercase">Add derug request</span>
+      </button>
     </>
   );
 };
