@@ -133,12 +133,12 @@ const PublicMint = () => {
     <>
       {" "}
       {candyMachine ? (
-        <div className="flex w-full gap-8">
+        <div className="flex flex-col lg:flex-row w-full gap-8">
           <div className="flex w-2/3 flex-col gap-8">
             <span className="text-base-white text-2xl text-white font-normal leading-32">
               Your {collection.name} NFTs
             </span>
-            <div className="flex w-full gap-8">
+            <div className="flex flex-col lg:flex-row w-full gap-8">
               <div className="flex flex-col gap-10 items-center">
                 {collection ? (
                   <img
@@ -319,13 +319,13 @@ const PublicMint = () => {
           <p>Public mint will be enabled soon!</p>
           {wallet?.publicKey.toString() ===
             derugRequest.derugger.toString() && (
-            <button
-              onClick={initializePublicMintHandler}
-              className="bg-main-blue color-white px-3 py-1 align-end"
-            >
-              Initialize Public Mint
-            </button>
-          )}
+              <button
+                onClick={initializePublicMintHandler}
+                className="bg-main-blue color-white px-3 py-1 align-end"
+              >
+                Initialize Public Mint
+              </button>
+            )}
         </div>
       )}
     </>

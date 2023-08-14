@@ -248,7 +248,7 @@ const Home = () => {
           className="py-5 text-center"
         >
           <div
-            className="w-full animate-text bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% text-2xl  bg-clip-text text-center font-display text-transparent drop-shadow-sm lg:text-5xl align-center animate-[wiggle_1s_ease-in-out_infinite]"
+            className="w-full animate-text bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% text-3xl  bg-clip-text text-center font-display text-transparent drop-shadow-sm lg:text-5xl align-center animate-[wiggle_1s_ease-in-out_infinite]"
           >
             Getting rugged collections back to life
           </div>

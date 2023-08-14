@@ -123,7 +123,7 @@ const HeaderNav: FC = () => {
                         }}
                       >
                         <FaTwitter color="rgb(9, 194, 246)" />
-                        <span>link twitter </span>
+                        <span className="text-xs lg:text-lg">link twitter </span>
                       </div>
                     )}
                   </p>

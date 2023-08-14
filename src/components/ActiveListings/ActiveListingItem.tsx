@@ -79,13 +79,13 @@ export const ActiveListingItem: FC<{
       className="flex flex-col cursor-pointer overflow-hidden lg:flex-row items-start p-4 md:p-5 items-start gap-8 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md"
     // style={{ background: '#1e521f' }}
     >
-      <div className="flex justify-start gap-5 items-center relative">
+      <div className="flex justify-start gap-5 items-center relative flex-col lg:flex-row">
         <img
           src={collectionData.image}
           alt="collectionImage"
           className={`w-[15em] h-[15em]`}
         />
-        <div className="flex flex-col items-start gap-16 bg-gray-800 shadow-md w-[40em]  rounded-xl p-5 cursor-pointer">
+        <div className="flex flex-col items-start gap-16 bg-gray-800 shadow-md w-full lg:w-[40em] rounded-xl p-5 cursor-pointer">
           <div className="w-full flex justify-between px-2">
             <p className="text-xl font-white" style={{ fontWeight: 400, lineHeight: '44px' }}>
               {collectionData.name}

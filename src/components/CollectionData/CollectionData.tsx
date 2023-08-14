@@ -22,11 +22,11 @@ const CollectionData = () => {
     }, 2000);
   }, [collection]);
   return (
-    <div className="flex w-full flex gap-5 pr-2 text-white">
-      <div className="flex w-full flex items-center gap-5">
+    <div className="flex w-full gap-5 text-white">
+      <div className="flex w-full items-center gap-5">
         <div className="flex w-full flex-col gap-4 items-center justify-center h-full">
           <div className="flex items-center justify-evenly w-full h-full">
-            <div className="flex h-full flex-col lg:flex-row items-start p-4 md:p-5 items-start gap-8 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md w-full">
+            <div className="flex h-full flex-col lg:flex-row p-4 md:p-5 items-start gap-8 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md w-full">
               <img
                 src={collection?.image}
                 alt="collectionImg"

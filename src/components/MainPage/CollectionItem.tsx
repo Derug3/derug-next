@@ -34,7 +34,7 @@ const CollectionItem: FC<{
           />
 
           <div className="w-full h-full flex flex-col items-start justify-between">
-            <div className="flex justify-between h-fit py-1 px-2 w-[21.5em]">
+            <div className="flex justify-between h-fit py-1 px-2 w-[10em] lg:w-[21.5em]">
               <p className="text-xl font-white truncate" style={{ fontWeight: 400, lineHeight: '44px' }}>
                 {collection.name}
               </p>
