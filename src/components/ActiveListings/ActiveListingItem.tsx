@@ -76,18 +76,18 @@ export const ActiveListingItem: FC<{
   return (
     <div
       onClick={() => navigate(`${COLLECTION}/${collectionData.symbol}`)}
-      className="flex flex-col cursor-pointer overflow-hidden lg:flex-row items-start p-4 md:p-5 items-start gap-8 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md"
-    // style={{ background: '#1e521f' }}
+      className="flex flex-col cursor-pointer overflow-hidden lg:flex-row p-4 md:p-5 items-start gap-8 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md"
+      style={{ background: 'rgb(14 26 43)' }}
     >
-      <div className="flex justify-start gap-5 items-center relative flex-col lg:flex-row">
+      <div className="flex justify-start gap-12 items-center relative flex-col lg:flex-row">
         <img
           src={collectionData.image}
           alt="collectionImage"
-          className={`w-[15em] h-[15em]`}
+          className={`w-[20em] h-[20em]`}
         />
-        <div className="flex flex-col items-start gap-16 bg-gray-800 shadow-md w-full lg:w-[40em] rounded-xl p-5 cursor-pointer">
-          <div className="w-full flex justify-between px-2">
-            <p className="text-xl font-white" style={{ fontWeight: 400, lineHeight: '44px' }}>
+        <div className="flex flex-col items-start gap-8 w-full lg:w-[40em] rounded-xl cursor-pointer">
+          <div className="w-full flex justify-between">
+            <p className="text-2xl font-mono font-white" style={{ fontWeight: 400, lineHeight: '44px' }}>
               {collectionData.name}
             </p>
             <div className="flex items-center gap-2">
@@ -111,7 +111,7 @@ export const ActiveListingItem: FC<{
               )}
             </div>
           </div>
-          <div className="flex flex-col w-full justify-start items-start gap-2 px-1.5 py-1 px-10" style={{ background: 'rgb(14 26 43)' }}>
+          <div className="flex flex-col w-full justify-start items-start gap-2 py-1">
             <p className="text-lg font-extralight flex w-full justify-between relateve">
               Status{" "}
               <span className={`text-${getStatusColor}`}>{getStatus(derugData.status)}</span>
@@ -119,7 +119,7 @@ export const ActiveListingItem: FC<{
             <p className="text-lg font-extralight flex w-full justify-between">
               Time left:{" "}
               <Countdown
-                className="text-gray-200  text-red-400"
+                className="text-red-400"
                 date={derugData.periodEnd}
               />
             </p>
@@ -129,10 +129,10 @@ export const ActiveListingItem: FC<{
             </p>
           </div>
           {winningRequest && (
-            <div className="flex justify-between w-full px-10" style={{ background: '#475467' }}>
+            <div className="flex justify-between w-full bg-emerald-500 py-3 px-2">
               <p className="text-lg font-extralight flex w-full justify-between">
                 New Name:{" "}
-                <span className="text-white font-mono ml-4">{winningRequest.newName}</span>
+                <span className="text-xl font-mono font-white">{winningRequest.newName}</span>
               </p>
             </div>
           )}
