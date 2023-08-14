@@ -7,16 +7,11 @@ import { getFloorPrice, getListings } from "@/api/tensor";
 import { AddDerugRequst } from "@/components/AddDerugRequest/AddDerugRequest";
 import { CollectionStats } from "@/components/CollectionLayout/CollectionStats";
 import { HeaderTabs } from "@/components/CollectionLayout/HeaderTabs";
-import DerugRequest from "@/components/DerugRequest/DerugRequest";
 import PublicMint from "@/components/Remit/PublicMint";
 import Remint from "@/components/Remit/Remint";
 import { getDummyCollectionData } from "@/solana/dummy";
 import { getCollectionDerugData } from "@/solana/methods/derug";
-import {
-  getAllDerugRequest,
-  getSingleDerugRequest,
-} from "@/solana/methods/derug-request";
-import { derugProgramFactory } from "@/solana/utilities";
+import { getAllDerugRequest } from "@/solana/methods/derug-request";
 import { CollectionContext } from "@/stores/collectionContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -35,7 +30,6 @@ import {
 import { IDerugCandyMachine, IGraphData } from "@/interface/derug.interface";
 import { GetServerSideProps } from "next";
 import { getDerugCandyMachine } from "@/solana/methods/public-mint";
-import { getCollectionChainData } from "@/solana/collections";
 import Modal from "@/components/Modal";
 import { Oval } from "react-loader-spinner";
 
@@ -105,36 +99,19 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   };
   useEffect(() => {
     if (basicCollectionData) void getChainCollectionDetails();
-  }, [basicCollectionData, wallet.publicKey]);
+  }, [basicCollectionData, wallet]);
   const getChainCollectionDetails = async () => {
     try {
+      const chainDetails = await getDummyCollectionData();
       // const chainDetails = await getCollectionChainData(
       //   basicCollectionData!,
       //   listings?.at(0)
       // );
-      const chainDetails = await getDummyCollectionData();
-      const derugProgram = derugProgramFactory();
-
-      derugProgram.addEventListener("PrivateMintStarted", async (data) => {
-        console.log("GOT EVENT LISTENER", data);
-
-        if (data.derugData.toString() === collectionDerug?.address.toString()) {
-          setCollectionDerug(await getCollectionDerugData(data.derugData));
-          setDerugRequests(await getSingleDerugRequest(data.derugRequest));
-        }
-      });
 
       chainDetails.slug = slug!;
       setChainCollectionData(chainDetails);
+
       if (chainDetails.hasActiveDerugData) {
-        if (
-          wallet &&
-          derugRequest &&
-          collectionDerug.status === DerugStatus.PublicMint
-        ) {
-          const cm = await getDerugCandyMachine(wallet, derugRequest[0]);
-          if (cm) setCandyMachine(cm);
-        }
         setCollectionDerug(
           await getCollectionDerugData(chainDetails.derugDataAddress)
         );
@@ -148,7 +125,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   };
 
   const renderDerugContent = useMemo(() => {
-    if (derugRequest)
+    if (derugRequest) {
       switch (derugRequest.status) {
         case DerugStatus.Initialized: {
           return (
@@ -162,14 +139,23 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
             </div>
           );
         }
-        case DerugStatus.Reminting: {
-          return <Remint />;
+        case DerugStatus.Reminting:
+        case DerugStatus.UploadingMetadata: {
+          if (
+            derugRequest.privateMintDuration > dayjs().unix() ||
+            derugRequest.status === DerugStatus.UploadingMetadata
+          ) {
+            return <Remint />;
+          } else {
+            return <PublicMint />;
+          }
         }
         case DerugStatus.PublicMint: {
           return <PublicMint />;
         }
       }
-  }, [derugRequest]);
+    }
+  }, [derugRequest, candyMachine]);
 
   return (
     <CollectionContext.Provider
@@ -215,7 +201,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
               <LeftPane selectedInfo={selectedInfo} />
               <div className="flex flex-col gap-5 w-full">
                 {derugRequest && (
-                  <div className="flex items-center w-full border-8 border-gray-700 bg-gray-800 shadow-md justify-center py-5">
+                  <div className="flex items-center w-full bg-gray-800 shadow-md justify-center p-10 gap-24 border-8 border-active">
                     {renderDerugContent}
                   </div>
                 )}

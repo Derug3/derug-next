@@ -107,11 +107,12 @@ export const Remint: FC = () => {
       </div>
     ) : (
       <div className="w-full text-center">
-        <p className="text-xl font-mono font-bold">
-          You don't have NFTs from collection! Public mint will be in{" "}
+        <p className="text-xl ">
+          <span className="font-mono">
+            You don't have NFTs from collection! Public mint will be in{" "}
+          </span>
           <Countdown
-            className="font-mono text-sm
-            text-orange-800 p-2"
+            className="text-2xl md:text-lg text-red-300 p-2"
             date={dayjs.unix(derugRequest.privateMintDuration).toDate()}
           />
           <RelativeTime />
@@ -176,7 +177,7 @@ export const Remint: FC = () => {
   return (
     <div className="w-full flex-col gap-10">
       <>
-        {collectionDerug?.status === DerugStatus.UploadingMetadata ? (
+        {derugRequest?.status === DerugStatus.UploadingMetadata ? (
           <div className="text-center text-lg m-10">
             <p className="text-white">
               ⚠️ Uploading metadata and preparing private mint.Minting will be

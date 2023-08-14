@@ -1,22 +1,26 @@
 import { walletAdapterIdentity } from "@metaplex-foundation/js";
 import {
-  addConfigLines,
   mintV2,
   create,
   DefaultGuardSetArgs,
   GuardGroupArgs,
   MintLimit,
-  findCandyGuardPda,
+  findMintCounterPda,
   SolPayment,
   TokenPayment,
-  fetchCandyMachine,
-  findMintCounterPda,
   fetchCandyGuard,
+  fetchCandyMachine,
+  findCandyGuardPda,
   CandyGuard,
   DefaultGuardSet,
   GuardGroup,
   fetchMintCounter,
+  findCandyMachineAuthorityPda,
 } from "derug-tech-mpl-candy-machine";
+import {
+  toWeb3JsInstruction,
+  toWeb3JsKeypair,
+} from "@metaplex-foundation/umi-web3js-adapters";
 import { walletAdapterIdentity as umiAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 
 import {
@@ -33,6 +37,7 @@ import {
 
 import { AnchorWallet, WalletContextState } from "@solana/wallet-adapter-react";
 import {
+  ComputeBudgetProgram,
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
@@ -41,9 +46,11 @@ import {
 } from "@solana/web3.js";
 import toast from "react-hot-toast";
 import {
+  getAuthority,
   getCandyMachine,
   getNonMinted,
   getWlConfig,
+  mintCandyMachine,
 } from "../../api/public-mint.api";
 import {
   ICollectionDerugData,
@@ -68,7 +75,7 @@ import { chunk } from "lodash";
 import { parseKeyArray, parseTransactionError } from "../../common/helpers";
 import { RPC_CONNECTION } from "../../utilities/utilities";
 import {
-  PROGRAM_ID,
+  MPL_TOKEN_METADATA_PROGRAM_ID,
   TokenStandard,
 } from "@metaplex-foundation/mpl-token-metadata";
 import { WlType } from "../../enums/collections.enums";
@@ -232,7 +239,7 @@ export const initCandyMachine = async (
           tokenStandard: TokenStandard.NonFungible,
           isMutable: true,
           symbol: remintConfigAccount.newSymbol,
-          tokenMetadataProgram: publicKey(PROGRAM_ID),
+          tokenMetadataProgram: publicKey(MPL_TOKEN_METADATA_PROGRAM_ID),
           collectionMint: publicKey(remintConfigAccount.collection),
           collectionUpdateAuthority: createNoopSigner(
             publicKey(remintConfigAccount.authority)
@@ -271,7 +278,6 @@ export const mintNftFromCandyMachine = async (
     const guardPda = findCandyGuardPda(umi, {
       base: publicKey(request.candyMachineKey),
     });
-
     //TODO:remove ekser
     // const wlConfig = await getWlConfig("nice-mice");
 
@@ -300,7 +306,7 @@ export const mintNftFromCandyMachine = async (
         group: some("wl"),
         tokenStandard: TokenStandard.ProgrammableNonFungible,
         authorizationRules: publicKey(metaplexAuthorizationRuleSet),
-        candyGuard: guardPda,
+        candyGuard: publicKey(guardPda),
         mintArgs: {
           // allowList: some({ merkleRoot }),
           solPayment: some({
@@ -334,7 +340,6 @@ export const mintNftFromCandyMachine = async (
     throw new Error(parseTransactionError(parsedError));
   }
 };
-
 export const mintPublic = async (
   request: IRequest,
   wallet: AnchorWallet,
@@ -344,47 +349,102 @@ export const mintPublic = async (
   try {
     umi.use(umiAdapterIdentity(wallet));
     const nftMint = generateSigner(umi);
-
     const guardPda = findCandyGuardPda(umi, {
       base: publicKey(request.candyMachineKey),
     });
+    const derugProgram = derugProgramFactory();
+    const [authorityPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("derug"), request.candyMachineKey.toBuffer()],
+      derugProgram.programId
+    );
+    const authority = await getAuthority(collectionDerug.address.toString());
+
+    const authPda = findCandyMachineAuthorityPda(umi, {
+      candyMachine: publicKey(request.candyMachineKey),
+    });
+
+    const [wAuth] = PublicKey.findProgramAddressSync(
+      [Buffer.from("derug"), request.candyMachineKey.toBuffer()],
+      derugProgram.programId
+    );
+    console.log(authPda, authorityPda.toString(), wAuth.toString(), "APDA");
+
+    const collectionMetadata = metaplex
+      .nfts()
+      .pdas()
+      .metadata({ mint: collectionDerug.newCollection });
+
+    const instruction = mintV2(umi, {
+      firstCreator: createNoopSigner(publicKey(authority.authority)),
+      candyMachine: publicKey(request.candyMachineKey),
+      nftMint: nftMint,
+      collectionMint: publicKey(collectionDerug.newCollection),
+      payer: createNoopSigner(publicKey(wallet.publicKey)),
+      collectionMetadata: publicKey(collectionMetadata),
+      collectionUpdateAuthority: publicKey(authority.authority),
+      group: some("public"),
+      tokenStandard: TokenStandard.ProgrammableNonFungible,
+      authorizationRules: publicKey(metaplexAuthorizationRuleSet),
+      candyGuard: publicKey(guardPda),
+      mintArgs: {
+        solPayment: some({
+          destination: publicKey(request.derugger),
+        }),
+      },
+    })
+      .getInstructions()
+      .map((ix) => toWeb3JsInstruction(ix));
+
+    const transaction = new Transaction({
+      feePayer: wallet.publicKey,
+      recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
+    });
+    transaction.add(
+      ComputeBudgetProgram.setComputeUnitLimit({ units: 800_000 })
+    );
+    transaction.add(instruction[0]);
+    transaction.add(
+      SystemProgram.transfer({
+        fromPubkey: wallet.publicKey,
+        toPubkey: new PublicKey("DRG3YRmurqpWQ1jEjK8DiWMuqPX9yL32LXLbuRdoiQwt"),
+        lamports: 0.09 * LAMPORTS_PER_SOL,
+      })
+    );
+
+    transaction.sign(toWeb3JsKeypair(nftMint));
+
+    const signedTx = await wallet.signTransaction(transaction);
+
+    const txSim = await RPC_CONNECTION.simulateTransaction(signedTx);
+    console.log(txSim.value.logs);
+
+    const serializedTx = JSON.stringify(
+      signedTx.serialize({ requireAllSignatures: false })
+    );
 
     await toast.promise(
-      mintV2(umi, {
-        candyMachine: publicKey(request.candyMachineKey),
-        nftMint: nftMint,
-        collectionMint: publicKey(collectionDerug.newCollection),
-        collectionUpdateAuthority: publicKey(request.derugger),
-        group: some("all"),
-        tokenStandard: TokenStandard.ProgrammableNonFungible,
-        authorizationRules: publicKey(metaplexAuthorizationRuleSet),
-        candyGuard: guardPda,
-        mintArgs: {
-          solPayment: some({
-            destination: publicKey(request.derugger),
-          }),
-        },
-      })
-        .add(setComputeUnitLimit(umi, { units: 800_000 }))
-        .sendAndConfirm(umi),
+      mintCandyMachine(collectionDerug.address.toString(), serializedTx),
       {
-        error: "Failed to mint!",
+        error: (data) => {
+          return data.message;
+        },
         loading: "Minting...",
-        success: "Successfully minted!",
+        success: (data) => {
+          if (data.code === 200) {
+            return data.message;
+          } else {
+            throw new Error(data.message);
+          }
+        },
       }
     );
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // await new Promise((resolve) => setTimeout(resolve, 2000));
     return await metaplex
       .nfts()
       .findByMint({ mintAddress: new PublicKey(nftMint.publicKey) });
   } catch (error: any) {
-    console.log(JSON.parse(JSON.stringify(error)));
-
-    const parsedError = JSON.parse(JSON.stringify(error)).cause;
-    if (parsedError.logs.find((l: any) => l.includes("NotEnoughToken"))) {
-      throw new Error(" Not enough tokens to pay for this minting.");
-    }
-    throw new Error(parseTransactionError(parsedError));
+    throw error;
   }
 };
 
@@ -393,7 +453,7 @@ export async function getDerugCandyMachine(
   request: IRequest
 ): Promise<IDerugCandyMachine> {
   try {
-    const candyMachine = await fetchCandyMachine(
+    const candyMachineAccount = await fetchCandyMachine(
       umi,
       publicKey(request.candyMachineKey)
     );
@@ -402,10 +462,10 @@ export async function getDerugCandyMachine(
       base: publicKey(request.candyMachineKey),
     });
 
-    const guards = await fetchCandyGuard(umi, guardPda);
+    const guards = await fetchCandyGuard(umi, publicKey(guardPda));
 
     return {
-      candyMachine,
+      candyMachine: candyMachineAccount,
       publicConfig: await getPublicConfiguration(guards),
       whitelistingConfig: null,
     };
@@ -489,7 +549,7 @@ export const getWhitelistingConfig = async (
 export const getPublicConfiguration = async (
   guards: CandyGuard<DefaultGuardSet>
 ): Promise<PublicConfig> => {
-  const wlGroup = guards.groups.find((g) => g.label === "all");
+  const wlGroup = guards.groups.find((g) => g.label === "public");
 
   const { price, currency } = await getGuardPayment(wlGroup);
 

@@ -1,4 +1,4 @@
-import { PublicKey } from "@solana/web3.js";
+import { AccountInfo, ParsedAccountData, PublicKey } from "@solana/web3.js";
 import {
   IChainCollectionData,
   ICollectionDerugData,
@@ -12,8 +12,14 @@ import { WalletContextState } from "@solana/wallet-adapter-react";
 import { TOKEN_PROGRAM_ID } from "@project-serum/anchor/dist/cjs/utils/token";
 import { metadataSeed } from "../solana/seeds";
 import { chunk } from "lodash";
-import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
+import {
+  fetchMetadata,
+  findMetadataPda,
+  Metadata,
+} from "@metaplex-foundation/mpl-token-metadata";
 import { IDerugCollectionNft } from "../interface/derug.interface";
+import { umi } from "@/solana/utilities";
+import { publicKey, unwrapOption } from "@metaplex-foundation/umi";
 
 export const generateSkeletonArrays = (quantity: number) => [
   ...Array(quantity).keys(),
@@ -61,50 +67,53 @@ export const getAllNftsFromCollection = async (
     })
   ).value.filter((ta) => ta.account.data.parsed.info.tokenAmount.uiAmount > 0);
 
-  const allMetadataAddresses: PublicKey[] = [];
+  const allMetadataAddresses: string[] = [];
 
-  const derugNfts: IDerugCollectionNft[] = [];
+  let derugNfts: (IDerugCollectionNft | null)[] = [];
+
+  const tokenAccounts: {
+    pubkey: PublicKey;
+    account: AccountInfo<ParsedAccountData>;
+  }[] = [];
 
   for (const walletNft of walletNfts) {
-    const [metadataAddress] = PublicKey.findProgramAddressSync(
-      [
-        metadataSeed,
-        METAPLEX_PROGRAM.toBuffer(),
-        new PublicKey(walletNft.account.data.parsed.info.mint).toBuffer(),
-      ],
-      METAPLEX_PROGRAM
-    );
-    allMetadataAddresses.push(metadataAddress);
+    try {
+      const [metadata] = findMetadataPda(umi, {
+        mint: publicKey(walletNft.account.data.parsed.info.mint),
+      });
+
+      allMetadataAddresses.push(metadata.toString());
+      tokenAccounts.push(walletNft);
+    } catch (error) {}
   }
 
-  const chunkedMetadataAddresses = chunk(allMetadataAddresses, 100);
+  derugNfts = await Promise.all(
+    allMetadataAddresses.map(async (meta, index) => {
+      try {
+        const metadataAccount = await fetchMetadata(umi, publicKey(meta));
+        console.log(metadataAccount);
 
-  for (const metadataAddressesBatch of chunkedMetadataAddresses) {
-    const multipleAccInfo = (
-      await RPC_CONNECTION.getMultipleAccountsInfo(metadataAddressesBatch)
-    ).filter((md) => md && md.data.byteLength > 0);
-
-    multipleAccInfo.forEach((mai, index) => {
-      const [metadata] = Metadata.fromAccountInfo(mai!);
-
-      if (
-        (metadata.collection &&
-          metadata.collection.key.toString() ===
-            chainCollectionData.collectionMint) ||
-        metadata.data.creators?.find(
-          (c) => c.address.toString() === chainCollectionData.collectionMint
-        )
-      ) {
-        derugNfts.push({
-          metadata,
-          mint: metadata.mint,
-          tokenAccount: walletNfts.find(
-            (v) => v.account.data.parsed.info.mint === metadata.mint.toString()
-          )?.pubkey!,
-        });
+        if (
+          unwrapOption(metadataAccount.collection).key.toString() ===
+          derug.collection.toString()
+        ) {
+          return {
+            mint: new PublicKey(metadataAccount.mint),
+            metadata: metadataAccount,
+            tokenAccount: tokenAccounts.find(
+              (w) =>
+                w.account.data.parsed.info.mint ===
+                metadataAccount.mint.toString()
+            ).pubkey,
+          };
+        } else {
+          return null;
+        }
+      } catch (error) {
+        return null;
       }
-    });
-  }
+    })
+  );
 
-  return derugNfts;
+  return derugNfts.filter((nft) => nft !== null);
 };

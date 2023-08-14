@@ -8,6 +8,7 @@ import { CollectionContext } from "../../stores/collectionContext";
 import Skeleton from "react-loading-skeleton";
 import { metaplex } from "@/solana/utilities";
 import { PublicKey } from "@solana/web3.js";
+import { toast } from "react-hot-toast";
 
 const ListedNftItem: FC<{ listedNft: INftListing }> = ({
   listedNft,
@@ -19,12 +20,18 @@ const ListedNftItem: FC<{ listedNft: INftListing }> = ({
   const [fallbackImage, setFallbackImage] = useState('');
 
   const handleImageLoaded = async (mint: string) => {
-    const metadata = await metaplex.nfts().findByMint({
-      mintAddress: new PublicKey(mint),
-      loadJsonMetadata: true,
-    })
+    try {
+      const metadata = await metaplex.nfts().findByMint({
+        mintAddress: new PublicKey(mint),
+        loadJsonMetadata: true,
+      })
 
-    return metadata.json.image;
+      return metadata.json.image;
+    } catch (error) {
+      console.log(error);
+      toast.error("Error loading image");
+
+    }
   };
 
   useEffect(() => {

@@ -9,7 +9,7 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { DerugProgram, IDL } from "../solana/idl/derug_program";
 import { DERUG_PROGRAM_ID, RPC_CONNECTION } from "../utilities/utilities";
-import { mplCandyMachine } from "@metaplex-foundation/mpl-candy-machine";
+import { mplCandyMachine } from "derug-tech-mpl-candy-machine";
 export const derugProgramFactory = () => {
   return new Program<DerugProgram>(
     IDL,
@@ -27,12 +27,9 @@ export const metadataUploaderWallet = new PublicKey(
 );
 
 //TODO:load from env
-export const umi = createUmi(
-  "https://mainnet.helius-rpc.com/?api-key=1da35f09-ec3c-4af4-a22e-299f4cf00edb",
-  {
-    commitment: "confirmed",
-  }
-).use(mplCandyMachine());
+export const umi = createUmi(process.env.NEXT_PUBLIC_RPC_CONNECTION, {
+  commitment: "confirmed",
+}).use(mplCandyMachine());
 
 //TODO mainnet: load this from env file
 export const metaplex = new Metaplex(RPC_CONNECTION);

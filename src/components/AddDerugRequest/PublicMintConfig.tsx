@@ -232,8 +232,8 @@ const PublicMintConfig = () => {
             id="privateMintEnd"
             className="flex w-full px-[12px] py-[8px] items-center self-stretch border border-gray-500 bg-[#1D2939] shadow-xs bg-transparent text-gray-400 text-sm font-mono text-normal"
             type={"number"}
-            min="1"
-            step={"1"}
+            min="0"
+            step={"0.1"}
           />
           <span className="absolute right-10 top-2 font-mono text-white">
             hours

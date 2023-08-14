@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const TabComponent = ({ tabs, activeTab, handleTabClick }) => {
 
     return (
-        <div className="w-fit p-4 flex flex-col items-center gap-10 bg-gray-800 text-white text-xl font-['Inter']">
+        <div className="w-fit p-4 flex flex-col items-center gap-10 bg-gray-800 text-white text-xl font-mono font-black">
             <div className="flex">
                 {tabs.map((tab, index) => (
                     <div

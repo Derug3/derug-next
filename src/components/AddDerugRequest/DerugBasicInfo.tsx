@@ -23,10 +23,6 @@ const DerugBasicInfo = () => {
   const { userData } = userStore();
   const wallet = useAnchorWallet();
 
-  const values = getValues();
-
-  console.log(values);
-
   const { fee } = getValues();
 
   const router = useRouter();
