@@ -85,7 +85,7 @@ export const ActiveListingItem: FC<{
           alt="collectionImage"
           className={`w-[15em] h-[15em]`}
         />
-        <div className="w-full flex flex-col items-center justify-between h-[15em]">
+        <div className="flex flex-col items-start gap-16 bg-gray-800 shadow-md w-[40em]  rounded-xl p-5 cursor-pointer">
           <div className="w-full flex justify-between px-2">
             <p className="text-xl font-white" style={{ fontWeight: 400, lineHeight: '44px' }}>
               {collectionData.name}

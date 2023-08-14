@@ -151,7 +151,7 @@ const Home = () => {
 
     return (
       <Select
-        className="absolute text-center top-0 left-0 h-full z-10 p-2 border border-gray-200 rounded-lg shadow w-[50em]"
+        className="absolute text-center top-0 left-0 h-full z-10 p-2 border border-gray-200 rounded-lg shadow w-[20em] lg:w-[50em]"
         placeholder="Search rugged collections"
         isLoading={searchLoading}
         onInputChange={handleSearch}
