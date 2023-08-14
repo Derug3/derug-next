@@ -131,9 +131,11 @@ const PublicMint = () => {
 
   return (
     <>
-      {""}
-      {candyMachine ? (
-        <div className="flex flex-col lg:flex-row w-full gap-8">
+      {" "}
+      {candyMachine &&
+        candyMachine.candyMachine.itemsLoaded.toString() ===
+        candyMachine.candyMachine.data.itemsAvailable.toString() ? (
+        <div className="flex w-full gap-8">
           <div className="flex w-2/3 flex-col gap-8">
             <span className="text-base-white text-2xl text-white font-normal leading-32">
               Your {collection.name} NFTs

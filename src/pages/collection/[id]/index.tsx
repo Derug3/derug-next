@@ -145,7 +145,7 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
             derugRequest.privateMintDuration > dayjs().unix() ||
             derugRequest.status === DerugStatus.UploadingMetadata
           ) {
-            return <Remint />;
+            return <Remint onComplete={() => getChainCollectionDetails()} />;
           } else {
             return <PublicMint />;
           }
