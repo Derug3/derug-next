@@ -306,7 +306,7 @@ const PublicMint = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-3 w-1/3 h-[25em] overflow-y-scroll">
+          <div className="flex flex-wrap gap-3 w-[35em] h-[25em] overflow-y-scroll">
             {nfts.length ? (
               renderNfts
             ) : (
