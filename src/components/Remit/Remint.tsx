@@ -23,7 +23,7 @@ import { getNonMinted } from "../../api/public-mint.api";
 import { RelativeTime } from "@primer/react";
 import Countdown from "react-countdown";
 import { remintMultipleNfts } from "@/api/remint-nft.api";
-export const Remint: FC = () => {
+export const Remint: FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const { derugRequest } = useContext(CollectionContext);
   const [collectionNfts, setCollectionNfts] = useState<IDerugCollectionNft[]>();
   const [loading, toggleLoading] = useState(true);
@@ -114,6 +114,7 @@ export const Remint: FC = () => {
           <Countdown
             className="text-2xl md:text-lg text-red-300 p-2"
             date={dayjs.unix(derugRequest.privateMintDuration).toDate()}
+            onComplete={onComplete}
           />
           <RelativeTime />
         </p>

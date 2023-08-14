@@ -132,7 +132,9 @@ const PublicMint = () => {
   return (
     <>
       {" "}
-      {candyMachine ? (
+      {candyMachine &&
+      candyMachine.candyMachine.itemsLoaded.toString() ===
+        candyMachine.candyMachine.data.itemsAvailable.toString() ? (
         <div className="flex w-full gap-8">
           <div className="flex w-2/3 flex-col gap-8">
             <span className="text-base-white text-2xl text-white font-normal leading-32">
