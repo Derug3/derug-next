@@ -131,7 +131,7 @@ const PublicMint = () => {
 
   return (
     <>
-      {" "}
+      {""}
       {candyMachine ? (
         <div className="flex flex-col lg:flex-row w-full gap-8">
           <div className="flex w-2/3 flex-col gap-8">
