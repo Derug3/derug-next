@@ -76,7 +76,7 @@ export const ActiveListingItem: FC<{
   return (
     <div
       onClick={() => navigate(`${COLLECTION}/${collectionData.symbol}`)}
-      className="flex flex-col cursor-pointer overflow-hidden lg:flex-row p-4 md:p-5 items-start gap-8 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md"
+      className="flex items-center w-full bg-gray-800 shadow-md justify-center p-10 gap-24 border-8 border-active"
       style={{ background: 'rgb(14 26 43)' }}
     >
       <div className="flex justify-start gap-12 items-center relative flex-col lg:flex-row">
@@ -129,10 +129,10 @@ export const ActiveListingItem: FC<{
             </p>
           </div>
           {winningRequest && (
-            <div className="flex justify-between w-full bg-emerald-500 py-3 px-2">
-              <p className="text-lg font-extralight flex w-full justify-between">
+            <div className="bg-[#36BFFA] w-full border border-[#36BFFA] px-[10%] py-2 shadow-xs text-lg text-black font-bold font-mono">
+              <p className="text-lg font-extralight flex w-full justify-between text-black">
                 New Name:{" "}
-                <span className="text-xl font-mono font-white">{winningRequest.newName}</span>
+                <span className="text-xl font-mono text-black">{winningRequest.newName}</span>
               </p>
             </div>
           )}
