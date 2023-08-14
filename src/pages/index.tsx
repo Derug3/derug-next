@@ -200,14 +200,14 @@ const Home = () => {
     )
   ), [activeCollections]);
 
-  const getFilterOptions = useMemo(() => {
-    return Object.values(CollectionVolumeFilter).map((c: any) => {
-      return {
-        label: mapFilterTypeToValue(c as CollectionVolumeFilter),
-        value: c,
-      };
-    });
-  }, []);
+  // const getFilterOptions = useMemo(() => {
+  //   return Object.values(CollectionVolumeFilter).map((c: any) => {
+  //     return {
+  //       label: mapFilterTypeToValue(c as CollectionVolumeFilter),
+  //       value: c,
+  //     };
+  //   });
+  // }, []);
 
   const [activeTab, setActiveTab] = useState('Hot');
 
