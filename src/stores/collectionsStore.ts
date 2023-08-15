@@ -1,12 +1,15 @@
 import { create } from "zustand";
 import {
   ICollectionData,
+  ICollectionStats,
   INftListing,
 } from "../interface/collections.interface";
 
 export interface ICollectionsStore {
-  collections: ICollectionData[];
-  setCollections: (collections: ICollectionData[]) => void;
+  collections: { collection: ICollectionData; stats: ICollectionStats }[];
+  setCollections: (
+    collections: { collection: ICollectionData; stats: ICollectionStats }[]
+  ) => void;
   nftListings: INftListing[];
   setListings: (nftListings: INftListing[]) => void;
 }

@@ -1,15 +1,21 @@
 import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
-import { ICollectionData, ICollectionVolume } from "../../interface/collections.interface";
+import {
+  ICollectionData,
+  ICollectionStats,
+  ICollectionVolume,
+} from "../../interface/collections.interface";
 import tensor from "../../assets/tensorLogo.png";
 import magiceden from "../../assets/magicEdenLogo.png";
 import { AiOutlineStar } from "react-icons/ai";
 import { collectionsStore } from "@/stores/collectionsStore";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 const CollectionItem: FC<{
   collection: ICollectionData;
   bigImage: boolean;
-}> = ({ collection, bigImage }) => {
+  stats: ICollectionStats;
+}> = ({ collection, bigImage, stats }) => {
   const { push: navigate } = useRouter();
   const [isValid, setIsValid] = useState(true);
   const [hover, setHover] = useState(false);
@@ -24,8 +30,11 @@ const CollectionItem: FC<{
         onClick={() => navigate(`/collection/${collection.symbol}`)}
         className="flex flex-col items-start gap-16 bg-gray-800 shadow-md w-[40em]  rounded-xl p-5 cursor-pointer"
       >
-        <div className="flex justify-between w-full gap-5 items-start relative h-60	" onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}>
+        <div
+          className="flex justify-between w-full gap-5 items-start relative h-60	"
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+        >
           <img
             src={collection.image}
             alt="collectionImage"
@@ -35,7 +44,10 @@ const CollectionItem: FC<{
 
           <div className="w-full h-full flex flex-col items-start justify-between">
             <div className="flex justify-between h-fit py-1 px-2 w-[10em] lg:w-[21.5em]">
-              <p className="text-xl font-white truncate" style={{ fontWeight: 400, lineHeight: '44px' }}>
+              <p
+                className="text-xl font-white truncate"
+                style={{ fontWeight: 400, lineHeight: "44px" }}
+              >
                 {collection.name}
               </p>
               <div className="flex gap-3 items-center">
@@ -51,20 +63,25 @@ const CollectionItem: FC<{
                 />
               </div>
             </div>
-            <div className="flex flex-col w-full justify-start items-start gap-2 px-1.5 gap-5 py-2 px-2" style={{ background: 'rgb(14 26 43)' }}>
+            <div
+              className="flex flex-col w-full justify-start items-start gap-2 px-1.5 gap-5 py-2 px-2"
+              style={{ background: "rgb(14 26 43)" }}
+            >
               <p className="text-md lg:text-lg font-extralight flex w-full justify-between relateve">
                 Floor price{" "}
-                <span className="text-emerald-400">{ } 1 SOL</span>
+                <span className="text-emerald-400">
+                  {(stats.fp / LAMPORTS_PER_SOL).toFixed(2)} SOL
+                </span>
               </p>
               <p className="text-md lg:text-lg font-extralight flex w-full justify-between">
-                Market cap{" "}
-                <span className="text-main-blue">{ }</span>
-                <span className="text-emerald-400">{ } 15 SOL</span>
+                Market cap <span className="text-main-blue">{}</span>
+                <span className="text-emerald-400">
+                  {(stats.marketCap / LAMPORTS_PER_SOL).toFixed(2)} SOL
+                </span>
               </p>
               <p className="text-md lg:text-lg  font-extralight flex w-full justify-between">
-                Total supply{" "}
-                <span className="text-main-blue">{ }</span>
-                <span className="text-emerald-400">{ } 333</span>
+                Total supply <span className="text-main-blue">{}</span>
+                <span className="text-emerald-400">{stats.numMints}</span>
               </p>
             </div>
           </div>

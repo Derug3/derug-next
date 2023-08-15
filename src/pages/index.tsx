@@ -23,16 +23,14 @@ import { useState, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import useDebounce from "@/hooks/useDebounce";
 import { useRouter } from "next/router";
-import { Swiper, SwiperSlide, SwiperProps } from 'swiper/react';
+import { Swiper, SwiperSlide, SwiperProps } from "swiper/react";
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/effect-cards';
-import { EffectCoverflow } from 'swiper/modules';
+import "swiper/css";
+import "swiper/css/effect-cards";
+import { EffectCoverflow } from "swiper/modules";
 import { makeRequest } from "@/api/request.api";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import TabComponent from "@/components/Tab";
-
-
 
 const Home = () => {
   const { setCollections, collections } = collectionsStore.getState();
@@ -42,14 +40,14 @@ const Home = () => {
   const [searchLoading, toggleSearchLoading] = useState(false);
   const [filteredCollections, setFilteredCollections] = useState<
     ICollectionData[] | undefined
-  >(collections);
+  >(collections.map((c) => c.collection));
   const [topVolumeCollections, setTopVolumeCollections] =
     useState<ICollectionVolume[]>();
   const [hotCollections, setHotCollections] = useState<ICollectionVolume[]>();
   const [filter, setFilter] = useState(CollectionVolumeFilter.MarketCap);
   const [loading, setLoading] = useState(true);
   const { name } = useDebounce(searchValue);
-  const router = useRouter()
+  const router = useRouter();
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -72,7 +70,7 @@ const Home = () => {
       setSearchValue(e);
     } else {
       toggleSearchLoading(false);
-      setFilteredCollections(collections);
+      setFilteredCollections(collections.map((c) => c.collection));
     }
   };
 
@@ -97,7 +95,7 @@ const Home = () => {
         return false;
       }
     } catch (error) {
-      console.error('Error occurred while fetching the image:', error);
+      console.error("Error occurred while fetching the image:", error);
       return false;
     }
   }
@@ -108,8 +106,7 @@ const Home = () => {
       const randomCollections = await getRandomCollections();
       setCollections(randomCollections);
 
-
-      setFilteredCollections(randomCollections);
+      setFilteredCollections(randomCollections.map((c) => c.collection));
       setCollections(randomCollections);
       setLoading(false);
     } catch (error) {
@@ -146,8 +143,7 @@ const Home = () => {
   const renderSelect = useMemo(() => {
     const enterSearch = (e: any) => {
       router.push(`/collection/${e.symbol}`);
-
-    }
+    };
 
     return (
       <Select
@@ -172,33 +168,43 @@ const Home = () => {
             }}
           >
             <img style={{ width: "2.5em", height: "2.5em" }} src={e.image} />
-            <h3 >{e.name}</h3>
+            <h3>{e.name}</h3>
           </div>
         )}
       />
     );
   }, [filteredCollections, searchLoading]);
 
-  const renderRandomCollections = useMemo(() => (
-    <div className="flex flex-col w-full">
-      <div className="flex flex-wrap gap-12 w-full items-center justify-center mt-10">
-        {collections && collections.map((c, index) => (
-          <CollectionItem collection={c} key={c.symbol} bigImage={true} />)
-        )}
+  const renderRandomCollections = useMemo(
+    () => (
+      <div className="flex flex-col w-full">
+        <div className="flex flex-wrap gap-12 w-full items-center justify-center mt-10">
+          {collections &&
+            collections.map((c, index) => (
+              <CollectionItem
+                stats={c.stats}
+                collection={c.collection}
+                key={c.collection.symbol}
+                bigImage={true}
+              />
+            ))}
+        </div>
       </div>
-    </div>
+    ),
+    [collections]
+  );
 
-  ), [collections]);
-
-  const renderActiveCollections = useMemo(() => (
-    activeCollections && activeCollections.length ? (
-      <div className="flex mb-10">
-        <ActiveListings activeListings={activeCollections} />
-      </div>
-    ) : (
-      <></>
-    )
-  ), [activeCollections]);
+  const renderActiveCollections = useMemo(
+    () =>
+      activeCollections && activeCollections.length ? (
+        <div className="flex mb-10">
+          <ActiveListings activeListings={activeCollections} />
+        </div>
+      ) : (
+        <></>
+      ),
+    [activeCollections]
+  );
 
   // const getFilterOptions = useMemo(() => {
   //   return Object.values(CollectionVolumeFilter).map((c: any) => {
@@ -209,16 +215,16 @@ const Home = () => {
   //   });
   // }, []);
 
-  const [activeTab, setActiveTab] = useState('Hot');
+  const [activeTab, setActiveTab] = useState("Hot");
 
   const tabs = [
     {
-      title: 'Active',
-      id: 'Active',
+      title: "Active",
+      id: "Active",
     },
     {
-      title: 'HOT 🔥',
-      id: 'Hot',
+      title: "HOT 🔥",
+      id: "Hot",
     },
   ];
 
@@ -241,28 +247,27 @@ const Home = () => {
           margin: "auto",
           position: "relative",
           marginBottom: "20px",
-          gap: '2em',
+          gap: "2em",
         }}
       >
-        <h1
-          className="py-5 text-center"
-        >
-          <div
-            className="w-full animate-text bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% text-3xl  bg-clip-text text-center font-display text-transparent drop-shadow-sm lg:text-5xl align-center animate-[wiggle_1s_ease-in-out_infinite]"
-          >
+        <h1 className="py-5 text-center">
+          <div className="w-full animate-text bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% text-3xl  bg-clip-text text-center font-display text-transparent drop-shadow-sm lg:text-5xl align-center animate-[wiggle_1s_ease-in-out_infinite]">
             Getting rugged collections back to life
           </div>
         </h1>
         {renderSelect}
       </div>
       <div className="flex w-full my-5 items-center justify-center">
-        <TabComponent tabs={tabs} activeTab={activeTab} handleTabClick={(tab) => setActiveTab(tab)} />
+        <TabComponent
+          tabs={tabs}
+          activeTab={activeTab}
+          handleTabClick={(tab) => setActiveTab(tab)}
+        />
       </div>
-      {activeTab === 'Active' && renderActiveCollections || activeTab === 'Hot' && renderRandomCollections}
+      {(activeTab === "Active" && renderActiveCollections) ||
+        (activeTab === "Hot" && renderRandomCollections)}
     </div>
   );
 };
 
 export default Home;
-
-

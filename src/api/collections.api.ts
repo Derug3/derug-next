@@ -1,5 +1,8 @@
 import { CollectionVolumeFilter } from "@/enums/collections.enums";
-import { ICollectionData } from "@/interface/collections.interface";
+import {
+  ICollectionData,
+  ICollectionStats,
+} from "@/interface/collections.interface";
 import { MAGIC_EDEN_URL } from "../utilities/utilities";
 import { get } from "./request.api";
 import {
@@ -16,7 +19,9 @@ import {
   TOP_VOLUME,
 } from "./url.api";
 
-export async function getRandomCollections(): Promise<ICollectionData[]> {
+export async function getRandomCollections(): Promise<
+  { collection: ICollectionData; stats: ICollectionStats }[]
+> {
   return get(`${MAGIC_EDEN_COLLECTIONS}${RANDOM}`);
 }
 
