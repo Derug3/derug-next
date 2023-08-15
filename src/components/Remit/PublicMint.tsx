@@ -101,7 +101,7 @@ const PublicMint = () => {
           key={index}
           className="flex flex-wrap flex-col items-center justify-start gap-2"
         >
-          <img src={n.image} alt="" className="w-28 h-26 rounded-md" />
+          <img src={n.image} alt="" className="w-28 rounded-md" />
           <p className="text-white text-center text-sm break-all truncate w-[115px]">
             {n.name}
           </p>
@@ -306,7 +306,7 @@ const PublicMint = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-3 w-[35em] h-[25em] overflow-y-scroll">
+          <div className="flex flex-wrap gap-3 w-[25em] h-[20em] overflow-y-scroll">
             {nfts.length ? (
               renderNfts
             ) : (
