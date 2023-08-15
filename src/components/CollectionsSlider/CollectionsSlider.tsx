@@ -23,12 +23,14 @@ const CollectionsSlider: FC = () => {
           style={{ border: "1px solid rgb(9, 194, 246)", opacity: 0.7 }}
           onMouseEnter={() => setHoveredCollection(index)}
           onMouseLeave={() => setHoveredCollection(undefined)}
-          onClick={() => navigate(`${COLLECTION}?symbol=${c.symbol}`)}
+          onClick={() =>
+            navigate(`${COLLECTION}?symbol=${c.collection.symbol}`)
+          }
         >
           {hoveredCollection === index ? (
             <div className="relative flex justify-center">
               <img
-                src={c.image}
+                src={c.collection.image}
                 alt="collectionImg"
                 className="drop-shadow-2xl"
                 style={{
@@ -37,11 +39,11 @@ const CollectionsSlider: FC = () => {
                 }}
               />
               <Balancer className="absolute text-xl text-white font-bold inset-y-1/3 font-bold tracking-[-0.02em] font-mono">
-                {c.name}
+                {c.collection.name}
               </Balancer>
             </div>
           ) : (
-            <img src={c.image} alt="collectionImg" />
+            <img src={c.collection.image} alt="collectionImg" />
           )}
         </div>
       );
