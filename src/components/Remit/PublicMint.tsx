@@ -102,7 +102,7 @@ const PublicMint = () => {
           className="flex flex-wrap flex-col items-center justify-start gap-2"
         >
           <img src={n.image} alt="" className="w-28 h-26 rounded-md" />
-          <p className="text-white text-center text-sm w-full break-all">
+          <p className="text-white text-center text-sm break-all truncate w-[115px]">
             {n.name}
           </p>
         </div>
