@@ -43,7 +43,6 @@ export async function getCollectionChainData(
     [derugDataSeed, new PublicKey(derugCollection).toBuffer()],
     derugProgram.programId
   );
-
   let hasActiveDerugData = false;
 
   try {
