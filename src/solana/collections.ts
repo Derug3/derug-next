@@ -57,7 +57,6 @@ export async function getCollectionChainData(
   } catch (error) {
     hasActiveDerugData = false;
   }
-
   return {
     collectionMint: derugCollection,
     firstCreator: metadataAccount.updateAuthority.toString(),
