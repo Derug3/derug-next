@@ -2,21 +2,15 @@ import { getListings } from "@/api/tensor";
 import {
   fetchMetadata,
   findMetadataPda,
-  Metadata,
 } from "@metaplex-foundation/mpl-token-metadata";
 import { publicKey, unwrapOption } from "@metaplex-foundation/umi";
 import { PublicKey } from "@solana/web3.js";
-import { getMagicEdenListingsBySlug } from "../api/collections.api";
 import {
   IChainCollectionData,
   ICollectionData,
   INftListing,
 } from "../interface/collections.interface";
-import {
-  MAINNET_RPC_CONNECTION,
-  METAPLEX_PROGRAM,
-  RPC_CONNECTION,
-} from "../utilities/utilities";
+import { RPC_CONNECTION } from "../utilities/utilities";
 import { derugDataSeed } from "./seeds";
 import { derugProgramFactory, umi } from "./utilities";
 
