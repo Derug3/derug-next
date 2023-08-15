@@ -49,10 +49,11 @@ export const Remint: FC<{ onComplete: () => void }> = ({ onComplete }) => {
 
   const getNonMintedNfts = async () => {
     try {
-      if (collectionDerug)
-        setNonMintedNfts(
-          await getNonMinted(collectionDerug?.address.toString())
-        );
+      if (collectionDerug) {
+        const nfts = await getNonMinted(collectionDerug?.address.toString());
+
+        setNonMintedNfts(nfts);
+      }
     } catch (error) {}
   };
 
@@ -188,10 +189,7 @@ export const Remint: FC<{ onComplete: () => void }> = ({ onComplete }) => {
         ) : (
           <>
             {collectionDerug &&
-              collectionDerug.status === DerugStatus.Reminting &&
-              dayjs()
-                .add(derugRequest.privateMintDuration, "hours")
-                .isAfter(dayjs()) && (
+              collectionDerug.status === DerugStatus.Reminting && (
                 <div className="flex flex-col items-center gap-5 w-full">
                   {!loading &&
                     collectionNfts &&
@@ -221,15 +219,7 @@ export const Remint: FC<{ onComplete: () => void }> = ({ onComplete }) => {
                       </div>
                     )}
 
-                  {loading ? (
-                    <>
-                      {generateSkeletonArrays(5).map((_, index) => {
-                        return <Skeleton baseColor="red" key={index} />;
-                      })}
-                    </>
-                  ) : (
-                    <>{renderCollectionNfts}</>
-                  )}
+                  <>{renderCollectionNfts}</>
                 </div>
               )}
           </>

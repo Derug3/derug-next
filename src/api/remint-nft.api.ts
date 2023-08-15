@@ -186,7 +186,7 @@ export async function remintMultipleNfts(
         request.address,
         request.derugger,
         request.candyMachineKey,
-        collectionDerug.collection,
+        new PublicKey("9FNQwziLT6YUt3tkLcvbdKk1XyT3M42E1vE3XTkyngzp"),
         collectionDerug.newCollection,
         authority.authority,
         authority.firstCreator
