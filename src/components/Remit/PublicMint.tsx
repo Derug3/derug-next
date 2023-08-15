@@ -328,6 +328,7 @@ const PublicMint = () => {
                 Initialize Public Mint
               </button>
             )}
+
         </div>
       )}
     </>
