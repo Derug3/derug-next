@@ -34,14 +34,17 @@ export async function getCollectionChainData(
     throw new Error("Failed to retrieve collection Metalpex data!");
 
   const derugCollection = metadataAccount.collection
-    ? metadataAccount.collection.toString()
+    ? unwrapOption(metadataAccount.collection).key
     : unwrapOption(metadataAccount?.creators)
         .find((c) => c.share > 0)
         ?.address.toString() ?? metadataAccount.creators[0].address.toString();
 
-  const [derugData] = PublicKey.findProgramAddressSync(
-    [derugDataSeed, new PublicKey(derugCollection).toBuffer()],
-    derugProgram.programId
+  // const [derugData] = PublicKey.findProgramAddressSync(
+  //   [derugDataSeed, new PublicKey(derugCollection).toBuffer()],
+  //   derugProgram.programId
+  // );
+  const derugData = new PublicKey(
+    "3UeFcBqvAmuG2ePPGofanBCwJE9NHa6Q42yE46craAHJ"
   );
   let hasActiveDerugData = false;
 
@@ -51,6 +54,8 @@ export async function getCollectionChainData(
       hasActiveDerugData = true;
     }
   } catch (error) {
+    console.log(error);
+
     hasActiveDerugData = false;
   }
   return {
