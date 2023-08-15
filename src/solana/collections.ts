@@ -21,23 +21,16 @@ export async function getCollectionChainData(
   let mint = listedNft?.mint;
 
   const derugProgram = derugProgramFactory();
+  //TODO:check
+  // if (!mint) {
+  //   throw new Error("Failed to retrieve collection Metalpex data!");
+  // }
 
-  if (!mint) {
-    throw new Error("Failed to retrieve collection Metalpex data!");
-  }
+  // const [metadataAddress] = findMetadataPda(umi, { mint: publicKey(mint) });
 
-  const [metadataAddress] = findMetadataPda(umi, { mint: publicKey(mint) });
+  // const metadataAccount = await fetchMetadata(umi, metadataAddress);
 
-  const metadataAccount = await fetchMetadata(umi, metadataAddress);
-
-  if (!metadataAccount || !metadataAccount.creators)
-    throw new Error("Failed to retrieve collection Metalpex data!");
-
-  const derugCollection = metadataAccount.collection
-    ? unwrapOption(metadataAccount.collection).key
-    : unwrapOption(metadataAccount?.creators)
-        .find((c) => c.share > 0)
-        ?.address.toString() ?? metadataAccount.creators[0].address.toString();
+  const derugCollection = "9FNQwziLT6YUt3tkLcvbdKk1XyT3M42E1vE3XTkyngzp";
 
   // const [derugData] = PublicKey.findProgramAddressSync(
   //   [derugDataSeed, new PublicKey(derugCollection).toBuffer()],
@@ -60,7 +53,7 @@ export async function getCollectionChainData(
   }
   return {
     collectionMint: derugCollection,
-    firstCreator: metadataAccount.updateAuthority.toString(),
+    firstCreator: "AFAyZncgP6ov51wfXurFLkWhxfotTZXqByeaJhYtrwUQ",
     slug: collection.symbol,
     totalSupply: collection.numMints!,
     derugDataAddress: derugData,

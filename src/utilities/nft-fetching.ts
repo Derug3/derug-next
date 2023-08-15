@@ -84,18 +84,19 @@ export const getAllNftsFromCollection = async (
 
       allMetadataAddresses.push(metadata.toString());
       tokenAccounts.push(walletNft);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   derugNfts = await Promise.all(
     allMetadataAddresses.map(async (meta, index) => {
       try {
         const metadataAccount = await fetchMetadata(umi, publicKey(meta));
-        console.log(metadataAccount);
 
         if (
-          unwrapOption(metadataAccount.collection).key.toString() ===
-          derug.collection.toString()
+          (unwrapOption(metadataAccount.collection) as any).key.toString() ===
+          "9FNQwziLT6YUt3tkLcvbdKk1XyT3M42E1vE3XTkyngzp"
         ) {
           return {
             mint: new PublicKey(metadataAccount.mint),

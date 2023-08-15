@@ -103,21 +103,23 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   }, [basicCollectionData, wallet]);
   const getChainCollectionDetails = async () => {
     try {
-      const chainDetails = await getCollectionChainData(
-        basicCollectionData!,
-        listings?.at(0)
-      );
-
-      chainDetails.slug = slug!;
-      setChainCollectionData(chainDetails);
-
-      if (chainDetails.hasActiveDerugData) {
-        setCollectionDerug(
-          await getCollectionDerugData(chainDetails.derugDataAddress)
+      if (basicCollectionData) {
+        const chainDetails = await getCollectionChainData(
+          basicCollectionData!,
+          listings?.at(0)
         );
-        setDerugRequests(
-          await getAllDerugRequest(chainDetails.derugDataAddress)
-        );
+
+        chainDetails.slug = slug!;
+        setChainCollectionData(chainDetails);
+
+        if (chainDetails.hasActiveDerugData) {
+          setCollectionDerug(
+            await getCollectionDerugData(chainDetails.derugDataAddress)
+          );
+          setDerugRequests(
+            await getAllDerugRequest(chainDetails.derugDataAddress)
+          );
+        }
       }
     } catch (error) {
       console.log(error);
