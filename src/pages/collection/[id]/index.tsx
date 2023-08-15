@@ -32,6 +32,7 @@ import { GetServerSideProps } from "next";
 import { getDerugCandyMachine } from "@/solana/methods/public-mint";
 import Modal from "@/components/Modal";
 import { Oval } from "react-loader-spinner";
+import { getCollectionChainData } from "@/solana/collections";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const slug = context.params.id;
@@ -102,11 +103,10 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
   }, [basicCollectionData, wallet]);
   const getChainCollectionDetails = async () => {
     try {
-      const chainDetails = await getDummyCollectionData();
-      // const chainDetails = await getCollectionChainData(
-      //   basicCollectionData!,
-      //   listings?.at(0)
-      // );
+      const chainDetails = await getCollectionChainData(
+        basicCollectionData!,
+        listings?.at(0)
+      );
 
       chainDetails.slug = slug!;
       setChainCollectionData(chainDetails);
