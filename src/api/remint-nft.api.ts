@@ -201,9 +201,6 @@ export async function remintMultipleNfts(
       transaction.add(ix);
       transaction.sign(newMint);
 
-      const txSim = await RPC_CONNECTION.simulateTransaction(transaction);
-      console.log(txSim.value.logs);
-
       return transaction;
     })
   );

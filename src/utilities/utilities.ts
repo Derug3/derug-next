@@ -22,5 +22,5 @@ export const DERUG_PROGRAM_ID = process.env.NEXT_PUBLIC_DERUG_PROGRAM as string;
 //TODO:load from env
 export const RPC_CONNECTION = new Connection(
   process.env.NEXT_PUBLIC_RPC_CONNECTION,
-  "finalized"
+  "confirmed"
 );
