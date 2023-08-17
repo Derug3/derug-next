@@ -289,7 +289,7 @@ const PublicMint = () => {
                 <div className="flex p-2 lg:p-5 items-start gap-1 md:gap-2 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md">
                   {candyMachine && (
                     <div className="flex items-center gap-3">
-                      <p className="text-white text-md font-mono">
+                      <p className="text-white text-md font-mono whitespace-nowrap">
                         MINT PRICE
                       </p>
                       <p className="text-lg">
