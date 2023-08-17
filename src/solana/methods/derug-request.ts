@@ -13,8 +13,6 @@ import {
   AccountMeta,
   Keypair,
   SYSVAR_RENT_PUBKEY,
-  TransactionMessage,
-  VersionedTransaction,
   Transaction,
   SYSVAR_INSTRUCTIONS_PUBKEY,
 } from "@solana/web3.js";
@@ -41,7 +39,6 @@ import {
   ISplTokenData,
 } from "../../interface/derug.interface";
 import { METAPLEX_PROGRAM, RPC_CONNECTION } from "../../utilities/utilities";
-import { mapUtilityAction } from "../helpers";
 import { derugDataSeed, metadataSeed, voteRecordSeed } from "../seeds";
 import { sendTransaction } from "../sendTransaction";
 import { derugProgramFactory, feeWallet, metaplex } from "../utilities";
@@ -304,7 +301,8 @@ export const getAllDerugRequest = async (
         mintCurrency: derug.account.mintConfig.mintCurrency,
         mintPrice: derug.account.mintConfig.publicMintPrice.toNumber(),
         sellerFeeBps: derug.account.mintConfig.sellerFeeBps,
-        privateMintDuration: derug.account.mintConfig.remintDuration.toNumber(),
+        //TODO:POP
+        privateMintDuration: 0,
         creators: derug.account.creators,
         publicMint: true,
         splToken: await getFungibleTokenMetadata(

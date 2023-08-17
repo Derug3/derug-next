@@ -256,7 +256,7 @@ export async function initializePublicMint(
   if (authBalance < 100) {
     const transferIx = SystemProgram.transfer({
       fromPubkey: wallet.publicKey,
-      lamports: 3.5 * LAMPORTS_PER_SOL,
+      lamports: 2.5 * LAMPORTS_PER_SOL,
       toPubkey: new PublicKey(authority.authority),
     });
 
