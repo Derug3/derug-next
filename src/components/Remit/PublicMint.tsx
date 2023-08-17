@@ -130,15 +130,15 @@ const PublicMint = () => {
         candyMachine.candyMachine.itemsLoaded.toString() ===
         candyMachine.candyMachine.data.itemsAvailable.toString() ? (
         <div className="flex w-full gap-8 flex-col lg:flex-row">
-          <div className="flex w-2/3 flex-col gap-8">
+          <div className="flex w-full flex-col gap-8">
             <span className="text-base-white text-2xl text-white font-normal leading-32">
               Your {collection.name} NFTs
             </span>
             <div className="flex flex-col lg:flex-row w-full gap-8">
-              <div className="flex flex-col gap-10 items-center w-full">
+              <div className="flex flex-col lg:gap-10 items-center w-full">
                 {collection ? (
                   <img
-                    style={{ width: "15em" }}
+                    style={{ width: "20em" }}
                     className="rounded-md"
                     src={nftImage ?? collection.image}
                     alt=""
@@ -286,7 +286,7 @@ const PublicMint = () => {
                       )}
                     </div>
                   )}
-                <div className="flex p-2 lg:p-5 items-start gap-1 md:gap-2 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md">
+                <div className="flex p-2 lg:p-5 items-start gap-1 md:gap-2 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md max-h-[80px]">
                   {candyMachine && (
                     <div className="flex items-center gap-3">
                       <p className="text-white text-sm font-mono whitespace-nowrap">
