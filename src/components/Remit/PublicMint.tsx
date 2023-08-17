@@ -127,7 +127,7 @@ const PublicMint = () => {
     <>
       {" "}
       {candyMachine &&
-      candyMachine.candyMachine.itemsLoaded.toString() ===
+        candyMachine.candyMachine.itemsLoaded.toString() ===
         candyMachine.candyMachine.data.itemsAvailable.toString() ? (
         <div className="flex w-full gap-8">
           <div className="flex w-2/3 flex-col gap-8">
@@ -289,9 +289,9 @@ const PublicMint = () => {
                 <div className="w-full flex">
                   <div className="flex p-4 md:p-5 items-start gap-1 md:gap-2 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md">
                     {candyMachine && (
-                      <>
-                        <p className="text-white text-lg font-mono">
-                          MINT PRICE :{" "}
+                      <div className="flex items-center gap-3">
+                        <p className="text-white text-md font-mono">
+                          MINT PRICE
                         </p>
                         <p className="text-lg">
                           {candyMachine.whitelistingConfig?.isActive
@@ -303,9 +303,11 @@ const PublicMint = () => {
                             ? candyMachine.whitelistingConfig.currency.name
                             : candyMachine.publicConfig.currency.name}
                         </p>
-
+                        <p className="text-sm font-mono flex whitespace-nowrap">
+                          + platform fees
+                        </p>
                         <img className="rounded-[50px] w-6" src={""} alt="" />
-                      </>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -327,13 +329,13 @@ const PublicMint = () => {
           <p>Public mint will be enabled soon!</p>
           {wallet?.publicKey.toString() ===
             derugRequest.derugger.toString() && (
-            <button
-              onClick={initializePublicMintHandler}
-              className="bg-main-blue color-white px-3 py-1 align-end"
-            >
-              Initialize Public Mint
-            </button>
-          )}
+              <button
+                onClick={initializePublicMintHandler}
+                className="bg-main-blue color-white px-3 py-1 align-end"
+              >
+                Initialize Public Mint
+              </button>
+            )}
         </div>
       )}
     </>
