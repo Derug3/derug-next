@@ -86,6 +86,7 @@ import { divide, pow } from "mathjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import dayjs from "dayjs";
+import nftStore from "@/stores/nftStore";
 
 export const initCandyMachine = async (
   collectionDerug: ICollectionDerugData,
@@ -343,106 +344,122 @@ export const mintNftFromCandyMachine = async (
 export const mintPublic = async (
   request: IRequest,
   wallet: AnchorWallet,
-  collectionDerug: ICollectionDerugData
+  collectionDerug: ICollectionDerugData,
+  mintsCount: number
 ) => {
   metaplex.use(walletAdapterIdentity(wallet));
+  const transactions: Transaction[] = [];
+  const mints: string[] = [];
+  const { setPublicMintNfts, publicMintNfts } = nftStore.getState();
   try {
     umi.use(umiAdapterIdentity(wallet));
-    const nftMint = generateSigner(umi);
-    const guardPda = findCandyGuardPda(umi, {
-      base: publicKey(request.candyMachineKey),
-    });
-    const derugProgram = derugProgramFactory();
-    const [authorityPda] = PublicKey.findProgramAddressSync(
-      [Buffer.from("derug"), request.candyMachineKey.toBuffer()],
-      derugProgram.programId
-    );
-    const authority = await getAuthority(collectionDerug.address.toString());
+    for (let i = 0; i < mintsCount; i++) {
+      const nftMint = generateSigner(umi);
+      const guardPda = findCandyGuardPda(umi, {
+        base: publicKey(request.candyMachineKey),
+      });
+      const derugProgram = derugProgramFactory();
+      const [authorityPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("derug"), request.candyMachineKey.toBuffer()],
+        derugProgram.programId
+      );
+      const authority = await getAuthority(collectionDerug.address.toString());
 
-    const authPda = findCandyMachineAuthorityPda(umi, {
-      candyMachine: publicKey(request.candyMachineKey),
-    });
+      const authPda = findCandyMachineAuthorityPda(umi, {
+        candyMachine: publicKey(request.candyMachineKey),
+      });
 
-    const [wAuth] = PublicKey.findProgramAddressSync(
-      [Buffer.from("derug"), request.candyMachineKey.toBuffer()],
-      derugProgram.programId
-    );
-    console.log(authPda, authorityPda.toString(), wAuth.toString(), "APDA");
+      const [wAuth] = PublicKey.findProgramAddressSync(
+        [Buffer.from("derug"), request.candyMachineKey.toBuffer()],
+        derugProgram.programId
+      );
+      console.log(authPda, authorityPda.toString(), wAuth.toString(), "APDA");
 
-    const collectionMetadata = metaplex
-      .nfts()
-      .pdas()
-      .metadata({ mint: collectionDerug.newCollection });
+      const collectionMetadata = metaplex
+        .nfts()
+        .pdas()
+        .metadata({ mint: collectionDerug.newCollection });
 
-    const instruction = mintV2(umi, {
-      firstCreator: createNoopSigner(publicKey(authority.authority)),
-      candyMachine: publicKey(request.candyMachineKey),
-      nftMint: nftMint,
-      collectionMint: publicKey(collectionDerug.newCollection),
-      payer: createNoopSigner(publicKey(wallet.publicKey)),
-      collectionMetadata: publicKey(collectionMetadata),
-      collectionUpdateAuthority: publicKey(authority.authority),
-      group: some("public"),
-      tokenStandard: TokenStandard.ProgrammableNonFungible,
-      authorizationRules: publicKey(metaplexAuthorizationRuleSet),
-      candyGuard: publicKey(guardPda),
-      mintArgs: {
-        solPayment: some({
-          destination: publicKey(request.derugger),
-        }),
-      },
-    })
-      .getInstructions()
-      .map((ix) => toWeb3JsInstruction(ix));
-
-    const transaction = new Transaction({
-      feePayer: wallet.publicKey,
-      recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
-    });
-    transaction.add(
-      ComputeBudgetProgram.setComputeUnitLimit({ units: 800_000 })
-    );
-    transaction.add(instruction[0]);
-    transaction.add(
-      SystemProgram.transfer({
-        fromPubkey: wallet.publicKey,
-        toPubkey: new PublicKey("DRG3YRmurqpWQ1jEjK8DiWMuqPX9yL32LXLbuRdoiQwt"),
-        lamports: 0.09 * LAMPORTS_PER_SOL,
+      const instruction = mintV2(umi, {
+        firstCreator: createNoopSigner(publicKey(authority.authority)),
+        candyMachine: publicKey(request.candyMachineKey),
+        nftMint: nftMint,
+        collectionMint: publicKey(collectionDerug.newCollection),
+        payer: createNoopSigner(publicKey(wallet.publicKey)),
+        collectionMetadata: publicKey(collectionMetadata),
+        collectionUpdateAuthority: publicKey(authority.authority),
+        group: some("public"),
+        tokenStandard: TokenStandard.ProgrammableNonFungible,
+        authorizationRules: publicKey(metaplexAuthorizationRuleSet),
+        candyGuard: publicKey(guardPda),
+        mintArgs: {
+          solPayment: some({
+            destination: publicKey(request.derugger),
+          }),
+        },
       })
-    );
+        .getInstructions()
+        .map((ix) => toWeb3JsInstruction(ix));
 
-    transaction.sign(toWeb3JsKeypair(nftMint));
+      const transaction = new Transaction({
+        feePayer: wallet.publicKey,
+        recentBlockhash: (await RPC_CONNECTION.getLatestBlockhash()).blockhash,
+      });
+      transaction.add(
+        ComputeBudgetProgram.setComputeUnitLimit({ units: 800_000 })
+      );
+      transaction.add(instruction[0]);
+      transaction.add(
+        SystemProgram.transfer({
+          fromPubkey: wallet.publicKey,
+          toPubkey: new PublicKey(
+            "DRG3YRmurqpWQ1jEjK8DiWMuqPX9yL32LXLbuRdoiQwt"
+          ),
+          lamports: 0.09 * LAMPORTS_PER_SOL,
+        })
+      );
 
-    const signedTx = await wallet.signTransaction(transaction);
+      transaction.sign(toWeb3JsKeypair(nftMint));
+      transactions.push(transaction);
+      mints.push(nftMint.publicKey);
+    }
 
-    const txSim = await RPC_CONNECTION.simulateTransaction(signedTx);
-    console.log(txSim.value.logs);
+    const signedTx = await wallet.signAllTransactions(transactions);
 
-    const serializedTx = JSON.stringify(
-      signedTx.serialize({ requireAllSignatures: false })
-    );
+    for (const [index, sTx] of signedTx.entries()) {
+      const serializedTx = JSON.stringify(
+        sTx.serialize({ requireAllSignatures: false })
+      );
 
-    await toast.promise(
-      mintCandyMachine(collectionDerug.address.toString(), serializedTx),
-      {
-        error: (data) => {
-          return data.message;
-        },
-        loading: "Minting...",
-        success: (data) => {
-          if (data.code === 200) {
+      await toast.promise(
+        mintCandyMachine(collectionDerug.address.toString(), serializedTx),
+        {
+          error: (data) => {
             return data.message;
-          } else {
-            throw new Error(data.message);
-          }
-        },
-      }
-    );
+          },
+          loading: "Minting...",
+          success: (data) => {
+            if (data.code === 200) {
+              return data.message;
+            } else {
+              throw new Error(data.message);
+            }
+          },
+        }
+      );
+
+      const nft = await metaplex
+        .nfts()
+        .findByMint({ mintAddress: new PublicKey(mints[index]) });
+
+      setPublicMintNfts([
+        ...publicMintNfts,
+        { image: nft.json.image, name: nft.name },
+      ]);
+      toast.success(`Minted ${nft.name}`);
+    }
 
     // await new Promise((resolve) => setTimeout(resolve, 2000));
-    return await metaplex
-      .nfts()
-      .findByMint({ mintAddress: new PublicKey(nftMint.publicKey) });
   } catch (error: any) {
     throw error;
   }

@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
 import { Oval } from "react-loader-spinner";
 import { Box, ProgressBar, Text } from "@primer/react";
 import { initializePublicMint } from "@/api/remint-nft.api";
+import Slider from "rc-slider";
+import nftStore from "@/stores/nftStore";
 
 const PublicMint = () => {
   const {
@@ -28,8 +30,7 @@ const PublicMint = () => {
   const [hasMinted, setHasMinted] = useState(false);
   const wallet = useAnchorWallet();
 
-  const [nfts, setNfts] = useState<{ image: string; name: string }[]>([]);
-
+  const { publicMintNfts: nfts, setPublicMintNfts: setNfts } = nftStore();
   const { signMessage } = useWallet();
 
   const [mintedNft, setMintedNft] = useState<NftWithToken>();
@@ -66,6 +67,7 @@ const PublicMint = () => {
     setCandyMachine(await getDerugCandyMachine(wallet, derugRequest));
   };
 
+  const [mintsCount, setMintsCount] = useState(1);
   const mintNfts = async () => {
     setHasMinted(true);
     toggleIsMinting(true);
@@ -73,19 +75,11 @@ const PublicMint = () => {
     setNftImage(undefined);
     try {
       if (wallet && derugRequest) {
-        const minted = candyMachine.whitelistingConfig?.isActive
+        candyMachine.whitelistingConfig?.isActive
           ? await mintNftFromCandyMachine(derugRequest, wallet, collectionDerug)
-          : await mintPublic(derugRequest, wallet, collectionDerug);
+          : await mintPublic(derugRequest, wallet, collectionDerug, mintsCount);
 
-        if (!minted) throw new Error();
-
-        setNftImage(minted.json.image);
         setCandyMachine(await getDerugCandyMachine(wallet, derugRequest));
-        toast.success(`Successfully minted ${minted.name}`);
-        setNfts((prevValue) => [
-          { name: minted.name, image: minted.json.image },
-          ...prevValue,
-        ]);
       }
     } catch (error: any) {
       toast.error(`Failed to mint:${error.message}`);
@@ -133,7 +127,7 @@ const PublicMint = () => {
     <>
       {" "}
       {candyMachine &&
-        candyMachine.candyMachine.itemsLoaded.toString() ===
+      candyMachine.candyMachine.itemsLoaded.toString() ===
         candyMachine.candyMachine.data.itemsAvailable.toString() ? (
         <div className="flex w-full gap-8">
           <div className="flex w-2/3 flex-col gap-8">
@@ -161,20 +155,32 @@ const PublicMint = () => {
                   <p className="text-main-blue font-bold">{mintedNft.name}</p>
                 )}
                 {true && (
-                  <button
-                    className="bg-[#36BFFA] w-full border border-[#36BFFA] px-[10%] shadow-xs text-lg text-black font-bold font-mono"
-                    onClick={mintNfts}
-                  >
-                    {isMinting ? (
-                      <Oval
-                        color="rgb(9, 194, 246)"
-                        height={"1.1em"}
-                        secondaryColor="transparent"
-                      />
-                    ) : (
-                      <span>Mint</span>
-                    )}
-                  </button>
+                  <div className="w-full flex flex-col gap-5">
+                    <button
+                      className="bg-[#36BFFA] w-full border border-[#36BFFA] px-[10%] shadow-xs text-lg text-black font-bold font-mono"
+                      onClick={mintNfts}
+                    >
+                      {isMinting ? (
+                        <Oval
+                          color="rgb(9, 194, 246)"
+                          height={"1.1em"}
+                          secondaryColor="transparent"
+                        />
+                      ) : (
+                        <span>
+                          Mint {mintsCount} {mintsCount < 10 ? "NFT" : "NFTs"}
+                        </span>
+                      )}
+                    </button>
+                    <Slider
+                      onChange={(e) => {
+                        setMintsCount(+e);
+                      }}
+                      value={mintsCount}
+                      min={1}
+                      max={100}
+                    />
+                  </div>
                 )}
               </div>
               <div className="flex flex-col items-start gap-3 justify-between">
@@ -321,13 +327,13 @@ const PublicMint = () => {
           <p>Public mint will be enabled soon!</p>
           {wallet?.publicKey.toString() ===
             derugRequest.derugger.toString() && (
-              <button
-                onClick={initializePublicMintHandler}
-                className="bg-main-blue color-white px-3 py-1 align-end"
-              >
-                Initialize Public Mint
-              </button>
-            )}
+            <button
+              onClick={initializePublicMintHandler}
+              className="bg-main-blue color-white px-3 py-1 align-end"
+            >
+              Initialize Public Mint
+            </button>
+          )}
         </div>
       )}
     </>
