@@ -409,15 +409,15 @@ export const mintPublic = async (
         ComputeBudgetProgram.setComputeUnitLimit({ units: 800_000 })
       );
       transaction.add(instruction[0]);
-      transaction.add(
-        SystemProgram.transfer({
-          fromPubkey: wallet.publicKey,
-          toPubkey: new PublicKey(
-            "DRG3YRmurqpWQ1jEjK8DiWMuqPX9yL32LXLbuRdoiQwt"
-          ),
-          lamports: 0.09 * LAMPORTS_PER_SOL,
-        })
-      );
+      // transaction.add(
+      //   SystemProgram.transfer({
+      //     fromPubkey: wallet.publicKey,
+      //     toPubkey: new PublicKey(
+      //       "DRG3YRmurqpWQ1jEjK8DiWMuqPX9yL32LXLbuRdoiQwt"
+      //     ),
+      //     lamports: 0.09 * LAMPORTS_PER_SOL,
+      //   })
+      // );
 
       transaction.sign(toWeb3JsKeypair(nftMint));
       transactions.push(transaction);

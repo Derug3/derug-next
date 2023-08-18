@@ -128,7 +128,6 @@ export const Collections: FC<{ slug: string }> = ({ slug }) => {
 
   const renderDerugContent = useMemo(() => {
     if (derugRequest) {
-      return <Remint onComplete={() => getChainCollectionDetails()} />;
       switch (derugRequest.status) {
         case DerugStatus.Initialized: {
           return (
