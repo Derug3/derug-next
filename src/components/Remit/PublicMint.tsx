@@ -127,18 +127,18 @@ const PublicMint = () => {
     <>
       {" "}
       {candyMachine &&
-      candyMachine.candyMachine.itemsLoaded.toString() ===
+        candyMachine.candyMachine.itemsLoaded.toString() ===
         candyMachine.candyMachine.data.itemsAvailable.toString() ? (
-        <div className="flex w-full gap-8">
-          <div className="flex w-2/3 flex-col gap-8">
+        <div className="flex w-full gap-8 flex-col lg:flex-row">
+          <div className="flex w-full flex-col gap-8">
             <span className="text-base-white text-2xl text-white font-normal leading-32">
               Your {collection.name} NFTs
             </span>
             <div className="flex flex-col lg:flex-row w-full gap-8">
-              <div className="flex flex-col gap-10 items-center">
+              <div className="flex flex-col lg:gap-10 items-center w-full">
                 {collection ? (
                   <img
-                    style={{ width: "15em" }}
+                    style={{ width: "20em" }}
                     className="rounded-md"
                     src={nftImage ?? collection.image}
                     alt=""
@@ -183,7 +183,7 @@ const PublicMint = () => {
                   </div>
                 )}
               </div>
-              <div className="flex flex-col items-start gap-3 justify-between">
+              <div className="flex flex-col items-start gap-3 justify-between w-full">
                 <p className="text-white text-lg font-mono font-black">
                   MINT DETAILS
                 </p>
@@ -286,37 +286,36 @@ const PublicMint = () => {
                       )}
                     </div>
                   )}
-                <div className="w-full flex">
-                  <div className="flex p-4 md:p-5 items-start gap-1 md:gap-2 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md">
-                    {candyMachine && (
-                      <>
-                        <p className="text-white text-lg font-mono">
-                          MINT PRICE :{" "}
-                        </p>
-                        <p className="text-lg">
-                          {candyMachine.whitelistingConfig?.isActive
-                            ? candyMachine.whitelistingConfig.price
-                            : candyMachine.publicConfig.price}
-                        </p>
-                        <p className="text-lg text-main-blue">
-                          {candyMachine.whitelistingConfig?.isActive
-                            ? candyMachine.whitelistingConfig.currency.name
-                            : candyMachine.publicConfig.currency.name}
-                        </p>
-
-                        <img className="rounded-[50px] w-6" src={""} alt="" />
-                      </>
-                    )}
-                  </div>
+                <div className="flex p-2 lg:p-5 items-start gap-1 md:gap-2 flex-1 border-8 border-gray-700 bg-gray-800 shadow-md max-h-[80px]">
+                  {candyMachine && (
+                    <div className="flex items-center gap-3">
+                      <p className="text-white text-sm font-mono whitespace-nowrap">
+                        MINT PRICE
+                      </p>
+                      <p className="text-lg">
+                        {candyMachine.whitelistingConfig?.isActive
+                          ? candyMachine.whitelistingConfig.price
+                          : candyMachine.publicConfig.price}
+                      </p>
+                      <p className="text-lg text-main-blue">
+                        {candyMachine.whitelistingConfig?.isActive
+                          ? candyMachine.whitelistingConfig.currency.name
+                          : candyMachine.publicConfig.currency.name}
+                      </p>
+                      <p className="text-sm font-mono flex whitespace-nowrap">
+                        + platform fees
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-3 w-[25em] h-[20em] overflow-y-scroll">
+          <div className="flex flex-wrap gap-3 w-full h-[20em] lg:w-[25em] lg:h-[25em] overflow-y-scroll">
             {nfts.length ? (
               renderNfts
             ) : (
-              <span className="flex text-white items-center">
+              <span className="flex text-sm text-white items-center w-full justify-center text-center">
                 No NFTs from a {collection.name} yet
               </span>
             )}
@@ -327,13 +326,13 @@ const PublicMint = () => {
           <p>Public mint will be enabled soon!</p>
           {wallet?.publicKey.toString() ===
             derugRequest.derugger.toString() && (
-            <button
-              onClick={initializePublicMintHandler}
-              className="bg-main-blue color-white px-3 py-1 align-end"
-            >
-              Initialize Public Mint
-            </button>
-          )}
+              <button
+                onClick={initializePublicMintHandler}
+                className="bg-main-blue color-white px-3 py-1 align-end"
+              >
+                Initialize Public Mint
+              </button>
+            )}
         </div>
       )}
     </>
