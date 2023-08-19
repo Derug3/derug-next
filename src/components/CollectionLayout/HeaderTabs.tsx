@@ -66,12 +66,12 @@ export const HeaderTabs: FC<{
           (dr) => dr.derugger.toString() === wallet.publicKey?.toString()
         )) || (
         )} */}
-      <button
+      {/* <button
         className="py-2 px-3 text-white hover:text-main-blue transition-all hover:bg-[#1D2939] hover:scale-105"
         onClick={() => openDerugModal(true)}
       >
         <span className="text-sm uppercase">Add derug request</span>
-      </button>
+      </button> */}
     </>
   );
 };
