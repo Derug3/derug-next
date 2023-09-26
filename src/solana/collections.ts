@@ -22,23 +22,22 @@ export async function getCollectionChainData(
 
   const derugProgram = derugProgramFactory();
   //TODO:check
-  // if (!mint) {
-  //   throw new Error("Failed to retrieve collection Metalpex data!");
-  // }
+  if (!mint) {
+    throw new Error("Failed to retrieve collection Metalpex data!");
+  }
 
-  // const [metadataAddress] = findMetadataPda(umi, { mint: publicKey(mint) });
+  const [metadataAddress] = findMetadataPda(umi, { mint: publicKey(mint) });
 
-  // const metadataAccount = await fetchMetadata(umi, metadataAddress);
+  const metadataAccount = await fetchMetadata(umi, metadataAddress);
 
-  const derugCollection = "9FNQwziLT6YUt3tkLcvbdKk1XyT3M42E1vE3XTkyngzp";
-
-  // const [derugData] = PublicKey.findProgramAddressSync(
-  //   [derugDataSeed, new PublicKey(derugCollection).toBuffer()],
-  //   derugProgram.programId
-  // );
-  const derugData = new PublicKey(
-    "3UeFcBqvAmuG2ePPGofanBCwJE9NHa6Q42yE46craAHJ"
+  const [derugData] = PublicKey.findProgramAddressSync(
+    [
+      derugDataSeed,
+      new PublicKey(unwrapOption(metadataAccount.collection).key).toBuffer(),
+    ],
+    derugProgram.programId
   );
+
   let hasActiveDerugData = false;
 
   try {
@@ -52,8 +51,8 @@ export async function getCollectionChainData(
     hasActiveDerugData = false;
   }
   return {
-    collectionMint: derugCollection,
-    firstCreator: "AFAyZncgP6ov51wfXurFLkWhxfotTZXqByeaJhYtrwUQ",
+    collectionMint: unwrapOption(metadataAccount.collection).key,
+    firstCreator: metadataAccount.creators[0].key,
     slug: collection.symbol,
     totalSupply: collection.numMints!,
     derugDataAddress: derugData,
