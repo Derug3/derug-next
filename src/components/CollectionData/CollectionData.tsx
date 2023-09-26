@@ -14,7 +14,7 @@ const CollectionData = () => {
   const [unableToLoad, setUnableToLoad] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const router = useRouter();
-  const slug = router.pathname;
+
 
   useEffect(() => {
     setTimeout(() => {
@@ -54,7 +54,7 @@ const CollectionData = () => {
                         className="w-8 h-8 rounded-full cursor-pointer"
                         onClick={() =>
                           window.open(
-                            `https://www.tensor.trade/trade/${slug}`,
+                            `https://www.tensor.trade/trade/${collection.symbol}`,
                             "_blank"
                           )
                         }
@@ -65,7 +65,7 @@ const CollectionData = () => {
                         className="w-8 h-8 rounded-full cursor-pointer"
                         onClick={() =>
                           window.open(
-                            `https://magiceden.io/marketplace/${slug}`,
+                            `https://magiceden.io/marketplace/${collection.symbol}`,
                             "_blank"
                           )
                         }

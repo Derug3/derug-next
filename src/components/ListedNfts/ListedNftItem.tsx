@@ -58,9 +58,11 @@ const ListedNftItem: FC<{ listedNft: INftListing }> = ({
   }, [listedNft]);
 
   const getUrl = useMemo(() => {
+    console.log(collection, 'collection');
+
     switch (listedNft.soruce) {
       case ListingSource.MagicEden:
-        return `https://magiceden.io/item-details/${listedNft.mint}`;
+        return `https://magiceden.io/${collection?.symbol}`;
       case ListingSource.SolanaArt:
         return `https://solanart.io/nft/${listedNft.mint}`;
       case ListingSource.Tensor:

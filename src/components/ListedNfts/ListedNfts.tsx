@@ -5,6 +5,9 @@ import ListedNftItem from "./ListedNftItem";
 const ListedNfts: FC = () => {
   const { activeListings, loading } = useContext(CollectionContext);
 
+  console.log(activeListings, 'activeListings');
+
+
   // test
   const renderListedNfts = () => {
     return activeListings
@@ -16,7 +19,9 @@ const ListedNfts: FC = () => {
           />
         );
       })
-      : [];
+      : <span>
+        No active listings
+      </span>;
   };
 
   return (
