@@ -77,22 +77,25 @@ const HeaderNav: FC = () => {
           background: "#1D2939",
         }}
       >
-        <Link
-          href={{
-            pathname: HOME,
-          }}
-        >
-          <img
-            src={derugPfp.src}
-            style={{
-              width: "12em",
-              cursor: "pointer",
-              // filter: "drop-shadow(#1D2939 0px 0px 13px)",
-              boxShadow: "0px 0px 13px #1D2939",
-              // border: '1px solid #101828'
+        <div className="flex w-fit text-white font-mono items-center gap-4">
+          <Link
+            href={{
+              pathname: HOME,
             }}
-          />
-        </Link>
+          >
+            <img
+              src={derugPfp.src}
+              style={{
+                width: "12em",
+                cursor: "pointer",
+                // filter: "drop-shadow(#1D2939 0px 0px 13px)",
+                boxShadow: "0px 0px 13px #1D2939",
+                // border: '1px solid #101828'
+              }}
+            />
+          </Link>
+        </div>
+
 
         <div className="flex">
           <div className="flex">
@@ -126,6 +129,7 @@ const HeaderNav: FC = () => {
                         <span className="text-xs lg:text-lg">link twitter </span>
                       </div>
                     )}
+
                   </p>
                 </div>
               </div>

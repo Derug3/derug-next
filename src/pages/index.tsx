@@ -181,13 +181,14 @@ const Home = () => {
         <div className="flex flex-wrap gap-12 w-full items-center justify-center mt-10">
           {collections &&
             collections.map((c, index) => (
-              <CollectionItem
-                stats={c.stats}
-                collection={c.collection}
-                key={c.collection.symbol}
-                bigImage={true}
-              />
-            ))}
+              c.collection.symbol !== "nice_mice" && (
+                <CollectionItem
+                  stats={c.stats}
+                  collection={c.collection}
+                  key={c.collection.symbol}
+                  bigImage={true}
+                />
+              )))}
         </div>
       </div>
     ),
@@ -257,15 +258,16 @@ const Home = () => {
         </h1>
         {renderSelect}
       </div>
-      <div className="flex w-full my-5 items-center justify-center">
+      {/* <div className="flex w-full my-5 items-center justify-center">
         <TabComponent
           tabs={tabs}
           activeTab={activeTab}
           handleTabClick={(tab) => setActiveTab(tab)}
         />
-      </div>
-      {(activeTab === "Active" && renderActiveCollections) ||
-        (activeTab === "Hot" && renderRandomCollections)}
+      </div> */}
+      {renderRandomCollections}
+      {/* {(activeTab === "Active" && renderActiveCollections) ||
+        (activeTab === "Hot" && renderRandomCollections)} */}
     </div>
   );
 };
